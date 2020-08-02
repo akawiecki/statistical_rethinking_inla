@@ -1,0 +1,154 @@
+---
+title: "INLArethinking_HW3"
+author: "Ania Kawiecki"
+date: "7/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+Statistical rethinking homework solutions link: https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework
+
+```{r libraries}
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+
+```
+
+#HOMEWORK 3
+
+All three problems below are based on the same data. The data in data(foxes) are 116 foxes from 30 different urban groups in England. These foxes are like street gangs. Group size varies from 2 to 8 individuals. Each group maintains its own (almost exclusive) urban territory. Some territories are larger than others. The area variable encodes this information. Some territories also have more avgfood than others. We want to model the weight of each fox. For the problems below, assume this DAG:
+
+```{r hw3 dag}
+
+hw3dag <- dagitty("dag{
+                  avgfood <- area
+                  weight <- avgfood
+                  weight <- groupsize
+                  groupsize <- avgfood
+                  }")
+
+plot(hw3dag)
+
+
+```
+
+## 1. Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.
+
+
+SOL: Because there are no back-door paths from area to weight,we only need to include area. No other variables are needed.
+Territory size seems to have no total causal influence on weight, at least not in this sample.
+```{r hw3 1 rethinking}
+
+data(foxes)
+f <- foxes
+
+f$A <- scale( f$area )
+f$F <- scale( f$avgfood )
+f$G <- scale( f$groupsize )
+f$W <- scale( f$weight)
+
+
+# area on weight
+m1 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m1)
+
+# the area has no influence on the weight
+
+```
+
+```{r hw3 1 INLA default priors}
+
+#using default priors
+
+m1.inla <- inla(W~A, data= f)
+summary(m1.inla)
+
+```
+
+```{r hw3 1 INLA priors}
+
+#pcprior <- list(prec = list(prior="pc.prec", param = c(3*sdres,0.01)))
+#formula <- nitrogen ~ f(site, model="iid", hyper = pcprior)
+#pmod <- inla(formula, family="gaussian", data=reeds)
+#bri.hyperpar.summary(pmod)
+
+
+```
+
+
+```{r hw3 2}
+
+# food on weight
+m2 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bF*F,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m2)
+
+
+
+# the food has no infuence on the weight
+```
+
+```{r hw3 3}
+
+# groupsize on weight
+#need to include avgfood
+m3 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bF*F + bG*G,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        bG ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m3)
+
+
+
+# the food has no infuence on the weight
+```
+
+
+```{r H1}
+data("WaffleDivorce")
+
+d <- WaffleDivorce
+d$W <- scale( d$WaffleHouses )
+d$D <- scale( d$Divorce )
+
+
+m6h1 <- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu <- a + bW*W + bS*South,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bW ~ dnorm( 0 , 0.5 ) ,
+        bS ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=d )
+
+precis(m6h1)
+
+```
