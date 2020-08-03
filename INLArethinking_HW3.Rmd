@@ -57,8 +57,6 @@ f$F <- scale( f$avgfood )
 f$G <- scale( f$groupsize )
 f$W <- scale( f$weight)
 
-
-# area on weight
 m1 <- quap(
     alist(
         W ~ dnorm( mu , sigma ) ,
@@ -69,8 +67,6 @@ m1 <- quap(
 ) , data=f )
 
 precis(m1)
-
-# the area has no influence on the weight
 
 ```
 ### default priors
@@ -89,18 +85,12 @@ summary(m1.inla)
 
 ```{r hw3 1 INLA custom priors}
 
-names(inla.models()$prior)
-
-#inla.doc("normal")
-
 m1.inla.prior <- inla(W~A, data= f, control.fixed = list(
         mean= 0, 
         prec= 0.5, 
         mean.intercept= 0, 
         prec.intercept= 0.2
 ))
-
-#m1.inla.prior = inla(W ~ A,family = c("gaussian"), data = f,control.family = list( hyper = list(prec = list(prior = "normal",param = c(0, 1)))))
 
 summary(m1.inla.prior)
 ```
@@ -127,8 +117,6 @@ m2 <- quap(
 precis(m2)
 
 
-
-# the food has no infuence on the weight
 ```
 
 ```{r hw3 2 INLA default priors}
@@ -197,9 +185,6 @@ summary(m3.inla)
 Prior mean for all fixed effects except the intercept. Alternatively, a named list with specific means where name=default applies to unmatched names. For example control.fixed=list(mean=list(a=1, b=2, default=0)) assign 'mean=1' to fixed effect 'a' , 'mean=2' to effect 'b' and 'mean=0' to all others. (default 0.0)
 
 ```{r hw3 3 INLA  priors}
-
-#inla.models()
-#inla.set.control.fixed.default()
 
 #using custom priors
 m3.inla.prior <- inla(W~F+G, data= f, control.fixed = list(
