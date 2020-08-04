@@ -2,7 +2,10 @@
 title: "INLArethinking_HW4"
 author: "Ania Kawiecki"
 date: "8/3/2020"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -50,7 +53,7 @@ Second, use each island’s birb distribution to predict the other two. This mea
 
 SOL: 
 To compute the entropies,we just need a function to compute the entropy.Information entropy, as defined in lecture and the book, is simply:
- $H(p) = - \sum_{i}p_i log(p_i)
+ $H(p) = - \sum_{i}p_i log(p_i)$
 
 where p is a vector of probabilities summing to 1. In R code this would look like:
 ```{r hw4.1.1}
@@ -93,16 +96,44 @@ round( Dm , 2 )
 
 The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.
 
-##2. 
-Recall the marriage,age,and happiness collider bias example from Chapter 6. Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree? 
+## 2. 
 
-SOL: So let’s consider a multiple regression model aimed at inferring the influence of age on happiness, while controlling for marriage status. This is just a plain multiple regression, like the others in this and the previous chapter. The linear model is this: μi = α mid[i] + βAAi where mid[i] is an index for the marriage status of individual i, with 1 meaning single and 2 meaning married. It’s easier to make priors, when we use multiple intercepts, one for each category, than when we use indicator variables.
+Recall the marriage,age,and happiness collider bias example from Chapter 6.
+
+Consider the question of how aging influences happiness.If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?
+
+Suppose, just to be provocative, that an individual’s average happiness is a trait that is determined at birth and does not change with age. However, happiness does influence events in one’s life. One of those events is marriage. Happier people are more likely to get married. Another variable that causally influences marriage is age: The more years you are alive, the more likely you are to eventually get married. Putting these three variables together, this is the causal model:
+
+```{r hw4.2 dag, echo=FALSE}
+
+hw4dag <- dagitty("dag{
+                  M <- A
+                  M <- H
+                  }")
+
+plot(hw4dag)
+
+
+```
+
+Happiness (H) and age (A) both cause marriage (M). Marriage is therefore a collider. Even though there is no causal association between happiness and age, if we condition on marriage— which means here, if we include it as a predictor in a regression—then it will induce a statistical association between age and happiness. And this can mislead us to think that happiness changes with age, when in fact it is constant.
+
+Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree? 
+
+SOL: So let’s consider a multiple regression model aimed at inferring the influence of age on happiness, while controlling for marriage status. This is just a plain multiple regression, like the others in this and the previous chapter. 
+
+The linear model is this:  $\mu_i= \alpha mid[i] + \beta AA_i$  where mid[i] is an index for the marriage status of individual i, with 1 meaning single and 2 meaning married. It’s easier to make priors, when we use multiple intercepts, one for each category, than when we use indicator variables.
 
 Now we should do our duty and think about the priors. 
--Let’s consider the slope βA first, because how we scale the predictor A will determine the meaning of the intercept. We’ll focus only on the adult sample, those 18 or over. Imagine a very strong relationship between age and happiness, such that happiness is at its maximum at age 18 and its minimum at age 65. It’ll be easier if we rescale age so that the range from 18 to 65 is one unit. Now this new variable A ranges from 0 to 1, where 0 is age 18 and 1 is age 65. 
--Happiness is on an arbitrary scale, in these data, from −2 to +2. So our imaginary strongest relationship, taking happiness from maximum to minimum, has a slope with rise over run of (2 − (−2))/1 = 4. Remember that 95% of the mass of a normal distribution is contained within 2 standard deviations. So if we set the standard deviation of the prior to half of 4, we are saying that we expect 95% of plausible slopes to be less than maximally strong. That isn’t a very strong prior, but again, it at least helps bound inference to realistic ranges. 
--Now for the intercepts. Each α is the value of μi when Ai = 0. In this case, that means at age 18. So we need to allow α to cover the full range of happiness scores. Normal(0, 1) will put 95% of the mass in the −2 to +2 interval.
--We need to construct the marriage status index variable, as well.
+
+* Let’s consider the slope $\beta A$ first, because how we scale the predictor A will determine the meaning of the intercept. We’ll focus only on the adult sample, those 18 or over. Imagine a very strong relationship between age and happiness, such that happiness is at its maximum at age 18 and its minimum at age 65. It’ll be easier if we rescale age so that the range from 18 to 65 is one unit. Now this new variable A ranges from 0 to 1, where 0 is age 18 and 1 is age 65. 
+
+* Happiness is on an arbitrary scale, in these data, from −2 to +2. So our imaginary strongest relationship, taking happiness from maximum to minimum, has a slope with rise over run of (2 − (−2))/1 = 4. Remember that 95% of the mass of a normal distribution is contained within 2 standard deviations. So if we set the standard deviation of the prior to half of 4, we are saying that we expect 95% of plausible slopes to be less than maximally strong. That isn’t a very strong prior, but again, it at least helps bound inference to realistic ranges. 
+
+* Now for the intercepts. Each α is the value of $\mu_i$ when Ai = 0. In this case, that means at age 18. So we need to allow $\alpha$ to cover the full range of happiness scores. Normal(0, 1) will put 95% of the mass in the −2 to +2 interval.
+
+* We need to construct the marriage status index variable, as well.
+
 Finally, let’s approximate the posterior.  
 
 ```{r hw4.2 rethinking data}
@@ -112,8 +143,9 @@ d2$A <- ( d2$age - 18 ) / ( 65 - 18 )
 d2$mid <- d2$married + 1
 ```
 
-Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path. To compare these models using WAIC:
+Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path. 
 
+### rethinking
 ```{r hw4.2.2 m6.9 rethinking}
 #contains both marriage status and age
 
@@ -129,7 +161,10 @@ precis(m6.9,depth=2)
 
 ```
 
-In order to code a separate intercept for being married/not, we need to reformat the data
+
+### INLA
+
+In order to code a separate intercept for being married/not, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on ( in this case marriage) and NAs for all other values. 
 
 ```{r hw4.2.2 m6.9 INLA}
 
@@ -137,13 +172,19 @@ d3 <- d2 %>%
   mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
          i_married= na_if(married, 0)) 
 
-m6.9.inla.prior <- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, control.fixed = list(
+m6.9.inla.prior <- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
+                        control.fixed = list(
         mean= list(0), 
-        prec= list(i_notmarried=2, i_married= 1, A=2)
-))
+        prec= list(i_notmarried=2, i_married= 1, A=2)),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
 summary(m6.9.inla.prior )
 
 ```
+
+
+### rethinking
 
 ```{r hw4.2.2 m6.10 rethinking}
 
@@ -157,21 +198,65 @@ m6.10 <- quap(
         sigma ~ dexp(1)
     ) , data=d2 )
 precis(m6.10)
-
- compare( m6.9 , m6.10 )
 ```
 
+### INLA
 
-3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
+```{r hw4.2.2 m6.10 INLA}
+
+
+m6.10.inla.prior <- inla(happiness~ A , data= d3, 
+                        control.fixed = list(
+        mean= list(0), 
+        prec= list(2),
+        mean.intercept= 0, 
+        prec.intercept= 1),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m6.10.inla.prior )
+```
+### To compare these models using WAIC:
+
+```{r compare hw4.2 models}
+
+#rethinking
+ compare( m6.9 , m6.10 )
+
+# INLA 
+m6.9.inla.prior$waic$waic
+m6.10.inla.prior$waic$waic
+```
+
+The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.
+
+
+## 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
 (1) avgfood + groupsize + area 
 (2) avgfood + groupsize
 (3) groupsize + area
 (4) avgfood
 (5) area
+
+
 Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).
 
+```{r hw3 dag, echo=FALSE}
 
-```{r hw4 3}
+hw3dag <- dagitty("dag{
+                  avgfood <- area
+                  weight <- avgfood
+                  weight <- groupsize
+                  groupsize <- avgfood
+                  }")
+
+plot(hw3dag)
+
+
+```
+
+
+```{r hw4 3 data}
 
 library(rethinking)
 data(foxes)
@@ -180,6 +265,13 @@ d$W <- standardize(d$weight)
 d$A <- standardize(d$area)
 d$F <- standardize(d$avgfood)
 d$G <- standardize(d$groupsize)
+
+```
+
+
+### rethinking
+```{r hw4 3 rethinking}
+
 m1 <- quap(
     alist(
         W ~ dnorm( mu , sigma ),
@@ -226,16 +318,67 @@ m5 <- quap(
 
 ```
 
-avgfood is a confounder of groupsize --> weight, so models that include avgfood and groupsize are causally correct 
+
+### INLA
+
+```{r hw3 3 INLA  priors}
+
+m1.i <- inla(W~F+G+A, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(F=0.5, G=0.5, A= 0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+#summary(m1.i)
+
+m2.i <- inla(W~F+G, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(F=0.5, G=0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+#summary(m2.i)
+
+m3.i <- inla(W~A+G, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(A=0.5, G=0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+#summary(m3.i)
+
+m4.i <- inla(W~F, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+#summary(m4.i)
+
+m5.i <- inla(W~A, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+#summary(m5.i)
+
+m1.i$waic$waic
+m2.i$waic$waic
+m3.i$waic$waic
+m4.i$waic$waic
+m5.i$waic$waic
+```
 
 
-(1) avgfood + groupsize + area: 
- don't really need ara 
+Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of good, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths.
+What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:
 
-
-(2) avgfood + groupsize
-
-(3) groupsize + area
- confounded 
-(4) avgfood
-(5) area
+```{r coeftab}
+coeftab(m4,m5)
+```
