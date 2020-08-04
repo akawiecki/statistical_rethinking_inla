@@ -137,7 +137,7 @@ Use indicator or index variables to model the influence of these features on the
 
 The easiest way to code the data is to use indicator variables. Let’s look at that approach first. I’ll do an index variable version next. I’ll use the three indicator variables W (NJ wine), J (American NJ), and R (red wine).
 
-## 2a.indicator variables
+## 2.a indicator variables
 
 ### 2.a rethinking
 ```{r HW5 2a re}
@@ -189,6 +189,16 @@ summary(m2a.i)
 ```
 As expected, red and wines are on average the same—bR is right on top of zero. American judges seem to be more on average slightly more generous with ratings—bJ is slightly but reliably above zero. American wines have slightly lower average ratings than French wines—bW is mostly below zero, but not very large in absolute size.
 
+## 2.b index variables
+
+Okay, now for an index variable version. The thing about index variables is that you can easily end up with more parameters than in an equivalent indicator variable model. But it’s still the same posterior distribution. You can convert from one to the other (if the priors are also equivalent). 
+
+We’ll need three index variables: wid, jid, fid. Now wid is 1 for a French wine and 2 for a NJ wine,jid is 1 for a French judge and 2 for an American judge, and fid is 1 for red and 2 for white. Those 1L numbers are just the R way to type the number as an integer—“1L” is the integer 1, while “1” is the real number 1. We want integers for an index variable.
+
+Now let’s think about priors for the parameters that correspond to each index value. Now the question isn’t how big the difference could be, but rather how far from the mean an indexed category could be. If we use Normal(0,0.5) priors, that would make a full standard deviation difference from the global mean rare. It will also match what we had above, in a crude sense. Again, I’d be tempted to something narrow, for the sake of regularization. But certainly something like Normal(0,10) is flat out silly, because it makes impossible values routine. Let’s see what we get:
+
+
+### 2.b rethinking
 
 ```{r hw5.2b index}
 
@@ -211,13 +221,80 @@ m2b <- ulam(
   )
 
 precis(m2b, depth=2)
+```
+
+
+To see that this model is the same as the previous, let’s compute contrasts. The contrast between American and French wines is:
+
+```{r hw5 2 contrast}
 
 post <- extract.samples(m2b)
 diff_w <- post$w[,2] - post$w[,1]
 precis( diff_w )
 
+```
+
+That’s almost exactly the same mean and standard deviation as bW in the first model. The other contrasts match as well.
+
+Something to notice about the two models is that the second one does sample less efficiently. The n_eff values are lower. This isn’t a problem, but it is a consequence of the higher correlations in the posterior, a result of the redundant parameterization. If you look at the pairs(m2b) plot, you’ll see tight correlations for each pair of index parameters of the same type. This is because really it is a difference that matters, and many combinations of two numbers can produce the same difference. But the priors keep this from ruining our inference. if you tried the same thing without priors, it would likely fall apart and return very large standard errors.
+
+```{r hw5 2b }
 pairs(m2b)
 ```
+
+### 2.b INLA 
+
+```{r hw5.2b INLA}
+
+d.i <- d %>% 
+  mutate(S = standardize(d$score),
+    jid = paste("j",as.integer(d$judge.amer), sep= "."),
+    wid =  paste("w",as.integer(d$wine.amer), sep= "."), 
+    j.value= 1, 
+    w.value= 1) %>% 
+  spread(jid, j.value) %>% 
+  spread(wid, w.value)
+
+j <- paste("j", 1:9, sep=".")
+
+w <- paste("w", 1:20, sep=".")
+
+est <- c(j,w)
+
+m1.i<- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
+                          w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i,
+                        control.fixed = list(
+        mean= 0, 
+        prec= 0.5),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m1.i )
+
+## Pull out summaries from the model object
+m1.i.sum <- summary(m1.i)
+ 
+## Summarise results
+m1.i.df  <- data.frame(mean = m1.i.sum$fixed[,"mean"],
+                       lower = m1.i.sum$fixed[,"0.025quant"],
+                       upper = m1.i.sum$fixed[,"0.975quant"],
+                       stringsAsFactors = FALSE)
+
+mi.i.df <- bind_cols(as.factor(est), m1.i.df)
+
+m1.i.plot <- mi.i.df %>% 
+  mutate(est= factor(est, levels= c("j.1",  "j.2" , "j.3" , "j.4" , "j.5"  ,"j.6" , "j.7" , "j.8" , "j.9" , "w.1" , "w.2" , "w.3" , "w.4" , "w.5" , "w.6" , "w.7" ,"w.8" , "w.9"  ,"w.10" ,"w.11", "w.12" ,"w.13" ,"w.14", "w.15" ,"w.16", "w.17", "w.18", "w.19", "w.20"))) %>% 
+  ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
+    xlab("coefficient") +
+    ylab("Estimate")+
+  coord_flip()+
+    theme_bw()
+
+m1.i.plot 
+
+```
+
 
 
 3. Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
