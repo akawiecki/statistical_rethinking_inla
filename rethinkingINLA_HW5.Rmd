@@ -91,10 +91,10 @@ w <- paste("w", 1:20, sep=".")
 est <- c(j,w)
 
 m1.i<- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
-                          w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i, 
+                          w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i,
                         control.fixed = list(
-        mean= list(0), 
-        prec= list(0.5)),
+        mean= 0, 
+        prec= 0.5),
         control.compute = list(dic=TRUE, waic= TRUE)
 )
 
@@ -109,10 +109,12 @@ m1.i.df  <- data.frame(mean = m1.i.sum$fixed[,"mean"],
                        upper = m1.i.sum$fixed[,"0.975quant"],
                        stringsAsFactors = FALSE)
 
-mi.i.df <- bind_cols(est, m1.i.df)
+mi.i.df <- bind_cols(as.factor(est), m1.i.df)
 
-m1.i.plot <- ggplot() + 
-    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), data= m1.i.df, position = position_dodge(0.5)) +
+m1.i.plot <- mi.i.df %>% 
+  mutate(est= factor(est, levels= c("j.1",  "j.2" , "j.3" , "j.4" , "j.5"  ,"j.6" , "j.7" , "j.8" , "j.9" , "w.1" , "w.2" , "w.3" , "w.4" , "w.5" , "w.6" , "w.7" ,"w.8" , "w.9"  ,"w.10" ,"w.11", "w.12" ,"w.13" ,"w.14", "w.15" ,"w.16", "w.17", "w.18", "w.19", "w.20"))) %>% 
+  ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
     xlab("coefficient") +
     ylab("Estimate")+
   coord_flip()+
@@ -120,8 +122,6 @@ m1.i.plot <- ggplot() +
 
 m1.i.plot 
 ```
-
-I got much worse estimations with INLA 
 
 
 ## 2.
