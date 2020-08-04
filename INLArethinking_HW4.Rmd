@@ -3,9 +3,9 @@ title: "INLArethinking_HW4"
 author: "Ania Kawiecki"
 date: "8/3/2020"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -231,7 +231,9 @@ m6.10.inla.prior$waic$waic
 The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.
 
 
-## 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
+## 3. 
+
+Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
 (1) avgfood + groupsize + area 
 (2) avgfood + groupsize
 (3) groupsize + area

@@ -274,7 +274,8 @@ highest entropy. Why does that give it a shorter distance to the other
 islands? Because it is less surprised by the other islands, due to its
 high entropy.
 
-\#\#2.
+\hypertarget{section-1}{%
+\subsection{2.}\label{section-1}}
 
 Recall the marriage,age,and happiness collider bias example from Chapter
 6.
@@ -296,6 +297,7 @@ Putting these three variables together, this is the causal model:
 \end{verbatim}
 
 \includegraphics{INLArethinking_HW4_files/figure-latex/hw4.2 dag-1.pdf}
+
 Happiness (H) and age (A) both cause marriage (M). Marriage is therefore
 a collider. Even though there is no causal association between happiness
 and age, if we condition on marriage--- which means here, if we include
@@ -320,27 +322,36 @@ meaning single and 2 meaning married. It's easier to make priors, when
 we use multiple intercepts, one for each category, than when we use
 indicator variables.
 
-Now we should do our duty and think about the priors. -Let's consider
-the slope \(\beta A\) first, because how we scale the predictor A will
-determine the meaning of the intercept. We'll focus only on the adult
-sample, those 18 or over. Imagine a very strong relationship between age
-and happiness, such that happiness is at its maximum at age 18 and its
-minimum at age 65. It'll be easier if we rescale age so that the range
-from 18 to 65 is one unit. Now this new variable A ranges from 0 to 1,
-where 0 is age 18 and 1 is age 65. -Happiness is on an arbitrary scale,
-in these data, from −2 to +2. So our imaginary strongest relationship,
-taking happiness from maximum to minimum, has a slope with rise over run
-of (2 − (−2))/1 = 4. Remember that 95\% of the mass of a normal
-distribution is contained within 2 standard deviations. So if we set the
-standard deviation of the prior to half of 4, we are saying that we
-expect 95\% of plausible slopes to be less than maximally strong. That
-isn't a very strong prior, but again, it at least helps bound inference
-to realistic ranges. -Now for the intercepts. Each α is the value of
-\(\mu_i\) when Ai = 0. In this case, that means at age 18. So we need to
-allow \(\alpha\) to cover the full range of happiness scores. Normal(0,
-1) will put 95\% of the mass in the −2 to +2 interval. -We need to
-construct the marriage status index variable, as well. Finally, let's
-approximate the posterior.
+Now we should do our duty and think about the priors.
+
+\begin{itemize}
+\item
+  Let's consider the slope \(\beta A\) first, because how we scale the
+  predictor A will determine the meaning of the intercept. We'll focus
+  only on the adult sample, those 18 or over. Imagine a very strong
+  relationship between age and happiness, such that happiness is at its
+  maximum at age 18 and its minimum at age 65. It'll be easier if we
+  rescale age so that the range from 18 to 65 is one unit. Now this new
+  variable A ranges from 0 to 1, where 0 is age 18 and 1 is age 65.
+\item
+  Happiness is on an arbitrary scale, in these data, from −2 to +2. So
+  our imaginary strongest relationship, taking happiness from maximum to
+  minimum, has a slope with rise over run of (2 − (−2))/1 = 4. Remember
+  that 95\% of the mass of a normal distribution is contained within 2
+  standard deviations. So if we set the standard deviation of the prior
+  to half of 4, we are saying that we expect 95\% of plausible slopes to
+  be less than maximally strong. That isn't a very strong prior, but
+  again, it at least helps bound inference to realistic ranges.
+\item
+  Now for the intercepts. Each α is the value of \(\mu_i\) when Ai = 0.
+  In this case, that means at age 18. So we need to allow \(\alpha\) to
+  cover the full range of happiness scores. Normal(0, 1) will put 95\%
+  of the mass in the −2 to +2 interval.
+\item
+  We need to construct the marriage status index variable, as well.
+\end{itemize}
+
+Finally, let's approximate the posterior.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -354,6 +365,9 @@ approximate the posterior.
 Model m6.9 contains both marriage status and age. Model m6.10 contains
 only age. Model m6.9 produces a confounded inference about the
 relationship between age and happiness, due to opening a collider path.
+
+\hypertarget{rethinking}{%
+\subsubsection{rethinking}\label{rethinking}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -378,6 +392,9 @@ relationship between age and happiness, due to opening a collider path.
 ## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
 ## sigma  0.9897080 0.02255800  0.9536559  1.0257600
 \end{verbatim}
+
+\hypertarget{inla}{%
+\subsubsection{INLA}\label{inla}}
 
 In order to code a separate intercept for being married/not, we need to
 reformat the data so that there are separate variables for each
@@ -409,7 +426,7 @@ intercept on ( in this case marriage) and NAs for all other values.
 ##    control.fixed = list(mean = list(0), prec = list(i_notmarried = 2, ", " 
 ##    i_married = 1, A = 2)))") 
 ## Time used:
-##     Pre = 1.46, Running = 0.469, Post = 0.24, Total = 2.17 
+##     Pre = 1.45, Running = 0.581, Post = 0.245, Total = 2.28 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -437,6 +454,9 @@ intercept on ( in this case marriage) and NAs for all other values.
 ##  the fitted values are computed
 \end{verbatim}
 
+\hypertarget{rethinking-1}{%
+\subsubsection{rethinking}\label{rethinking-1}}
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{#this model to a model that omits marriage status.}
@@ -458,6 +478,9 @@ intercept on ( in this case marriage) and NAs for all other values.
 ## bA     2.378318e-06 0.13225977 -0.2113743 0.2113790
 ## sigma  1.213188e+00 0.02766081  1.1689804 1.2573950
 \end{verbatim}
+
+\hypertarget{inla-1}{%
+\subsubsection{INLA}\label{inla-1}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -481,7 +504,7 @@ intercept on ( in this case marriage) and NAs for all other values.
 ##    = TRUE, ", " waic = TRUE), control.fixed = list(mean = list(0), prec = 
 ##    list(2), ", " mean.intercept = 0, prec.intercept = 1))") 
 ## Time used:
-##     Pre = 1.24, Running = 0.504, Post = 0.212, Total = 1.96 
+##     Pre = 1.26, Running = 0.527, Post = 0.204, Total = 1.99 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
@@ -508,7 +531,9 @@ intercept on ( in this case marriage) and NAs for all other values.
 ##  the fitted values are computed
 \end{verbatim}
 
-To compare these models using WAIC:
+\hypertarget{to-compare-these-models-using-waic}{%
+\subsubsection{To compare these models using
+WAIC:}\label{to-compare-these-models-using-waic}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -551,16 +576,12 @@ causal inference. We should not use WAIC (or LOO) to choose among
 models, unless we have some clear sense of the causal model. These
 criteria will happily favor confounded models.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
-\item
-  Reconsider the urban fox analysis from last week's homework. Use WAIC
-  or LOO based model comparison on five different models, each using
-  weight as the outcome, and containing these sets of predictor
-  variables:
-\end{enumerate}
+\hypertarget{reconsider-the-urban-fox-analysis-from-last-weeks-homework.-use-waic-or-loo-based-model-comparison-on-five-different-models-each-using-weight-as-the-outcome-and-containing-these-sets-of-predictor-variables}{%
+\subsection{3. Reconsider the urban fox analysis from last week's
+homework. Use WAIC or LOO based model comparison on five different
+models, each using weight as the outcome, and containing these sets of
+predictor
+variables:}\label{reconsider-the-urban-fox-analysis-from-last-weeks-homework.-use-waic-or-loo-based-model-comparison-on-five-different-models-each-using-weight-as-the-outcome-and-containing-these-sets-of-predictor-variables}}
 
 \begin{enumerate}
 \def\labelenumi{(\arabic{enumi})}
@@ -599,7 +620,8 @@ error of the score differences (dSE).
 \end{Highlighting}
 \end{Shaded}
 
-rethinking
+\hypertarget{rethinking-2}{%
+\subsubsection{rethinking}\label{rethinking-2}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -658,7 +680,8 @@ rethinking
 ## m5 333.7415 13.79359 10.884499 7.243278 2.659040 0.002012735
 \end{verbatim}
 
-INLA
+\hypertarget{inla-2}{%
+\subsubsection{INLA}\label{inla-2}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
