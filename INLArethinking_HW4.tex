@@ -1,0 +1,397 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={INLArethinking\_HW4},
+  pdfauthor={Ania Kawiecki},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{INLArethinking\_HW4}
+\author{Ania Kawiecki}
+\date{8/3/2020}
+
+\begin{document}
+\maketitle
+
+\begin{itemize}
+\tightlist
+\item
+  {[}Statistical rethinking homework solutions{]}
+  (\url{https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework})
+\end{itemize}
+
+INLA book:
+\url{https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(rethinking)}
+\KeywordTok{library}\NormalTok{(dagitty)}
+\KeywordTok{library}\NormalTok{(INLA)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{homework-4}{%
+\section{HOMEWORK 4}\label{homework-4}}
+
+\hypertarget{consider-three-fictional-polynesian-islands.-on-each-there-is-a-royal-or--nithologist-charged-by-the-king-with-surveying-the-bird-population.-they-have-each-found-the-following-proportions-of-5-important-birb-species}{%
+\subsection{1. Consider three fictional Polynesian islands. On each
+there is a Royal Or- nithologist charged by the king with surveying the
+bird population. They have each found the following proportions of 5
+important birb
+species:}\label{consider-three-fictional-polynesian-islands.-on-each-there-is-a-royal-or--nithologist-charged-by-the-king-with-surveying-the-bird-population.-they-have-each-found-the-following-proportions-of-5-important-birb-species}}
+
+Notice that each row sums to 1, all the birbs. This problem has two
+parts. It is not computationally complicated. But it is conceptually
+tricky.
+
+First, compute the entropy of each island's birb distribution. Interpret
+these entropy values.
+
+Second, use each island's birb distribution to predict the other two.
+This means to compute the K-L Divergence of each island from the others,
+treat- ing each island as if it were a statistical model of the other
+islands. You should end up with 6 different K-L Divergence values. Which
+island predicts the others best? Why?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{H <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(p) }\OperatorTok{-}\KeywordTok{sum}\NormalTok{(p}\OperatorTok{*}\KeywordTok{log}\NormalTok{(p))}
+
+\NormalTok{IB <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+\NormalTok{IB[[}\DecValTok{1}\NormalTok{]] <-}\StringTok{ }\KeywordTok{c}\NormalTok{( }\FloatTok{0.2}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ )}
+\NormalTok{IB[[}\DecValTok{2}\NormalTok{]] <-}\StringTok{ }\KeywordTok{c}\NormalTok{( }\FloatTok{0.8}\NormalTok{ , }\FloatTok{0.1}\NormalTok{ , }\FloatTok{0.05}\NormalTok{ , }\FloatTok{0.025}\NormalTok{ , }\FloatTok{0.025}\NormalTok{ )}
+\NormalTok{IB[[}\DecValTok{3}\NormalTok{]] <-}\StringTok{ }\KeywordTok{c}\NormalTok{( }\FloatTok{0.05}\NormalTok{ , }\FloatTok{0.15}\NormalTok{ , }\FloatTok{0.7}\NormalTok{ , }\FloatTok{0.05}\NormalTok{ , }\FloatTok{0.05}\NormalTok{ )}
+\KeywordTok{sapply}\NormalTok{( IB , H )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.6094379 0.7430039 0.9836003
+\end{verbatim}
+
+The first island has the largest entropy, followed by the third, and
+then the second in last place. Why is this? Entropy is a measure of the
+evenness of a distribution. The first islands has the most even
+distribution of birbs. This means you wouldn't be very surprised by any
+particular birb. The second island, in contrast, has a very uneven
+distribution of birbs. If you saw any birb other than the first species,
+it would be surprising.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DKL <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(p,q) }\KeywordTok{sum}\NormalTok{( p}\OperatorTok{*}\NormalTok{(}\KeywordTok{log}\NormalTok{(p)}\OperatorTok{-}\KeywordTok{log}\NormalTok{(q)) )}
+
+
+
+\NormalTok{Dm <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{( }\OtherTok{NA}\NormalTok{ , }\DataTypeTok{nrow=}\DecValTok{3}\NormalTok{ , }\DataTypeTok{ncol=}\DecValTok{3}\NormalTok{ )}
+
+\ControlFlowTok{for}\NormalTok{ ( i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{ ) }\ControlFlowTok{for}\NormalTok{ ( j }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{ ) Dm[i,j] <-}\StringTok{ }\KeywordTok{DKL}\NormalTok{( IB[[j]] , IB[[i]])}
+
+\NormalTok{test <-}\StringTok{ }\KeywordTok{DKL}\NormalTok{( IB[[}\DecValTok{1}\NormalTok{]] , IB[[}\DecValTok{2}\NormalTok{]])}
+  
+\KeywordTok{round}\NormalTok{( Dm , }\DecValTok{2}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,] 0.00 0.87 0.63
+## [2,] 0.97 0.00 1.84
+## [3,] 0.64 2.01 0.00
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Recall them arriage,age,and happiness collider bias example from
+  Chapter 6. Run models m6.9 and m6.10 again. Compare these two models
+  using WAIC (or LOO, they will produce identical results). Which model
+  is ex- pected to make better predictions? Which model provides the
+  correct causal inference about the influence of age on happiness? Can
+  you explain why the answers to these two questions disagree?
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rethinking)}
+\NormalTok{d <-}\StringTok{ }\KeywordTok{sim_happiness}\NormalTok{( }\DataTypeTok{seed=}\DecValTok{1977}\NormalTok{ , }\DataTypeTok{N_years=}\DecValTok{1000}\NormalTok{ )}
+\KeywordTok{precis}\NormalTok{(d)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    mean        sd      5.5%     94.5%     histogram
+## age        3.300000e+01 18.768883  4.000000 62.000000 ▇▇▇▇▇▇▇▇▇▇▇▇▇
+## married    3.007692e-01  0.458769  0.000000  1.000000    ▇▁▁▁▁▁▁▁▁▃
+## happiness -1.000070e-16  1.214421 -1.789474  1.789474      ▇▅▇▅▅▇▅▇
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{d2 <-}\StringTok{ }\NormalTok{d[ d}\OperatorTok{$}\NormalTok{age}\OperatorTok{>}\DecValTok{17}\NormalTok{ , ] }\CommentTok{# only adults}
+\NormalTok{d2}\OperatorTok{$}\NormalTok{A <-}\StringTok{ }\NormalTok{( d2}\OperatorTok{$}\NormalTok{age }\OperatorTok{-}\StringTok{ }\DecValTok{18}\NormalTok{ ) }\OperatorTok{/}\StringTok{ }\NormalTok{( }\DecValTok{65} \OperatorTok{-}\StringTok{ }\DecValTok{18}\NormalTok{ )}
+\NormalTok{d2}\OperatorTok{$}\NormalTok{mid <-}\StringTok{ }\NormalTok{d2}\OperatorTok{$}\NormalTok{married }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+
+\CommentTok{#contains both marriage status and age}
+\NormalTok{m6}\FloatTok{.9}\NormalTok{ <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        happiness }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a[mid] }\OperatorTok{+}\StringTok{ }\NormalTok{bA}\OperatorTok{*}\NormalTok{A,}
+\NormalTok{        a[mid] }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ ),}
+\NormalTok{        bA }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{2}\NormalTok{ ),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ) , }\DataTypeTok{data=}\NormalTok{d2 )}
+\KeywordTok{precis}\NormalTok{(m6}\FloatTok{.9}\NormalTok{,}\DataTypeTok{depth=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             mean         sd       5.5%      94.5%
+## a[1]  -0.2350877 0.06348986 -0.3365568 -0.1336186
+## a[2]   1.2585517 0.08495989  1.1227694  1.3943340
+## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
+## sigma  0.9897080 0.02255800  0.9536559  1.0257600
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#this model to a model that omits marriage status.}
+\NormalTok{m6}\FloatTok{.10}\NormalTok{ <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        happiness }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bA}\OperatorTok{*}\NormalTok{A,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ ),}
+\NormalTok{        bA }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{2}\NormalTok{ ),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ) , }\DataTypeTok{data=}\NormalTok{d2 )}
+\KeywordTok{precis}\NormalTok{(m6}\FloatTok{.10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                mean         sd       5.5%     94.5%
+## a      1.649248e-07 0.07675015 -0.1226614 0.1226617
+## bA    -2.728620e-07 0.13225976 -0.2113769 0.2113764
+## sigma  1.213188e+00 0.02766080  1.1689803 1.2573949
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \KeywordTok{compare}\NormalTok{( m6}\FloatTok{.9}\NormalTok{ , m6}\FloatTok{.10}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m6.9  2713.971 37.54465   0.0000       NA 3.738532 1.000000e+00
+## m6.10 3101.906 27.74379 387.9347 35.40032 2.340445 5.768312e-85
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Reconsider the urban fox analysis from last week's homework. Use WAIC
+  or LOO based model comparison on five different models, each using
+  weight as the outcome, and containing these sets of predictor
+  variables:
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\tightlist
+\item
+  avgfood + groupsize + area
+\item
+  avgfood + groupsize
+\item
+  groupsize + area
+\item
+  avgfood
+\item
+  area Can you explain the relative differences in WAIC scores, using
+  the fox DAG from last week's homework? Be sure to pay attention to the
+  standard error of the score differences (dSE).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rethinking)}
+\KeywordTok{data}\NormalTok{(foxes)}
+\NormalTok{d <-}\StringTok{ }\NormalTok{foxes}
+\NormalTok{d}\OperatorTok{$}\NormalTok{W <-}\StringTok{ }\KeywordTok{standardize}\NormalTok{(d}\OperatorTok{$}\NormalTok{weight)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{A <-}\StringTok{ }\KeywordTok{standardize}\NormalTok{(d}\OperatorTok{$}\NormalTok{area)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{F <-}\StringTok{ }\KeywordTok{standardize}\NormalTok{(d}\OperatorTok{$}\NormalTok{avgfood)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{G <-}\StringTok{ }\KeywordTok{standardize}\NormalTok{(d}\OperatorTok{$}\NormalTok{groupsize)}
+\NormalTok{m1 <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        W }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bF}\OperatorTok{*}\NormalTok{F }\OperatorTok{+}\StringTok{ }\NormalTok{bG}\OperatorTok{*}\NormalTok{G }\OperatorTok{+}\StringTok{ }\NormalTok{bA}\OperatorTok{*}\NormalTok{A,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.2}\NormalTok{),}
+        \KeywordTok{c}\NormalTok{(bF,bG,bA) }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ), }\DataTypeTok{data=}\NormalTok{d )}
+\NormalTok{m2 <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        W }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bF}\OperatorTok{*}\NormalTok{F }\OperatorTok{+}\StringTok{ }\NormalTok{bG}\OperatorTok{*}\NormalTok{G,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.2}\NormalTok{),}
+        \KeywordTok{c}\NormalTok{(bF,bG) }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ), }\DataTypeTok{data=}\NormalTok{d )}
+\NormalTok{m3 <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        W }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bG}\OperatorTok{*}\NormalTok{G }\OperatorTok{+}\StringTok{ }\NormalTok{bA}\OperatorTok{*}\NormalTok{A,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.2}\NormalTok{),}
+        \KeywordTok{c}\NormalTok{(bG,bA) }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ), }\DataTypeTok{data=}\NormalTok{d )}
+\NormalTok{m4 <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        W }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bF}\OperatorTok{*}\NormalTok{F,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.2}\NormalTok{),}
+\NormalTok{        bF }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    ), }\DataTypeTok{data=}\NormalTok{d )}
+\NormalTok{m5 <-}\StringTok{ }\KeywordTok{quap}\NormalTok{(}
+    \KeywordTok{alist}\NormalTok{(}
+\NormalTok{        W }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{( mu , sigma ),}
+\NormalTok{        mu <-}\StringTok{ }\NormalTok{a }\OperatorTok{+}\StringTok{ }\NormalTok{bA}\OperatorTok{*}\NormalTok{A,}
+\NormalTok{        a }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.2}\NormalTok{),}
+\NormalTok{        bA }\OperatorTok{~}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.5}\NormalTok{),}
+\NormalTok{        sigma }\OperatorTok{~}\StringTok{ }\KeywordTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{), }\DataTypeTok{data=}\NormalTok{d )}
+
+
+ \KeywordTok{compare}\NormalTok{( m1 , m2 , m3 , m4 , m5 )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        WAIC       SE     dWAIC      dSE    pWAIC      weight
+## m1 322.8847 16.27783  0.000000       NA 4.656959 0.465363694
+## m3 323.8985 15.68240  1.013749 2.899417 3.718565 0.280323674
+## m2 324.1284 16.13964  1.243666 3.598475 3.859897 0.249881396
+## m4 333.4444 13.78855 10.559695 7.193396 2.426279 0.002370193
+## m5 333.7239 13.79447 10.839215 7.242069 2.650636 0.002061043
+\end{verbatim}
+
+avgfood is a confounder of groupsize --\textgreater{} weight, so models
+that include avgfood and groupsize are causally correct
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\item
+  avgfood + groupsize + area: don't really need ara
+\item
+  avgfood + groupsize
+\item
+  groupsize + area confounded
+\item
+  avgfood
+\item
+  area
+\end{enumerate}
+
+\end{document}
