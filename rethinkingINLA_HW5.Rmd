@@ -66,14 +66,12 @@ traceplot(m1)
 
 plot(precis(m1, 2))
 ```
-The a parameters are the judges. Each represents an average deviation of the scores. So judges with lower values are harsher on average. Judges with higher values liked the wines more on average. There is some noticeable variation here. It is fairly easy to tell the judges apart.
-The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
 
 ### 1. INLA
 
 In order to code a separate intercept for each judge and wine, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on and NAs for all other values. 
 
-```{r hw4.2.2 m6.9 INLA}
+```{r hw5.1 INLA}
 
 d.i <- d %>% 
   mutate(S = standardize(d$score),
@@ -122,7 +120,9 @@ m1.i.plot <- mi.i.df %>%
 
 m1.i.plot 
 ```
+The a/j parameters are the judges. Each represents an average deviation of the scores. So judges with lower values are harsher on average. Judges with higher values liked the wines more on average. There is some noticeable variation here. It is fairly easy to tell the judges apart.
 
+The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
 
 ## 2.
 Now consider three features of the wines and judges:
@@ -135,7 +135,12 @@ Now consider three features of the wines and judges:
 
 Use indicator or index variables to model the influence of these features on the scores. Omit the individual judge and wine index variables from Problem 1. Do not include interaction effects yet. Again use ulam, justify your priors, and be sure to check the chains. What do you conclude about the differences among the wines and judges? Try to relate the results to the inferences in Problem 1.
 
-```{r HW5 1.2a}
+The easiest way to code the data is to use indicator variables. Let’s look at that approach first. I’ll do an index variable version next. I’ll use the three indicator variables W (NJ wine), J (American NJ), and R (red wine).
+
+## 2a.indicator variables
+
+### 2.a rethinking
+```{r HW5 2a re}
 
 dat_list2 <- list(
     S = standardize(d$score),
@@ -158,7 +163,32 @@ precis(m2a)
 traceplot(m2a)
 plot(precis(m2a, 2))
 
+
 ```
+### 2.a INLA
+
+```{r HW5 2a INLA}
+
+
+d.i2a <- d %>% 
+  mutate(S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == "red", 1, 0))
+
+m2a.i <- inla(S~W+J+R, data= d.i2a, control.fixed = list(
+        mean= 0, 
+        prec= list(R=0.5, W=0.5, J= 0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+
+summary(m2a.i)
+
+```
+As expected, red and wines are on average the same—bR is right on top of zero. American judges seem to be more on average slightly more generous with ratings—bJ is slightly but reliably above zero. American wines have slightly lower average ratings than French wines—bW is mostly below zero, but not very large in absolute size.
+
 
 ```{r hw5.2b index}
 
