@@ -12,9 +12,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-* [Statistical rethinking homework solutions] (https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
+[Statistical rethinking homework solutions](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
-INLA book: https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html
+[INLA book](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
 
 ```{r libraries, message= FALSE}
 library(tidyverse)

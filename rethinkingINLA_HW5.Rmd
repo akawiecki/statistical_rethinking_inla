@@ -1,0 +1,266 @@
+---
+title: "rethinkingINLA_HW5"
+author: "Ania Kawiecki"
+date: "8/3/2020"
+output: html_document
+---
+
+[Statistical rethinking homework solutions](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
+
+[INLA book](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
+
+```{r libraries, message= FALSE}
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)
+```
+# HOMEWORK 5
+
+## 1. 
+Consider the data (Wines2012) data table.These data are expert ratings of 20 different French and American wines by 9 different French and American judges. Your goal is to model score, the subjective rating assigned by each judge to each wine. I recommend standardizing it.
+
+In this first problem, consider only variation among judges and wines. Construct index variables of judge and wine and then use these index variables to construct a linear regression model. Justify your priors. You should end up with 9 judge parameters and 20 wine parameters. Use ulam instead of quap to build this model, and be sure to check the chains for convergence. If you’d rather build the model directly in Stan or PyMC3, go ahead. I just want you to use Hamiltonian Monte Carlo instead of quadratic approximation.
+How do you interpret the variation among individual judges and individual wines? Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?
+
+```{r HW5 1.1}
+library(rethinking)
+data(Wines2012)
+d <- Wines2012
+
+dat_list <- list(
+    S = standardize(d$score),
+    jid = as.integer(d$judge),
+    wid = as.integer(d$wine)
+)
+
+str(dat_list)
+
+```
+
+The model is straightforward. The only issue is the priors. Since I’ve standardized the outcome, we can use the ordinary N(0,0.5) prior from the examples in the text with standardized outcomes. Then the prior outcomes will stay largely within the possible outcome space. A bit more regularization than that wouldn’t be a bad idea either.
+
+diagnostics that precis provides: The n_eff values are all actually higher than the number of samples (2000), and all the Rhat values at exactly 1. Looks good so far. These diagnostics can mislead, however, so let’s look at the trace plots too: These pass the hairy-caterpillar-ocular-inspection-test: all the chains mix in the same region, and they move quickly through it, not getting stuck anyplace. 
+Now let’s plot these parameters so they are easier to interpret:
+
+### 1. rethinking
+```{r hw5.1 re}
+
+#How do you interpret the variation among individual judges and indi- vidual wines?
+#Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?
+
+m1 <- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu <- a[jid] + b[wid], 
+    a[jid] ~ dnorm(0, 0.5), 
+    b[wid] ~ dnorm(0, 0.5), 
+    sigma ~dexp(1)
+    
+  ), data=dat_list, chains=4 , cores=4)
+
+precis(m1, 2)
+traceplot(m1)
+plot(precis(m1, 2))
+```
+
+### 1. INLA
+
+In order to code a separate intercept for each judge and wine, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on and NAs for all other values. 
+
+```{r hw4.2.2 m6.9 INLA}
+
+d.i <- d %>% 
+  mutate(S = standardize(d$score),
+    jid = paste("j",as.integer(d$judge), sep= "."),
+    wid =  paste("w",as.integer(d$wine), sep= "."), 
+    j.value= 1, 
+    w.value= 1) %>% 
+  spread(jid, j.value) %>% 
+  spread(wid, w.value)
+
+#print(paste("j", 1:9, sep="."))
+
+#print(paste("w", 1:20, sep="."))
+
+m1.i<- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
+                          w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i, 
+                        control.fixed = list(
+        mean= list(0), 
+        prec= list(0.5)),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m1.i )
+
+```
+
+## 2.
+Now consider three features of the wines and judges:
+
+1. flight: Whether the wine is red or white.
+
+2. wine.amer: Indicator variable for American wines. 
+
+3. judge.amer: Indicator variable for American judges.
+
+Use indicator or index variables to model the influence of these features on the scores. Omit the individual judge and wine index variables from Problem 1. Do not include interaction effects yet. Again use ulam, justify your priors, and be sure to check the chains. What do you conclude about the differences among the wines and judges? Try to relate the results to the inferences in Problem 1.
+
+```{r HW5 1.2a}
+
+dat_list2 <- list(
+    S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    F= if_else(d$flight == "white", 0, 1))
+
+m2a <- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu <- a + bW*W + bJ*J + bF*F, 
+    a ~ dnorm(0, 0.2), 
+    bW~ dnorm(0, 0.5),
+    bJ~ dnorm(0, 0.5),
+    bF~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2, chains=4 , cores=4)
+
+precis(m2a)
+traceplot(m2a)
+plot(precis(m2a, 2))
+
+```
+
+```{r hw5.2b index}
+
+dat_list2b <- list(
+    S = standardize(d$score),
+    wid = d$wine.amer + 1,
+    jid = d$judge.amer + 1, 
+    fid= if_else(d$flight=="red",1L,2L)
+    )
+
+m2b <- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu <- w[wid]+j[jid]+f[fid], 
+    w[wid]~ dnorm(0, 0.5),
+    j[wid]~ dnorm(0, 0.5),
+    f[wid]~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2b, chains=4 , cores=4
+  )
+
+precis(m2b, depth=2)
+
+post <- extract.samples(m2b)
+diff_w <- post$w[,2] - post$w[,1]
+precis( diff_w )
+
+pairs(m2b)
+```
+
+
+3. Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
+What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?
+
+```{r hw5.3a }
+
+dat_list2 <- list(
+    S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == "red", 1, 0))
+
+m3a <- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu <- a + bW*W + bJ*J + bR*R + 
+      bWJ*W*J + bWR*W*R + bJR*J*R, 
+    a ~ dnorm(0, 0.2), 
+   c(bW,bJ,bR) ~ dnorm(0,0.5),
+    c(bWJ,bWR,bJR) ~ dnorm(0,0.25),
+  sigma ~ dexp(1)
+    ), data=dat_list2, chains=4 , cores=4)
+
+precis(m3a)
+
+pred_dat <- data.frame(
+    W = rep( 0:1 , times=4 ),
+    J = rep( 0:1 , each=4 ),
+    R = rep( c(0,0,1,1) , times=2 )
+)
+mu <- link( m3 )
+
+row_labels <- paste( ifelse(pred_dat$W==1,"A","F") ,
+                 ifelse(pred_dat$J==1,"A","F") ,
+                 ifelse(pred_dat$R==1,"R","W") , sep="" )
+plot( precis( list(mu=mu) , 2 ) , labels=row_labels )
+```
+
+
+```{r hw5.3b}
+dat_list2b <- list(
+    S = standardize(d$score),
+    wid = d$wine.amer + 1,
+    jid = d$judge.amer + 1, 
+    fid= if_else(d$flight=="red",1L,2L)
+    )
+
+# define an array
+# in STAN
+ mcode <- "
+data{
+    vector[180] S;
+
+
+m2b <- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu <- w[wid]+j[jid]+f[fid], 
+    w[wid]~ dnorm(0, 0.5),
+    j[wid]~ dnorm(0, 0.5),
+    f[wid]~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2b, chains=4 , cores=4
+  )
+   int fid[180];
+    int jid[180];
+    int wid[180];
+}
+parameters{
+    real w[2,2,2];
+    real<lower=0> sigma;
+}
+model{
+    vector[180] mu;
+    sigma ~ exponential( 1 );
+    for ( i in 1:2 )
+        for ( j in 1:2 )
+            for ( k in 1:2 )
+                w[i,j,k] ~ normal( 0 , 0.5 );
+    for ( i in 1:180 ) {
+        mu[i] = w[wid[i], jid[i], fid[i]];
+    }
+    S ~ normal( mu , sigma );
+}
+"
+
+
+#in ulam 
+
+m3b <- ulam(
+    alist(
+        S ~ dnorm( mu , sigma ),
+        mu <- w[wid,jid,fid],
+        real['2,2,2']:w ~ normal(0,0.5),
+        sigma ~ dexp(1)
+    ), data=dat_list2b , chains=4 , cores=4 )
+precis(m3b, depth=3)
+
+
+
+
+```
