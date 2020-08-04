@@ -63,8 +63,11 @@ m1 <- ulam(
 
 precis(m1, 2)
 traceplot(m1)
+
 plot(precis(m1, 2))
 ```
+The a parameters are the judges. Each represents an average deviation of the scores. So judges with lower values are harsher on average. Judges with higher values liked the wines more on average. There is some noticeable variation here. It is fairly easy to tell the judges apart.
+The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
 
 ### 1. INLA
 
@@ -81,9 +84,11 @@ d.i <- d %>%
   spread(jid, j.value) %>% 
   spread(wid, w.value)
 
-#print(paste("j", 1:9, sep="."))
+j <- paste("j", 1:9, sep=".")
 
-#print(paste("w", 1:20, sep="."))
+w <- paste("w", 1:20, sep=".")
+
+est <- c(j,w)
 
 m1.i<- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
                           w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i, 
@@ -95,7 +100,29 @@ m1.i<- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
 
 summary(m1.i )
 
+## Pull out summaries from the model object
+m1.i.sum <- summary(m1.i)
+ 
+## Summarise results
+m1.i.df  <- data.frame(mean = m1.i.sum$fixed[,"mean"],
+                       lower = m1.i.sum$fixed[,"0.025quant"],
+                       upper = m1.i.sum$fixed[,"0.975quant"],
+                       stringsAsFactors = FALSE)
+
+mi.i.df <- bind_cols(est, m1.i.df)
+
+m1.i.plot <- ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), data= m1.i.df, position = position_dodge(0.5)) +
+    xlab("coefficient") +
+    ylab("Estimate")+
+  coord_flip()+
+    theme_bw()
+
+m1.i.plot 
 ```
+
+I got much worse estimations with INLA 
+
 
 ## 2.
 Now consider three features of the wines and judges:
