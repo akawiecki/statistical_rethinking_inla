@@ -285,12 +285,20 @@ summary(as.vector(m2b.i.contrast))
 
 ```
 
-
-
-3. Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
+# 3.
+Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
 What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?
 
-```{r hw5.3a }
+Again I’ll show both the indicator approach and the index variable ap- proach.
+
+## 3.a indicator variables
+
+### 3.a rethinking
+For the indicator approach, we can use the same predictor variables as before, it's the model that's different. 
+I used the same priors as before for the main effects. I used tighter priors for the interactions. Why? Because interactions represent sub-categories of data, and if we keep slicing up the sample, differences can’t keep getting bigger. Again, the most important thing is not to use flat priors like Nor- mal(0,10) that produce impossible outcomes.
+
+
+```{r hw5.3a rethinking}
 
 dat_list2 <- list(
     S = standardize(d$score),
@@ -311,18 +319,61 @@ m3a <- ulam(
 
 precis(m3a)
 
+```
+
+Reading the parameters this way is not easy. But right away you might notice that bW is now close to zero and overlaps it a lot on both sides. NJ wines are no longer on average worse. So the interactions did something. Glancing at the interaction parameters, you can see that only one of them has much mass away from zero, bWR, the interaction between NJ wines and red flight, so red NJ wines. To get the predicted scores for red and white wines from both NJ and France, for both types of judges, we can use link:
+
+```{r hw5 3.a plot}
 pred_dat <- data.frame(
     W = rep( 0:1 , times=4 ),
     J = rep( 0:1 , each=4 ),
     R = rep( c(0,0,1,1) , times=2 )
 )
-mu <- link( m3 )
+mu <- link( m3a )
 
 row_labels <- paste( ifelse(pred_dat$W==1,"A","F") ,
                  ifelse(pred_dat$J==1,"A","F") ,
                  ifelse(pred_dat$R==1,"R","W") , sep="" )
 plot( precis( list(mu=mu) , 2 ) , labels=row_labels )
 ```
+
+
+### 3.a INLA
+
+```{r hw5.3a inla}
+d.i3a <- d %>% 
+  mutate(S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == "red", 1, 0))
+
+m3a.i <- inla(S~W+J+R+ W*J + W*R + J*R, data= d.i3a, 
+              
+              control.fixed = list(
+        mean= 0, 
+        prec= list(R=0.5, W=0.5, J= 0.5, WJ = 0.25, WR=0.25, JR= 0.25), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+
+summary(m3a.i)
+
+m3a.i.predicted.scores <- 
+```
+
+Overthinking: How link works. The function link is not really very sophisticated. All it is doing is using the formula you provided when you fit the model to compute the value of the linear model. It does this for each sample from the posterior distribution, for each case in the data. You could accomplish the same thing for any model, fit by any means, by performing these steps yourself. This is how it’d look for m4.3.
+```{r code 4.58}
+post <- extract.samples(m4.3)
+mu.link <- function(weight) post$a + post$b*( weight - xbar ) weight.seq <- seq( from=25 , to=70 , by=1 )
+mu <- sapply( weight.seq , mu.link )
+mu.mean <- apply( mu , 2 , mean )
+mu.CI <- apply( mu , 2 , PI , prob=0.89 )
+
+```
+And the values in mu.mean and mu.CI should be very similar (allowing for simulation variance) to what you got the automated way, using link.
+Knowing this manual method is useful both for (1) understanding and (2) sheer power. What- ever the model you find yourself with, this approach can be used to generate posterior predictions for any component of it. Automated tools like link save effort, but they are never as flexible as the code you can write yourself.
+
 
 
 ```{r hw5.3b}
