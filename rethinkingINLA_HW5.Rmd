@@ -7,7 +7,7 @@ output: html_document
 
 [Statistical rethinking homework solutions](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
-[INLA book](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
+[INLA gitbook](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
 
 ```{r libraries, message= FALSE}
 library(tidyverse)
@@ -120,6 +120,7 @@ m1.i.plot <- mi.i.df %>%
 
 m1.i.plot 
 ```
+
 The a/j parameters are the judges. Each represents an average deviation of the scores. So judges with lower values are harsher on average. Judges with higher values liked the wines more on average. There is some noticeable variation here. It is fairly easy to tell the judges apart.
 
 The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
@@ -165,6 +166,7 @@ plot(precis(m2a, 2))
 
 
 ```
+
 ### 2.a INLA
 
 ```{r HW5 2a INLA}
@@ -185,6 +187,29 @@ m2a.i <- inla(S~W+J+R, data= d.i2a, control.fixed = list(
 control.compute = list(waic= TRUE))
 
 summary(m2a.i)
+
+
+## Pull out summaries from the model object
+m1.i.sum <- summary(m1.i)
+ 
+## Summarise results
+m1.i.df  <- data.frame(mean = m1.i.sum$fixed[,"mean"],
+                       lower = m1.i.sum$fixed[,"0.025quant"],
+                       upper = m1.i.sum$fixed[,"0.975quant"],
+                       stringsAsFactors = FALSE)
+
+mi.i.df <- bind_cols(as.factor(est), m1.i.df)
+
+m1.i.plot <- mi.i.df %>% 
+  mutate(est= factor(est, levels= c("j.1",  "j.2" , "j.3" , "j.4" , "j.5"  ,"j.6" , "j.7" , "j.8" , "j.9" , "w.1" , "w.2" , "w.3" , "w.4" , "w.5" , "w.6" , "w.7" ,"w.8" , "w.9"  ,"w.10" ,"w.11", "w.12" ,"w.13" ,"w.14", "w.15" ,"w.16", "w.17", "w.18", "w.19", "w.20"))) %>% 
+  ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
+    xlab("coefficient") +
+    ylab("Estimate")+
+  coord_flip()+
+    theme_bw()
+
+m1.i.plot 
 
 ```
 As expected, red and wines are on average the same—bR is right on top of zero. American judges seem to be more on average slightly more generous with ratings—bJ is slightly but reliably above zero. American wines have slightly lower average ratings than French wines—bW is mostly below zero, but not very large in absolute size.
@@ -359,11 +384,11 @@ control.compute = list(waic= TRUE))
 
 summary(m3a.i)
 
-m3a.i.predicted.scores <- 
+#m3a.i.predicted.scores <- 
 ```
 
 Overthinking: How link works. The function link is not really very sophisticated. All it is doing is using the formula you provided when you fit the model to compute the value of the linear model. It does this for each sample from the posterior distribution, for each case in the data. You could accomplish the same thing for any model, fit by any means, by performing these steps yourself. This is how it’d look for m4.3.
-```{r code 4.58}
+```{r code 4.58, eval=FALSE}
 post <- extract.samples(m4.3)
 mu.link <- function(weight) post$a + post$b*( weight - xbar ) weight.seq <- seq( from=25 , to=70 , by=1 )
 mu <- sapply( weight.seq , mu.link )
@@ -376,7 +401,7 @@ Knowing this manual method is useful both for (1) understanding and (2) sheer po
 
 
 
-```{r hw5.3b}
+```{r hw5.3b , eval=FALSE}
 dat_list2b <- list(
     S = standardize(d$score),
     wid = d$wine.amer + 1,
