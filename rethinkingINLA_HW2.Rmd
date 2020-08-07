@@ -22,11 +22,9 @@ library(knitr)
 library(stringr)
 ```
 
-# HOMEWORK 2
+# Intro to linear prediction from Statistical Rethinking 2nd edition Chapter 4. 
 
-## 1. 
-
-*The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% compatibility intervals for each of these individuals, using model-based predictions.*
+**Finding the posterior distribution**
 
 Bayesian updating will allow us to consider every possible combination of values for μ and σ and to score each combination by its relative plausibility, in light of the data. These relative plausibilities are the posterior probabilities of each combination of values μ, σ.  Posterior plausibility provides a measure of the logical compatibility of each possible distribution with the data and model.
 
@@ -34,8 +32,7 @@ The thing to worry about is keeping in mind that the “estimate” here will be
 
 The prior for μ is a broad Gaussian prior, centered on 178cm, with 95% of probability between 178 ± 40.
 
-The weights that interest us are all adult weights, so we can analyze only the adults and make an okay linear approximation. If you did something else, that’s okay. I deliberately made the question a little vague. Loading the data, selecting out adults, and doing the regression from the book. 
-
+The weights that interest us are all adult weights, so we can analyze only the adults and make an okay linear approximation. 
 
 ```{r hw2.1 re}
 data(Howell1)
@@ -74,8 +71,10 @@ dens( prior_h )
 This is the expected distribution of heights, averaged over the prior. Notice that the prior probability distribution of height is not itself Gaussian. This is okay. The distribution you see is not an empirical expectation, but rather the distribution of relative plausibilities of different heights, before seeing the data.
 
 μ i = α + β ( x i −  ̄x )
+
 What this tells the regression golem is that you are asking two questions about the mean of
 the outcome.
+
 (1) What is the expected height when xi =  ̄x? The parameter α answers this question, because when xi =  ̄x, μi = α. For this reason, α is often called the intercept. But we should think not in terms of some abstract line, but rather in terms of the meaning with respect to the observable variables.
 
 (2) What is the change in expected height, when xi changes by 1 unit? The parameter β answers this question. It is often called a “slope,” again because of the abstract line. Better to think of it as a rate of change in expectation.
@@ -125,10 +124,8 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
 
 ```
 
-*Interpreting the posterior distribution*. One trouble with statistical models is that they are hard to understand. Once you’ve fit the model, it can only report posterior distribu- tion. This is the right answer to the question you asked. But it’s your responsibility to process the answer and make sense of it.
+**Interpreting the posterior distribution**. One trouble with statistical models is that they are hard to understand. Once you’ve fit the model, it can only report posterior distribution. This is the right answer to the question you asked. But it’s your responsibility to process the answer and make sense of it.
  
-
-## 1. rethinking
 
 ```{r hw2.1 quap}
 
@@ -155,10 +152,11 @@ round( vcov( m4.3 ) , 3 )
 # shows both the marginal posteriors and the covariance.
 pairs(m4.3)
 ```
+
 Very little covariation among the parameters in this case. The lack of covariance among the parameters results from centering.
 
 
-*Plotting posterior inference against the data*. It’s almost always much more useful to plot the posterior inference against the data. Not only does plotting help in interpret- ing the posterior, but it also provides an informal check on model assumptions. When the model’s predictions don’t come close to key observations or patterns in the plotted data, then you might suspect the model either did not fit correctly or is rather badly specified. But even if you only treat plots as a way to help in interpreting the posterior, they are invaluable.
+**Plotting posterior inference against the data**. It’s almost always much more useful to plot the posterior inference against the data. Not only does plotting help in interpreting the posterior, but it also provides an informal check on model assumptions. When the model’s predictions don’t come close to key observations or patterns in the plotted data, then you might suspect the model either did not fit correctly or is rather badly specified. But even if you only treat plots as a way to help in interpreting the posterior, they are invaluable.
 
 
 Each point in this plot is a single individual. The black line is defined by the mean slope β and mean intercept α = the posterior mean line. It looks highly plausible. But there an infinite number of other highly plausible lines near it. Let’s draw those too.
@@ -243,11 +241,11 @@ The value of xi in this case is 50.
 mu_at_50 is a vector of predicted means, one for each random sample from the posterior. Since joint a and b went into computing each, the variation across those means incorporates the uncertainty in and correlation between both parameters. It might be helpful at this point to actually plot the density for this vector of means.
 
 Since the components of μ have distributions, so too does μ. And since the distributions of α and β are Gaussian, so to is the distribution of μ (adding Gaussian distributions always produces a Gaussian distribution).
-Since the posterior for μ is a distribution, you can find intervals for it, just like for any posterior distribution. To find the 89% compatibilit
-the central 89% of the ways for the model to produce the data place the average height between about 159 cm and 160 cm (conditional on the model and data), assuming the weight is 50 kg.
+Since the posterior for μ is a distribution, you can find intervals for it, just like for any posterior distribution.
+The central 89% of the ways for the model to produce the data place the average height between about 159 cm and 160 cm (conditional on the model and data), assuming the weight is 50 kg.
 
 
-```{r 4.50}
+```{r 4.50 dens}
 post <- extract.samples( m4.3 )
 mu_at_50 <- post$a + post$b * ( 50 - xbar )
 
@@ -269,7 +267,7 @@ str(mu)
 
 You end up with a big matrix of values of μ. Each row is a sample from the posterior distribu- tion. There are 352 rows in d2, corresponding to 352 individuals. So there are 352 columns in the matrix mu above. link takes 1000 samples of the posterior dist. for every value in the data (of weight in this case). 
 
-this is what the link function does:
+### **this is what the link function does**:
 
 ```{r 4.58}
 post <- extract.samples(m4.3)
@@ -350,13 +348,187 @@ To summarize, here’s the recipe for generating predictions and intervals from 
 This recipe works for every model we fit in the book. As long as you know the structure of the model—how parameters relate to the data—you can use samples from the posterior to describe any aspect of the model’s behavior.
 
 
+**Prediction intervals** Now let’s walk through generating an 89% prediction in- terval for actual heights, not just the average height, μ. This means we’ll incorporate the standard deviation σ and its uncertainty as well. Remember, the first line of the statistical model here is:
+
+hi ∼ Normal(μi, σ)
+
+
+What you’ve done so far is just use samples from the posterior to visualize the uncertainty in μi, the linear model of the mean. But actual predictions of heights depend also upon the distribution in the first line. The Gaussian distribution on the first line tells us that the model expects observed heights to be distributed around μ, not right on top of it. And the spread around μ is governed by σ. All of this suggests we need to incorporate σ in the predictions somehow.
+
+Here’s how you do it. Imagine simulating heights. For any unique weight value, you sample from a Gaussian distribution with the correct mean μ for that weight, using the correct value of σ sampled from the same posterior distribution. If you do this for every sample from the posterior, for every weight value of interest, you end up with a collection of simulated heights that embody the uncertainty in the posterior as well as the uncertainty in the Gaussian distribution of heights. There is a tool called sim which does this. 
+
+This matrix is much like the earlier one, mu, but it contains simulated heights, not distributions of plausible average height, μ.
+
+We can summarize these simulated heights in the same way we summarized the distributions of μ, by using the PI function over apply. 
+
+
+```{r 4.59}
+
+sim.height <- sim( m4.3 , data=list(weight=weight.seq) )
+
+#This matrix is much like the earlier one, mu, but it contains simulated heights, not distributions of plausible average height, μ.
+str(sim.height)
+
+#height.PI contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in weight.seq
+height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+```
+
+Let’s plot everything we’ve built up: 
+(1) the average line
+(2) the shaded region of 89% plausible μ
+(3) the boundaries of the simulated heights the model expects.
+
+```{r 4.61}
+
+
+# plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+# draw MAP line : the average line of all the mean heights expected by the linear model for each weight
+#mu.link <- function(weight) post$a + post$b*( weight - xbar )
+#weight.seq <- seq( from=25 , to=70 , by=1 )
+#mu <- sapply( weight.seq , mu.link )
+#mu.mean <- apply( mu , 2 , mean )
+lines( weight.seq , mu.mean )
+# draw 89% region for line
+shade( mu.PI , weight.seq )
+# draw PI region for simulated heights:
+#the area within which the model expects to find 89% of actual heights in the population, at each weight.
+shade( height.PI , weight.seq )
+
+```
+
+89% prediction interval for height, as a function of weight. The solid line is the average line for the mean height at each weight. The two shaded regions show different 89% plausible regions. The narrow shaded in- terval around the line is the distribution of μ. The wider shaded region represents the region within which the model expects to find 89% of actual heights in the population, at each weight.
+
+### **this is what the sim function does**
+
+```{r 4.63}
+
+#extract samples automatically extracts 1000 from posterior dist
+post <- extract.samples(m4.3)
+
+weight.seq <- 25:70
+
+sim.function <- function(weight)
+    rnorm(
+        n=nrow(post) ,
+        mean=post$a + post$b*( weight - xbar ) ,
+        sd=post$sigma )
+
+sim.height <- sapply( weight.seq , sim.function )
+
+##compute the mean of each column (dimension “2”) of the matrix mu.
+height.interval <- apply(sim.height, 2, quantile, c( 0.05 , 0.94 ))
+
+#example of compatibility interval for 1st col (first weight)
+#quantile(sim.height[,1],c( 0.05 , 0.94 ) )
+
+# plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+# draw MAP line
+lines( weight.seq , mu.mean )
+# draw HPDI region for line
+shade( mu.PI , weight.seq )
+# draw PI region for simulated heights
+shade( height.interval, weight.seq )
+
+```
+
+
+**Rethinking: Two kinds of uncertainty.** In the procedure above, we encountered both uncertainty in parameter values and uncertainty in a sampling process. These are distinct concepts, even though they are processed much the same way and end up blended together in the posterior predictive simu- lation. The posterior distribution is a ranking of the relative plausibilities of every possible combina- tion of parameter values. The distribution of simulated outcomes, like height, is instead a distribution that includes sampling variation from some process that generates Gaussian random variables. This sampling variation is still a model assumption. It’s no more or less objective than the posterior distribution. Both kinds of uncertainty matter, at least sometimes. But it’s important to keep them straight, because they depend upon different model assumptions. 
+
+# HOMEWORK 2
+
+## 1. 
+
+**The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% compatibility intervals for each of these individuals, using model-based predictions.**
+
+```{r !kung table}
+
+ind <- 1:5
+weight <- c(45, 40, 65, 31, 53)
+expected_height <- NA
+interval <- NA
+kung <- bind_cols(ind, weight, expected_height, interval)
+colnames(kung) <- c("individual", "weight", "expected_height", "89%interval")
+kable(kung)
+```
+
+## 1. rethinking
+
+```{r hw2.1 quap}
+
+m4.3 <- quap(
+alist(
+height ~ dnorm( mu , sigma ) ,
+mu <- a + b*( weight - xbar ) ,
+a ~ dnorm( 178 , 20 ) ,
+b ~ dlnorm( 0 , 1 ) ,
+sigma ~ dunif( 0 , 50 )
+), data=d2 )
+
+precis(m4.3)
+
+```
+
+Now we need posterior predictions for each case in the table. Easiest way to do this is to use sim. We need sim, not just link, because we are trying to predict an individual’s height. So the relevant compatibility interval includes the Gaussian variance from sigma. If you provided only the compatibility interval for μ, that’s okay. But be sure you understand the difference.
+
+**Solution using rethinking functions**
+
+```{r hw2.1 prediction 1}
+dat <-  data.frame(weight= c(45, 40, 65, 31, 53))
+h_sim <- sim( m4.3 , data=dat )
+Eh <- apply(h_sim,2,mean)
+h_ci <- apply(h_sim,2,PI,prob=0.89)
+
+dat$Eh <- Eh 
+dat$L89 <- h_ci[1,] 
+dat$U89 <- h_ci[2,] 
+round(dat,1)
+```
+
+**Solution using base r functions**
+```{r hw2.1 prediction 2}
+
+weight= c(45, 40, 65, 31, 53)
+
+sim.hw2.fun <- function(weight, model) {
+  post.hw2 = extract.samples(model)
+  rnorm(
+    n= nrow(post),
+    mean= post$a + post$b*(weight - xbar),
+    sd= post$sigma)
+}
+
+sim.hw2 <- sapply(weight, sim.hw2.fun , m4.3)
+
+hw2.mean <- apply(sim.hw2,2, mean)
+hw2.ci <- apply(sim.hw2,2, quantile, c(0.05, 0.95))
+
+hw2.1 <- data.frame(weight= c(45, 40, 65, 31, 53)) %>% 
+  mutate(expected_height= hw2.mean, 
+         LCI= hw2.ci[1], 
+         UCI = hw2.ci[2])
+
+```
 
 ## 1. inla
 
 https://www.flutterbys.com.au/stats/tut/tut12.10.html
+
 https://people.bath.ac.uk/jjf23/brinla/hubble.html#inla-weakly-or-non-informative
 
+https://people.bath.ac.uk/jjf23/brinla/chicago.html
 
+https://haakonbakka.bitbucket.io/btopic112.html
+
+
+```{r install brinla}
+library(devtools)
+install_github("julianfaraway/brinla")
+library(brinla)
+
+library("inlabru")
+```
 
 The default mean and precision for fixed effects are:
 
@@ -370,37 +542,51 @@ We see that the default prior on beta is normal with mean zero and precision 0.0
 sqrt(1/0.001)
 ```
 
-We can see that the linear model fit for beta is somewhat more than two standard deviations from prior mean. So in this case, the default prior is actually quite informative. We need to make an adjustment by setting the precision to a much smaller value
-
-
-plot of the posterior density of beta (with the 95% credible interval added)
-```{r plot inla post }
-x <- seq(60, 100, length.out = 100)
-plot(imod$marginals.fixed$x, type = "l", xlab = "beta", ylab = "density", 
-    xlim = c(60, 100))
-abline(v = ibci[c(3, 5)], lty = 2)
-```
-
-
 
 ```{r hw2.1 inla }
 
-d1.i <- d2 %>% 
-  mutate(w= weight-xbar)
+data(Howell1)
+d <- Howell1
+d2 <- d[ d$age >= 18 , ]
 
-m1.i<- inla(height~ w, data= d1.i,
+dat <-  data.frame(weight= c(45, 40, 65, 31, 53))
+
+xbar <- mean(d2$weight) 
+
+new_w <- bind_cols(weight, NA)
+colnames(new_w) <- c("weight", "height")
+
+d1.i <- d2  %>% 
+  select(c("weight", "height")) %>%  
+  rbind(new_w) %>% 
+  mutate(w= weight-xbar) %>% 
+  select( c("height", "w"))
+
+#indices of the weights with missing values of height 
+
+d1.i.na <- which(is.na(d1.i$height))
+
+#We need to set the control.predictor to compute the posterior means of the linear predictors
+m1.i<- inla(height ~ w, data= d1.i,
             control.fixed = list(
         mean= 0, 
         prec= 1, 
         mean.intercept= 178, 
         prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
-        control.compute = list(
-          dic=TRUE, waic= TRUE)
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
 )
 
 
-summary(m1.i)
+# posterior means and SDs from the INLA fit
+
+m1.i$summary.fixed[,1:2]
+
+# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
+m1.i$summary.fitted.values[d1.i.na, ]
+
 ```
+
 
 ## 2. 
 
