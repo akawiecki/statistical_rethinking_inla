@@ -589,16 +589,10 @@ d2.i <- d %>%
          log_w= log_weight - xbar, 
          idx= row_number())
 
-#That said, you can do it if you want. It would be
-
-#f(index, covariate, model="iid", hyper=list(prec=list(........)))
-prec.prior <- list(prec = list(prior = "logtnormal", param = c(0, 1)))
-
-m2.i<- inla(height ~ 1+ f(idx, log_w, model = "iid", hyper = prec.prior), 
-            data= d2.i,
+m2.i<- inla(height ~ log_w, data= d2.i,
             control.fixed = list(
-       # mean= 0, 
-       # prec= 1, 
+        mean= 0, 
+        prec= 1, 
         mean.intercept= 178, 
         prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
         control.compute = list(config= TRUE),
@@ -628,15 +622,7 @@ m2.i.plot
 ```{r old code}
 #We need to set the control.predictor to compute the posterior means of the linear predictors
 
-m2.i<- inla(height ~ log_w, data= d2.i,
-            control.fixed = list(
-        mean= 0, 
-        prec= 1, 
-        mean.intercept= 178, 
-        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
-        control.compute = list(config= TRUE),
-        control.predictor=list(compute=TRUE)
-)
+
 
 ```
 
