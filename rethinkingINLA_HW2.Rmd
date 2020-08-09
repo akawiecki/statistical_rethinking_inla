@@ -538,6 +538,7 @@ Model the relationship between height(cm) and the natural logarithm of weight (l
 ### 2.rethinking
 
 ```{r hw2 2 re}
+library(rethinking)
 data(Howell1)
 d <- Howell1
 d$log_weight <- log(d$weight) 
@@ -571,6 +572,8 @@ where k = πα2 is just some proportionality constant.
 
 ```{r hw2.2 inla }
 library(brinla)
+library(INLA)
+library(tidyverse)
 data(Howell1)
 d <- Howell1
 log_wplot <- log(1:60)
@@ -589,7 +592,7 @@ d2.i <- d %>%
 #That said, you can do it if you want. It would be
 
 #f(index, covariate, model="iid", hyper=list(prec=list(........)))
-prec.prior <- list(prec = list(prior = "logtgaussian", param = c(0, 1)))
+prec.prior <- list(prec = list(prior = "logtnormal", param = c(0, 1)))
 
 m2.i<- inla(height ~ 1+ f(idx, log_w, model = "iid", hyper = prec.prior), 
             data= d2.i,
@@ -602,19 +605,10 @@ m2.i<- inla(height ~ 1+ f(idx, log_w, model = "iid", hyper = prec.prior),
         control.predictor=list(compute=TRUE)
 )
 
-#We need to set the control.predictor to compute the posterior means of the linear predictors
-
-m2.i<- inla(height ~ log_w, data= d2.i,
-            control.fixed = list(
-        mean= 0, 
-        prec= 1, 
-        mean.intercept= 178, 
-        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
-        control.compute = list(config= TRUE),
-        control.predictor=list(compute=TRUE)
-)
-
 summary(m2.i)
+library(brinla)
+bri.hyperpar.summary(m2.i)
+
 # posterior means and SDs from the INLA fit
 m2.i$summary.fixed[,1:2]
 #indices of the weights with missing values of height 
@@ -631,6 +625,20 @@ m2.i.plot <- ggplot()+
 m2.i.plot 
 ```
 
+```{r old code}
+#We need to set the control.predictor to compute the posterior means of the linear predictors
+
+m2.i<- inla(height ~ log_w, data= d2.i,
+            control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 178, 
+        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+)
+
+```
 
 ## 3. 
 
