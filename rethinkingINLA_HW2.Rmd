@@ -38,7 +38,6 @@ The weights that interest us are all adult weights, so we can analyze only the a
 data(Howell1)
 d <- Howell1
 d2 <- d[ d$age >= 18 , ] 
-
 xbar <- mean(d2$weight) 
 ```
 
@@ -46,13 +45,11 @@ The golem is assuming that the average height (not each individual height) is al
 ```{r 4.12}
 #plot mean prior
  curve( dnorm( x , 178 , 20 ) , from=100 , to=250 )
-
 ```
 The σ prior is a truly flat prior, a uniform one, that functions just to constrain σ to have positive probability between zero and 50cm. A standard deviation of 50cm would imply that 95% of individual heights lie within 100cm of the average height. That’s a very large range.
 ```{r 4.13}
 #plot sd prior
   curve( dunif( x , 0 , 50 ) , from=-10 , to=60 )
-
 ```
 
 The prior predictive simulation is an essential part of your modeling. Once you’ve chosen priors for h, μ, and σ, these imply a joint prior distribution of individual heights. By simulating from this distribution, you can see what your choices imply about observable height. This helps you diagnose bad choices. Lots of conventional choices are indeed bad ones, and we’ll be able to see this through prior predictive simulations.
@@ -87,8 +84,6 @@ set.seed(2971)
 N <- 100                   # 100 lines
 a <- rnorm( N , 178 , 20 )
 b <- rnorm( N , 0 , 10 )
-
-
 plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400) ,
     xlab="weight" , ylab="height" )
 abline( h=0 , lty=2 )
@@ -110,8 +105,6 @@ set.seed(2971)
 N <- 100                   # 100 lines
 a <- rnorm( N , 178 , 20 )
 b <- rlnorm( N , 0 , 1 )
-
-
 plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400) ,
     xlab="weight" , ylab="height" )
 abline( h=0 , lty=2 )
@@ -121,7 +114,6 @@ xbar <- mean(d2$weight)
 for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
     from=min(d2$weight) , to=max(d2$weight) , add=TRUE ,
     col=col.alpha("black",0.2) )
-
 ```
 
 **Overthinking: Logs and exps, oh my.** My experience is that many natural and social scientists have naturally forgotten whatever they once knew about logarithms. Logarithms appear all the time in applied statistics. You can usefully think of y = log(x) as assigning to y the order of magnitude of x. The function x = exp(y) is the reverse, turning a magnitude into a value. These definitions will make a mathematician shriek. But much of our computational work relies only on these intuitions.
@@ -133,7 +125,6 @@ mu <- a + exp(log_b)*( weight - xbar ), a ~ dnorm( 178 , 20 ) ,
 log_b ~ dnorm( 0 , 1 ) ,
 sigma ~ dunif( 0 , 50 )
 ) , data=d2 )
-
 ```
 Note the exp(log_b) in the definition of mu. This is the same model as m4.3. It will make the same predictions. But instead of β in the posterior distribution, you get log(β). It is easy to translate between the two, because β = exp(log(β)). In code form: b <- exp(log_b).
 
@@ -141,7 +132,6 @@ Note the exp(log_b) in the definition of mu. This is the same model as m4.3. It 
  
 
 ```{r hw2.1 quap}
-
 m4.3 <- quap(
 alist(
 height ~ dnorm( mu , sigma ) ,
@@ -150,7 +140,6 @@ a ~ dnorm( 178 , 20 ) ,
 b ~ dlnorm( 0 , 1 ) ,
 sigma ~ dunif( 0 , 50 )
 ), data=d2 )
-
 precis(m4.3)
 ```
 The first row gives the quadratic approximation for α, the second the approximation for β, and the third approximation for σ. Let’s try to make some sense of them.
@@ -159,9 +148,7 @@ Let’s focus on b (β), because it’s the new parameter. Since β is a slope, 
 
 You can see the covariances among the parameters with vcov:
 ```{r 4.45}
-
 round( vcov( m4.3 ) , 3 )
-
 # shows both the marginal posteriors and the covariance.
 pairs(m4.3)
 ```
@@ -196,7 +183,6 @@ mN <- quap(
         b ~ dlnorm( 0 , 1 ) ,
         sigma ~ dunif( 0 , 50 )
 ) , data=dN )
-
 ```
 
 Now let’s plot 20 of these lines, to see what the uncertainty looks like.
@@ -204,13 +190,11 @@ Now let’s plot 20 of these lines, to see what the uncertainty looks like.
 ```{r 4.49}
 # extract 20 samples from the posterior
 post <- extract.samples( mN , n=20 )
-
 # display raw data and sample size
 plot( dN$weight , dN$height ,
     xlim=range(d2$weight) , ylim=range(d2$height) ,
     col=rangi2 , xlab="weight" , ylab="height" )
 mtext(concat("N = ",N))
-
 # plot the lines, with transparency
 for ( i in 1:20 )
     curve( post$a[i] + post$b[i]*(x-mean(dN$weight)) ,
@@ -219,7 +203,6 @@ for ( i in 1:20 )
 Increae the amounts of data. Notice that the cloud of regression lines grows more compact as the sample size increases. This is a result of the model growing more confident about the location of the mean.
 
 ```{r 4.50}
-
 N <- 352
 dN <- d2[ 1:N , ]
 mN <- quap(
@@ -230,16 +213,13 @@ mN <- quap(
         b ~ dlnorm( 0 , 1 ) ,
         sigma ~ dunif( 0 , 50 )
 ) , data=dN )
-
 # extract 20 samples from the posterior
 post <- extract.samples( mN , n=20 )
-
 # display raw data and sample size
 plot( dN$weight , dN$height ,
     xlim=range(d2$weight) , ylim=range(d2$height) ,
     col=rangi2 , xlab="weight" , ylab="height" )
 mtext(concat("N = ",N))
-
 # plot the lines, with transparency
 for ( i in 1:20 )
     curve( post$a[i] + post$b[i]*(x-mean(dN$weight)) ,
@@ -261,9 +241,7 @@ The central 89% of the ways for the model to produce the data place the average 
 ```{r 4.50 dens}
 post <- extract.samples( m4.3 )
 mu_at_50 <- post$a + post$b * ( 50 - xbar )
-
 dens( mu_at_50 , col=rangi2 , lwd=2 , xlab="mu|weight=50" )
-
 PI( mu_at_50 , prob=0.89 )
 ```
 
@@ -275,7 +253,6 @@ This is made simple by strategic use of the link function, a part of the rethink
 ```{r 4.53}
 mu <- link( m4.3 )
 str(mu)
-
 ```
 
 You end up with a big matrix of values of μ. Each row is a sample from the posterior distribu- tion. There are 352 rows in d2, corresponding to 352 individuals. So there are 352 columns in the matrix mu above. link takes 1000 samples of the posterior dist. for every value in the data (of weight in this case). 
@@ -284,14 +261,11 @@ You end up with a big matrix of values of μ. Each row is a sample from the post
 
 ```{r 4.58}
 post <- extract.samples(m4.3)
-
 mu.link <- function(weight) post$a + post$b*( weight - xbar )
-
 weight.seq <- seq( from=25 , to=70 , by=1 )
 mu <- sapply( weight.seq , mu.link )
 mu.mean <- apply( mu , 2 , mean )
 mu.CI <- apply( mu , 2 , PI , prob=0.89 )
-
 ```
 
 
@@ -307,7 +281,6 @@ weight.seq <- seq( from=25 , to=70 , by=1 )
 # and for each weight in weight.seq
 mu <- link( m4.3 , data=data.frame(weight=weight.seq) )
 str(mu)
-
 ```
 
 And now there are only 46 columns in mu, because we fed it 46 different values for weight.
@@ -315,13 +288,11 @@ And now there are only 46 columns in mu, because we fed it 46 different values f
 
 To visualize what you’ve got here, let’s plot the distribution of μ values at each height.
 ```{r 4.55}
-
 # use type="n" to hide raw data
 plot( height ~ weight , d2 ) #, type="n" )
 # loop over samples and plot each mu value
 for ( i in 1:100 )
     points( weight.seq , mu[i,] , pch=16 , col=col.alpha(rangi2,0.1) )
-
 ```
 
 At each weight value in weight.seq, a pile of computed μ values are shown. Each of these piles is a Gaussian distribution, the amount of uncertainty in μ depends upon the value of weight.
@@ -331,16 +302,10 @@ The final step is to summarize the distribution for each weight value. We’ll u
 
 mu.mean contains the average μ at each weight value, and mu.PI contains 89% lower and upper bounds for each weight value.
 ```{r 4.56}
-
 # summarize the distribution of mu
-
 #compute the mean of each column (dimension “2”) of the matrix mu.
 mu.mean <- apply( mu , 2 , mean )
-
-
 mu.PI <- apply( mu , 2 , PI , prob=0.89 )
-
-
 # plot raw data
 # fading out points to make line and interval more visible
 plot( height ~ weight , data=d2 , col=col.alpha(rangi2,0.5) )
@@ -376,12 +341,9 @@ We can summarize these simulated heights in the same way we summarized the distr
 
 
 ```{r 4.59}
-
 sim.height <- sim( m4.3 , data=list(weight=weight.seq) )
-
 #This matrix is much like the earlier one, mu, but it contains simulated heights, not distributions of plausible average height, μ.
 str(sim.height)
-
 #height.PI contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in weight.seq
 height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
 ```
@@ -392,8 +354,6 @@ Let’s plot everything we’ve built up:
 (3) the boundaries of the simulated heights the model expects.
 
 ```{r 4.61}
-
-
 # plot raw data
 plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
 # draw MAP line : the average line of all the mean heights expected by the linear model for each weight
@@ -407,7 +367,6 @@ shade( mu.PI , weight.seq )
 # draw PI region for simulated heights:
 #the area within which the model expects to find 89% of actual heights in the population, at each weight.
 shade( height.PI , weight.seq )
-
 ```
 
 89% prediction interval for height, as a function of weight. The solid line is the average line for the mean height at each weight. The two shaded regions show different 89% plausible regions. The narrow shaded in- terval around the line is the distribution of μ. The wider shaded region represents the region within which the model expects to find 89% of actual heights in the population, at each weight.
@@ -415,26 +374,19 @@ shade( height.PI , weight.seq )
 ### **this is what the rethinking::sim function does**
 
 ```{r 4.63}
-
 #extract samples automatically extracts 1000 from posterior dist
 post <- extract.samples(m4.3)
-
 weight.seq <- 25:70
-
 sim.function <- function(weight)
     rnorm(
         n=nrow(post) ,
         mean=post$a + post$b*( weight - xbar ) ,
         sd=post$sigma )
-
 sim.height <- sapply( weight.seq , sim.function )
-
 ##compute the mean of each column (dimension “2”) of the matrix mu.
 height.interval <- apply(sim.height, 2, quantile, c( 0.05 , 0.94 ))
-
 #example of compatibility interval for 1st col (first weight)
 #quantile(sim.height[,1],c( 0.05 , 0.94 ) )
-
 # plot raw data
 plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
 # draw MAP line
@@ -443,7 +395,6 @@ lines( weight.seq , mu.mean )
 shade( mu.PI , weight.seq )
 # draw PI region for simulated heights
 shade( height.interval, weight.seq )
-
 ```
 
 
@@ -456,7 +407,6 @@ shade( height.interval, weight.seq )
 **The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% compatibility intervals for each of these individuals, using model-based predictions.**
 
 ```{r !kung table}
-
 ind <- 1:5
 weight <- c(45, 40, 65, 31, 53)
 expected_height <- NA
@@ -469,7 +419,6 @@ kable(kung)
 ## 1. rethinking
 
 ```{r hw2.1 rethinking model}
-
 m4.3 <- quap(
 alist(
 height ~ dnorm( mu , sigma ) ,
@@ -478,9 +427,7 @@ a ~ dnorm( 178 , 20 ) ,
 b ~ dlnorm( 0 , 1 ) ,
 sigma ~ dunif( 0 , 50 )
 ), data=d2 )
-
 precis(m4.3)
-
 ```
 
 Now we need posterior predictions for each case in the table. Easiest way to do this is to use sim. We need sim, not just link, because we are trying to predict an individual’s height. So the relevant compatibility interval includes the Gaussian variance from sigma. If you provided only the compatibility interval for μ, that’s okay. But be sure you understand the difference.
@@ -492,7 +439,6 @@ dat <-  data.frame(weight= c(45, 40, 65, 31, 53))
 h_sim <- sim( m4.3 , data=dat )
 Eh <- apply(h_sim,2,mean)
 h_ci <- apply(h_sim,2,PI,prob=0.89)
-
 dat$Eh <- Eh 
 dat$L89 <- h_ci[1,] 
 dat$U89 <- h_ci[2,] 
@@ -501,9 +447,7 @@ round(dat,1)
 
 **Solution using base r functions**
 ```{r hw2.1 prediction 2}
-
 weight= c(45, 40, 65, 31, 53)
-
 sim.hw2.fun <- function(weight, model) {
   post.hw2 = extract.samples(model)
   rnorm(
@@ -511,17 +455,13 @@ sim.hw2.fun <- function(weight, model) {
     mean= post$a + post$b*(weight - xbar),
     sd= post$sigma)
 }
-
 sim.hw2 <- sapply(weight, sim.hw2.fun , m4.3)
-
 hw2.mean <- apply(sim.hw2,2, mean)
 hw2.ci <- apply(sim.hw2,2, quantile, c(0.05, 0.95))
-
 hw2.1 <- data.frame(weight= c(45, 40, 65, 31, 53)) %>% 
   mutate(expected_height= hw2.mean, 
          LCI= hw2.ci[1], 
          UCI = hw2.ci[2])
-
 print(hw2.1)
 ```
 
@@ -540,7 +480,6 @@ https://haakonbakka.bitbucket.io/btopic112.html
 library(devtools)
 install_github("julianfaraway/brinla")
 library(brinla)
-
 library("inlabru")
 ```
 
@@ -559,29 +498,21 @@ sqrt(1/0.001)
 We wish to predict the response at a new set of inputs. We add a case for the new inputs (weight= c(45, 40, 65, 31, 53)) and set the response to missing (height=NA):
 
 ```{r hw2.1 inla }
-
 data(Howell1)
 d <- Howell1
 d2 <- d[ d$age >= 18 , ]
-
 dat <-  data.frame(weight= c(45, 40, 65, 31, 53))
-
 xbar <- mean(d2$weight) 
 new_w <- bind_cols(weight, NA)
 colnames(new_w) <- c("weight", "height")
-
 # add the weight values of interest to the dataframe
-
 d1.i <- d2  %>% 
   select(c("weight", "height")) %>%  
   rbind(new_w) %>% 
   mutate(w= weight-xbar) %>% 
   select( c("height", "w"))
-
 #indices of the weights with missing values of height 
-
 d1.i.na <- which(is.na(d1.i$height))
-
 #We need to set the control.predictor to compute the posterior means of the linear predictors
 m1.i<- inla(height ~ w, data= d1.i,
             control.fixed = list(
@@ -592,15 +523,10 @@ m1.i<- inla(height ~ w, data= d1.i,
         control.compute = list(config= TRUE),
         control.predictor=list(compute=TRUE)
 )
-
-
 # posterior means and SDs from the INLA fit
-
 m1.i$summary.fixed[,1:2]
-
 # the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
 m1.i$summary.fitted.values[d1.i.na, ]
-
 ```
 
 
@@ -616,7 +542,6 @@ data(Howell1)
 d <- Howell1
 d$log_weight <- log(d$weight) 
 xbar <- mean(d$log_weight) 
-
 m2 <- quap(
 alist(
 height ~ dnorm( mu , sigma ) ,
@@ -625,9 +550,7 @@ a ~ dnorm( 178 , 20 ) ,
 b ~ dlnorm( 0 , 1 ) ,
 sigma ~ dunif( 0 , 50 )
 ), data=d )
-
 precis(m2)
-
 plot( d$weight , d$height , col=col.alpha(rangi2,0.7) ) 
 x_seq <- log(1:60)
 mu <- sim( m2 , data=list(log_weight=x_seq) )
@@ -647,26 +570,40 @@ where k = πα2 is just some proportionality constant.
 ### 2.INLA
 
 ```{r hw2.2 inla }
-
 library(brinla)
 data(Howell1)
 d <- Howell1
-
 log_wplot <- log(1:60)
 new_logw <- bind_cols(log_wplot, NA)
 colnames(new_logw) <- c("log_weight", "height")
 
 # add the weight values of interest to the dataframe
-
 d2.i <- d %>% 
   mutate(log_weight= log(weight)) %>% 
   select(c("log_weight", "height")) %>%  
   rbind(new_logw) %>% 
   mutate(xbar= mean(log_weight),
-         log_w= log_weight - xbar)
+         log_w= log_weight - xbar, 
+         idx= row_number())
 
+#That said, you can do it if you want. It would be
+
+#f(index, covariate, model="iid", hyper=list(prec=list(........)))
+prec.prior <- list(prec = list(prior = "logtgaussian", param = c(0, 1)))
+
+m2.i<- inla(height ~ 1+ f(idx, log_w, model = "iid", hyper = prec.prior), 
+            data= d2.i,
+            control.fixed = list(
+       # mean= 0, 
+       # prec= 1, 
+        mean.intercept= 178, 
+        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+)
 
 #We need to set the control.predictor to compute the posterior means of the linear predictors
+
 m2.i<- inla(height ~ log_w, data= d2.i,
             control.fixed = list(
         mean= 0, 
@@ -677,29 +614,22 @@ m2.i<- inla(height ~ log_w, data= d2.i,
         control.predictor=list(compute=TRUE)
 )
 
+summary(m2.i)
 # posterior means and SDs from the INLA fit
-
 m2.i$summary.fixed[,1:2]
-
 #indices of the weights with missing values of height 
-
 d2.i.na <- which(is.na(d2.i$height))
-
 # the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
 m2.i$summary.fitted.values[d2.i.na, ]
-
 m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
   select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
 names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
-
 m2.i.plot <- ggplot()+
   geom_point(data= d, aes(weight, height))+
   geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
   geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
 m2.i.plot 
-
 ```
-
 
 
 ## 3. 
