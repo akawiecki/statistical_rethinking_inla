@@ -124,6 +124,19 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
 
 ```
 
+**Overthinking: Logs and exps, oh my.** My experience is that many natural and social scientists have naturally forgotten whatever they once knew about logarithms. Logarithms appear all the time in applied statistics. You can usefully think of y = log(x) as assigning to y the order of magnitude of x. The function x = exp(y) is the reverse, turning a magnitude into a value. These definitions will make a mathematician shriek. But much of our computational work relies only on these intuitions.
+These definitions allow the Log-Normal prior for β to be coded another way. Instead of defining a parameter β, we define a parameter that is the logarithm of β and then assign it a normal distribution. Then we can reverse the logarithm inside the linear model. It looks like this:
+```{R code 4.43}
+m4.3b <- quap( alist(
+height ~ dnorm( mu , sigma ) ,
+mu <- a + exp(log_b)*( weight - xbar ), a ~ dnorm( 178 , 20 ) ,
+log_b ~ dnorm( 0 , 1 ) ,
+sigma ~ dunif( 0 , 50 )
+) , data=d2 )
+
+```
+Note the exp(log_b) in the definition of mu. This is the same model as m4.3. It will make the same predictions. But instead of β in the posterior distribution, you get log(β). It is easy to translate between the two, because β = exp(log(β)). In code form: b <- exp(log_b).
+
 **Interpreting the posterior distribution**. One trouble with statistical models is that they are hard to understand. Once you’ve fit the model, it can only report posterior distribution. This is the right answer to the question you asked. But it’s your responsibility to process the answer and make sense of it.
  
 
@@ -267,7 +280,7 @@ str(mu)
 
 You end up with a big matrix of values of μ. Each row is a sample from the posterior distribu- tion. There are 352 rows in d2, corresponding to 352 individuals. So there are 352 columns in the matrix mu above. link takes 1000 samples of the posterior dist. for every value in the data (of weight in this case). 
 
-### **this is what the link function does**:
+### **this is what the rethinking::link function does**:
 
 ```{r 4.58}
 post <- extract.samples(m4.3)
@@ -399,7 +412,7 @@ shade( height.PI , weight.seq )
 
 89% prediction interval for height, as a function of weight. The solid line is the average line for the mean height at each weight. The two shaded regions show different 89% plausible regions. The narrow shaded in- terval around the line is the distribution of μ. The wider shaded region represents the region within which the model expects to find 89% of actual heights in the population, at each weight.
 
-### **this is what the sim function does**
+### **this is what the rethinking::sim function does**
 
 ```{r 4.63}
 
@@ -455,7 +468,7 @@ kable(kung)
 
 ## 1. rethinking
 
-```{r hw2.1 quap}
+```{r hw2.1 rethinking model}
 
 m4.3 <- quap(
 alist(
@@ -509,6 +522,7 @@ hw2.1 <- data.frame(weight= c(45, 40, 65, 31, 53)) %>%
          LCI= hw2.ci[1], 
          UCI = hw2.ci[2])
 
+print(hw2.1)
 ```
 
 ## 1. inla
@@ -542,6 +556,7 @@ We see that the default prior on beta is normal with mean zero and precision 0.0
 sqrt(1/0.001)
 ```
 
+We wish to predict the response at a new set of inputs. We add a case for the new inputs (weight= c(45, 40, 65, 31, 53)) and set the response to missing (height=NA):
 
 ```{r hw2.1 inla }
 
@@ -552,9 +567,10 @@ d2 <- d[ d$age >= 18 , ]
 dat <-  data.frame(weight= c(45, 40, 65, 31, 53))
 
 xbar <- mean(d2$weight) 
-
 new_w <- bind_cols(weight, NA)
 colnames(new_w) <- c("weight", "height")
+
+# add the weight values of interest to the dataframe
 
 d1.i <- d2  %>% 
   select(c("weight", "height")) %>%  
@@ -593,9 +609,101 @@ m1.i$summary.fitted.values[d1.i.na, ]
 Model the relationship between height(cm) and the natural logarithm of weight (log-kg): log(weight). Use the entire Howell1 data frame, all 544 rows, adults and non-adults. Use any model type from Chapter 4 that you think useful: an ordinary linear regression, a polynomial or a spline. Plot the posterior predictions against the raw data.
 
 
+### 2.rethinking
+
+```{r hw2 2 re}
+data(Howell1)
+d <- Howell1
+d$log_weight <- log(d$weight) 
+xbar <- mean(d$log_weight) 
+
+m2 <- quap(
+alist(
+height ~ dnorm( mu , sigma ) ,
+mu <- a + b*( log_weight - xbar ) , 
+a ~ dnorm( 178 , 20 ) ,
+b ~ dlnorm( 0 , 1 ) ,
+sigma ~ dunif( 0 , 50 )
+), data=d )
+
+precis(m2)
+
+plot( d$weight , d$height , col=col.alpha(rangi2,0.7) ) 
+x_seq <- log(1:60)
+mu <- sim( m2 , data=list(log_weight=x_seq) )
+mu_mean <- apply(mu,2,mean)
+mu_ci <- apply(mu,2,PI,0.99) 
+lines( exp(x_seq) , mu_mean ) 
+shade( mu_ci , exp(x_seq) )
+```
+
+You could certainly do better—the trend is under-predicting in the mid ages. But just taking the log of weight does most of the work. Why? It’ll help to think of a human body as a cylinder. Roughly. The weight of a cylinder is proportional to its volume. And the volume of a cylinder is: V = πr2h
+where r is the radius and h is the height. As the cylinder, uh human, gets taller, the radius gets bigger. So we can just say the radius is some fraction α of the height:
+Substituting that in:
+r = αh
+V = πα2h3 = kh3
+where k = πα2 is just some proportionality constant. 
+
+### 2.INLA
+
+```{r hw2.2 inla }
+
+library(brinla)
+data(Howell1)
+d <- Howell1
+
+log_wplot <- log(1:60)
+new_logw <- bind_cols(log_wplot, NA)
+colnames(new_logw) <- c("log_weight", "height")
+
+# add the weight values of interest to the dataframe
+
+d2.i <- d %>% 
+  mutate(log_weight= log(weight)) %>% 
+  select(c("log_weight", "height")) %>%  
+  rbind(new_logw) %>% 
+  mutate(xbar= mean(log_weight),
+         log_w= log_weight - xbar)
+
+
+#We need to set the control.predictor to compute the posterior means of the linear predictors
+m2.i<- inla(height ~ log_w, data= d2.i,
+            control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 178, 
+        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+)
+
+# posterior means and SDs from the INLA fit
+
+m2.i$summary.fixed[,1:2]
+
+#indices of the weights with missing values of height 
+
+d2.i.na <- which(is.na(d2.i$height))
+
+# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
+m2.i$summary.fitted.values[d2.i.na, ]
+
+m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
+  select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
+names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
+
+m2.i.plot <- ggplot()+
+  geom_point(data= d, aes(weight, height))+
+  geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
+  geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
+m2.i.plot 
+
+```
+
+
 
 ## 3. 
 
-Plot the prior predictive distribution for the polynomial regression model in Chapter 4. You can modify the the code that plots the linear regression prior predictive distribution. 20 or 30 parabolas from the prior should suffice to show where the prior probability resides. Can you modify the prior distributions of α, β1, and β2 so that the prior predictions stay within the biologically reasonable outcome space? That is to say: Do not try to fit the data by hand. But do try to keep the curves consistent with what you know about height and weight, before seeing these exact data.
+**Plot the prior predictive distribution for the polynomial regression model in Chapter 4. You can modify the the code that plots the linear regression prior predictive distribution. 20 or 30 parabolas from the prior should suffice to show where the prior probability resides. Can you modify the prior distributions of α, β1, and β2 so that the prior predictions stay within the biologically reasonable outcome space? That is to say: Do not try to fit the data by hand. But do try to keep the curves consistent with what you know about height and weight, before seeing these exact data.**
 
 
