@@ -312,19 +312,24 @@ summary(as.vector(m2b.i.contrast))
 ```
 
 # 3.
-Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
-What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?
+**Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
+What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?**
 
-Again I’ll show both the indicator approach and the index variable ap- proach.
+Again I’ll show both the indicator approach and the index variable approach.
 
 ## 3.a indicator variables
 
 ### 3.a rethinking
+
 For the indicator approach, we can use the same predictor variables as before, it's the model that's different. 
 I used the same priors as before for the main effects. I used tighter priors for the interactions. Why? Because interactions represent sub-categories of data, and if we keep slicing up the sample, differences can’t keep getting bigger. Again, the most important thing is not to use flat priors like Nor- mal(0,10) that produce impossible outcomes.
 
 
 ```{r hw5.3a rethinking}
+
+library(rethinking)
+data(Wines2012)
+d <- Wines2012
 
 dat_list2 <- list(
     S = standardize(d$score),
@@ -360,6 +365,7 @@ mu <- link( m3a )
 row_labels <- paste( ifelse(pred_dat$W==1,"A","F") ,
                  ifelse(pred_dat$J==1,"A","F") ,
                  ifelse(pred_dat$R==1,"R","W") , sep="" )
+
 plot( precis( list(mu=mu) , 2 ) , labels=row_labels )
 ```
 

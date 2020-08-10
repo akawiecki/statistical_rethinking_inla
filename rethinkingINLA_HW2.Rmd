@@ -619,9 +619,60 @@ m2.i.plot <- ggplot()+
 m2.i.plot 
 ```
 
+```{r hw2.2 inla clinear }
+library(brinla)
+library(INLA)
+library(tidyverse)
+data(Howell1)
+d <- Howell1
+log_wplot <- log(1:60)
+new_logw <- bind_cols(log_wplot, NA)
+colnames(new_logw) <- c("log_weight", "height")
+
+# add the weight values of interest to the dataframe
+d2.i <- d %>% 
+  mutate(log_weight= log(weight)) %>% 
+  select(c("log_weight", "height")) %>%  
+  rbind(new_logw) %>% 
+  mutate(xbar= mean(log_weight),
+         log_w= log_weight - xbar)
+
+m2.i<- inla(height ~ f(log_w, model = "clinear", range=c(0, Inf),
+                         hyper=list(theta=list(prior = "normal", param=c(0, 1)))), data= d2.i,
+            control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 178, 
+        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE), 
+        control.inla = list(h = 0.0001), 
+        verbose = TRUE
+)
+
+summary(m2.i)
+library(brinla)
+bri.hyperpar.summary(m2.i)
+
+# posterior means and SDs from the INLA fit
+m2.i$summary.fixed[,1:2]
+#indices of the weights with missing values of height 
+d2.i.na <- which(is.na(d2.i$height))
+# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
+m2.i$summary.fitted.values[d2.i.na, ]
+m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
+  select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
+names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
+m2.i.plot <- ggplot()+
+  geom_point(data= d, aes(weight, height))+
+  geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
+  geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
+m2.i.plot 
+```
+
  https://www.muscardinus.be/2018/07/inlabru-bru/
 
-```{r hw2.2 inlabru}
+```{r hw2.2 inlabru, eval= FALSE }
 
 library(inlabru)
 library(INLA)
@@ -637,44 +688,53 @@ d2.i <- d %>%
          log_w= log_weight - xbar, 
          idx= row_number())
 
-formula <- height ~ a + exp(log_b) * log_w
-components <-  ~ a + log_b(map = d2.i$idx, model = "iid", n=max(d2.i$idx), hyper=list(theta=list(prior="normal", param = c(0, 1))))
-result <- bru(components = components, formula = formula, family = "gaussian", data = d2.i, 
+formula <- height ~ -1 + a + exp(log_b) * log_w
+components <-  ~ a + log_b(map = d2.i$idx, model = "iid", n=max(d2.i$idx), hyper=list(theta=list(prior="normal",fixed = TRUE, param = c(0, 1))))
+result <- bru(components = components, formula = formula, family = "gaussian", data = d2.i)
+
+
+, 
               bru.options(control.fixed = list(
         mean.intercept= 178, 
         prec.intercept= 1/(20^2)))) 
 
+```
+Anna, see inla.doc("clinear").  clinear implements the exp(log_b) "trick" used by inlabru, but in a way that applies the full Laplace approximations, by having log_b as a hyperparameter theta, that can have a Normal prior. 
 
+Comparison between the clinear and inlabru approaches (one can also use clinear within inlabru; it's a comparison between having log_b be a Gaussian hyperparameter, and having log_b be a latent Gaussian, with iterative linearsiation). The result comparison at the end shows some differences in the results for this small and noisy test example; with more data the differences is reduced.  The clinear approach was fairly sensitive to the h=... setting for the numerical derivatives.
 
+```{r inla sol google group finn lindgren}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(INLA))
+suppressPackageStartupMessages(library(inlabru))
 
+set.seed(12L)
+data <-
+  data.frame(a = 5, log_b = rnorm(1), log_w = 1:10) %>%
+  mutate(y = a + exp(log_b) * log_w + rnorm(n(), sd = 1))
 
+# inla, clinear (transformed hyperparameter)
+formula = y ~ -1 + a + f(log_w, model = "clinear", range=c(0, Inf),
+                         hyper=list(theta=list(prior = "normal", param=c(0, 1))))
+r1 <- inla(formula = formula,
+           data=data,
+           control.inla = list(h = 0.0001))
 
+# inlabru, transformed latent Gaussian
+components <- ~ -1 + a + log_b(map = 1, model = "iid", n = 1,
+                               hyper=list(theta=list(prior="normal", param = c(0, 1))))
+formula <- y ~ a + exp(log_b) * log_w
+r2 <- bru(components = components, formula = formula, family = "gaussian",
+          data = data,
+          options = list(control.inla = list(h = 0.0001)))
 
-
-
-
-
-library(rethinking)
-
-m2 <- quap(
-alist(
-height ~ dnorm( mu , sigma ) ,
-mu <- a + b*( log_weight - xbar ) , 
-a ~ dnorm( 178 , 20 ) ,
-b ~ dlnorm( 0 , 1 ) ,
-sigma ~ dunif( 0 , 50 )
-), data=d )
-precis(m2)
-plot( d$weight , d$height , col=col.alpha(rangi2,0.7) ) 
-x_seq <- log(1:60)
-mu <- sim( m2 , data=list(log_weight=x_seq) )
-mu_mean <- apply(mu,2,mean)
-mu_ci <- apply(mu,2,PI,0.99) 
-lines( exp(x_seq) , mu_mean ) 
-shade( mu_ci , exp(x_seq) )
+# Comparison
+quant <- c("0.025quant", "0.5quant", "0.975quant")
+rbind(
+  clinear = cbind("True b" = exp(data$log_b[1]),
+                  r1$summary.hyperpar["Beta for log_w", quant]),
+  inlabru = cbind("True b" = exp(data$log_b[1]),
+                  exp(r2$summary.random$log_b[quant]))
+)
 
 ```
-
-
-
-
