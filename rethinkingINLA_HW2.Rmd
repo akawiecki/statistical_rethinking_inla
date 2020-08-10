@@ -619,15 +619,62 @@ m2.i.plot <- ggplot()+
 m2.i.plot 
 ```
 
-```{r old code}
-#We need to set the control.predictor to compute the posterior means of the linear predictors
+ https://www.muscardinus.be/2018/07/inlabru-bru/
+
+```{r hw2.2 inlabru}
+
+library(inlabru)
+library(INLA)
+library(tidyverse)
+
+data(Howell1)
+d <- Howell1
+
+# add the weight values of interest to the dataframe
+d2.i <- d %>% 
+  mutate(log_weight= log(weight)) %>% 
+  mutate(xbar= mean(log_weight),
+         log_w= log_weight - xbar, 
+         idx= row_number())
+
+formula <- height ~ a + exp(log_b) * log_w
+components <-  ~ a + log_b(map = d2.i$idx, model = "iid", n=max(d2.i$idx), hyper=list(theta=list(prior="normal", param = c(0, 1))))
+result <- bru(components = components, formula = formula, family = "gaussian", data = d2.i, 
+              bru.options(control.fixed = list(
+        mean.intercept= 178, 
+        prec.intercept= 1/(20^2)))) 
 
 
+
+
+
+
+
+
+
+
+
+library(rethinking)
+
+m2 <- quap(
+alist(
+height ~ dnorm( mu , sigma ) ,
+mu <- a + b*( log_weight - xbar ) , 
+a ~ dnorm( 178 , 20 ) ,
+b ~ dlnorm( 0 , 1 ) ,
+sigma ~ dunif( 0 , 50 )
+), data=d )
+precis(m2)
+plot( d$weight , d$height , col=col.alpha(rangi2,0.7) ) 
+x_seq <- log(1:60)
+mu <- sim( m2 , data=list(log_weight=x_seq) )
+mu_mean <- apply(mu,2,mean)
+mu_ci <- apply(mu,2,PI,0.99) 
+lines( exp(x_seq) , mu_mean ) 
+shade( mu_ci , exp(x_seq) )
 
 ```
 
-## 3. 
 
-**Plot the prior predictive distribution for the polynomial regression model in Chapter 4. You can modify the the code that plots the linear regression prior predictive distribution. 20 or 30 parabolas from the prior should suffice to show where the prior probability resides. Can you modify the prior distributions of α, β1, and β2 so that the prior predictions stay within the biologically reasonable outcome space? That is to say: Do not try to fit the data by hand. But do try to keep the curves consistent with what you know about height and weight, before seeing these exact data.**
 
 
