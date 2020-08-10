@@ -20,6 +20,7 @@ library(dagitty)
 library(INLA)
 library(knitr)
 library(stringr)
+library("rmarkdown")
 ```
 
 # Intro to linear prediction from Statistical Rethinking 2nd edition Chapter 4. 
