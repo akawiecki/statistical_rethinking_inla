@@ -467,9 +467,7 @@ print(hw2.1)
 
 ## 1. inla
 
-https://www.flutterbys.com.au/stats/tut/tut12.10.html
-
-https://people.bath.ac.uk/jjf23/brinla/hubble.html#inla-weakly-or-non-informative
+inla linear regression examples: 
 
 https://people.bath.ac.uk/jjf23/brinla/chicago.html
 
