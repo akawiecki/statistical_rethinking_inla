@@ -620,9 +620,11 @@ m2.i.plot
 ```
 
 ```{r hw2.2 inla clinear }
+library(rethinking)
 library(brinla)
 library(INLA)
 library(tidyverse)
+
 data(Howell1)
 d <- Howell1
 log_wplot <- log(1:60)
@@ -640,8 +642,6 @@ d2.i <- d %>%
 m2.i<- inla(height ~ f(log_w, model = "clinear", range=c(0, Inf),
                          hyper=list(theta=list(prior = "normal", param=c(0, 1)))), data= d2.i,
             control.fixed = list(
-        mean= 0, 
-        prec= 1, 
         mean.intercept= 178, 
         prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
         control.compute = list(config= TRUE),
@@ -651,15 +651,12 @@ m2.i<- inla(height ~ f(log_w, model = "clinear", range=c(0, Inf),
 )
 
 summary(m2.i)
-library(brinla)
 bri.hyperpar.summary(m2.i)
 
-# posterior means and SDs from the INLA fit
-m2.i$summary.fixed[,1:2]
 #indices of the weights with missing values of height 
 d2.i.na <- which(is.na(d2.i$height))
-# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
-m2.i$summary.fitted.values[d2.i.na, ]
+
+# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height m2.i$summary.fitted.values[d2.i.na, ]
 m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
   select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
 names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
