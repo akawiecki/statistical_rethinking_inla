@@ -1,15 +1,15 @@
 name: "Statistical Rethinking homeworks in INLA"
-navbar:
-  title: "HOME"
-left:
-  - text: "Homework 2"
-href: rethinkingINLA_HW2.html
-- text: "Homework 3"
-href: rethinkingINLA_HW3.html
-output_dir: "."
+output_dir: '.'
 output:
   html_document:
-  theme: yeti
-highlight: textmate
-#    include:
-#      after_body: _footer.html
+    theme: flatly
+    css: style.css
+    lib_dir: site_libs
+    self_contained: no
+navbar:
+  title: Home
+  left:
+  - text: Home
+    href: index.html
+  - text: Homework 2
+    href: rethinkingINLA_HW2.html
