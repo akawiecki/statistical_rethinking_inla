@@ -570,54 +570,6 @@ where k = πα2 is just some proportionality constant.
 
 ### 2.INLA
 
-```{r hw2.2 inla }
-library(brinla)
-library(INLA)
-library(tidyverse)
-data(Howell1)
-d <- Howell1
-log_wplot <- log(1:60)
-new_logw <- bind_cols(log_wplot, NA)
-colnames(new_logw) <- c("log_weight", "height")
-
-# add the weight values of interest to the dataframe
-d2.i <- d %>% 
-  mutate(log_weight= log(weight)) %>% 
-  select(c("log_weight", "height")) %>%  
-  rbind(new_logw) %>% 
-  mutate(xbar= mean(log_weight),
-         log_w= log_weight - xbar, 
-         idx= row_number())
-
-m2.i<- inla(height ~ log_w, data= d2.i,
-            control.fixed = list(
-        mean= 0, 
-        prec= 1, 
-        mean.intercept= 178, 
-        prec.intercept= 1/(20^2)),# sd = 20 --> precision =1/variance --> 1/(sd^2)
-        control.compute = list(config= TRUE),
-        control.predictor=list(compute=TRUE)
-)
-
-summary(m2.i)
-library(brinla)
-bri.hyperpar.summary(m2.i)
-
-# posterior means and SDs from the INLA fit
-m2.i$summary.fixed[,1:2]
-#indices of the weights with missing values of height 
-d2.i.na <- which(is.na(d2.i$height))
-# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height
-m2.i$summary.fitted.values[d2.i.na, ]
-m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
-  select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
-names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
-m2.i.plot <- ggplot()+
-  geom_point(data= d, aes(weight, height))+
-  geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
-  geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
-m2.i.plot 
-```
 
 ```{r hw2.2 inla clinear }
 library(rethinking)
