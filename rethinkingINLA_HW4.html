@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Rethinking 2nd edition Homework 4 in INLA</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="rethinkingINLA_HW2.html">Homework 2</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW3.html">Homework 3</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW4.html">Homework 4</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 4 in INLA</h1>
+
+</div>
+
+
+<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Homework Solutions of Statistical Rethinking by Richard McElreath</a></p>
+<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">Bayesian inference with INLA by Virgilio Gómez-Rubio</a></p>
+<pre class="r"><code>library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)</code></pre>
+<div id="homework-4" class="section level1">
+<h1>HOMEWORK 4</h1>
+<div id="section" class="section level2">
+<h2>1.</h2>
+<p><strong>Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:</strong></p>
+<pre class="r"><code>IB1 &lt;- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
+IB2&lt;- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
+IB3 &lt;- c( 0.05 , 0.15 , 0.7 , 0.05 , 0.05 )
+
+df &lt;- data.frame(IB1, IB2, IB3)
+
+rownames(df) &lt;- c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;)
+
+kable(df)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">IB1</th>
+<th align="right">IB2</th>
+<th align="right">IB3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">A</td>
+<td align="right">0.2</td>
+<td align="right">0.800</td>
+<td align="right">0.05</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="right">0.2</td>
+<td align="right">0.100</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="left">C</td>
+<td align="right">0.2</td>
+<td align="right">0.050</td>
+<td align="right">0.70</td>
+</tr>
+<tr class="even">
+<td align="left">D</td>
+<td align="right">0.2</td>
+<td align="right">0.025</td>
+<td align="right">0.05</td>
+</tr>
+<tr class="odd">
+<td align="left">E</td>
+<td align="right">0.2</td>
+<td align="right">0.025</td>
+<td align="right">0.05</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notice that each column sums to 1, all the birbs. This problem has two parts. It is not computationally complicated. But it is conceptually tricky.</strong></p>
+<p><strong>First, compute the entropy of each island’s birb distribution. Interpret these entropy values.</strong></p>
+<p><strong>Second, use each island’s birb distribution to predict the other two. This means to compute the K-L Divergence of each island from the others, treat- ing each island as if it were a statistical model of the other islands. You should end up with 6 different K-L Divergence values. Which island predicts the others best? Why?</strong></p>
+<p>To compute the entropies,we just need a function to compute the entropy.Information entropy, as defined in lecture and the book, is simply: <span class="math inline">\(H(p) = - \sum_{i}p_i log(p_i)\)</span></p>
+<p>where p is a vector of probabilities summing to 1. In R code this would look like:</p>
+<pre class="r"><code>H &lt;- function(p) -sum(p*log(p))
+
+IB &lt;- list()
+IB[[1]] &lt;- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
+IB[[2]] &lt;- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
+IB[[3]] &lt;- c( 0.05 , 0.15 , 0.7 , 0.05 , 0.05 )
+sapply( IB , H )</code></pre>
+<pre><code>## [1] 1.6094379 0.7430039 0.9836003</code></pre>
+<p>The first island has the largest entropy, followed by the third, and then the second in last place. Why is this? Entropy is a measure of the evenness of a distribution. The first islands has the most even distribution of birbs. This means you wouldn’t be very surprised by any particular birb. The second island, in contrast, has a very uneven distribution of birbs. If you saw any birb other than the first species, it would be surprising.</p>
+<p>Divergence: The additional uncertainty induced by using probabilities from one distribution to describe another distribution.This is often known as Kullback-Leibler divergence or simply K-L divergence. In plainer language, the divergence is the average difference in log probability between the target (p) and model (q). This divergence is just the difference between two entropies: The entropy of the target distribution p and the cross entropy arising from using q to predict p. When p = q, we know the actual probabilities of the events and the K-L distance = 0. What divergence can do for us now is help us contrast different approximations to p. As an approximating function q becomes more accurate, DKL(p, q) will shrink. So if we have a pair of candidate distributions, then the candidate that minimizes the divergence will be closest to the target. Since predictive models specify probabilities of events (observations), we can use divergence to compare the accuracy of models.</p>
+<p>Now we need K-L distance, so let’s write a function for it:</p>
+<pre class="r"><code>DKL &lt;- function(p,q) sum( p*(log(p)-log(q)) )</code></pre>
+<p>This is the distance from q to p, regarding p as true and q as the model. Now to use each island as a model of the others, we need to consider the different ordered pairings. I’ll just make a matrix and loop over rows and columns:</p>
+<pre class="r"><code>Dm &lt;- matrix( NA , nrow=3 , ncol=3 )
+
+for ( i in 1:3 ) for ( j in 1:3 ) Dm[i,j] &lt;- DKL( IB[[j]] , IB[[i]])
+
+#test &lt;- DKL( IB[[1]] , IB[[2]])
+#0.2*(log(0.2)- log(0.8)) + 0.2*(log(0.2)- log(0.1))+ 0.2*(log(0.2)- log(0.05))+0.2*(log(0.2)- log(0.025))+0.2*(log(0.2)-log(0.025))
+  
+round( Dm , 2 )</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,] 0.00 0.87 0.63
+## [2,] 0.97 0.00 1.84
+## [3,] 0.64 2.01 0.00</code></pre>
+<p>The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.</p>
+</div>
+<div id="section-1" class="section level2">
+<h2>2.</h2>
+<p>Recall the marriage,age,and happiness collider bias example from Chapter 6.</p>
+<p>Consider the question of how aging influences happiness.If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?</p>
+<p>Suppose, just to be provocative, that an individual’s average happiness is a trait that is determined at birth and does not change with age. However, happiness does influence events in one’s life. One of those events is marriage. Happier people are more likely to get married. Another variable that causally influences marriage is age: The more years you are alive, the more likely you are to eventually get married. Putting these three variables together, this is the causal model:</p>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
+<p><img src="rethinkingINLA_HW4_files/figure-html/hw4.2%20dag-1.png" width="672" /></p>
+<p>Happiness (H) and age (A) both cause marriage (M). Marriage is therefore a collider. Even though there is no causal association between happiness and age, if we condition on marriage— which means here, if we include it as a predictor in a regression—then it will induce a statistical association between age and happiness. And this can mislead us to think that happiness changes with age, when in fact it is constant.</p>
+<p><strong>Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree?</strong></p>
+<p>So let’s consider a multiple regression model aimed at inferring the influence of age on happiness, while controlling for marriage status. This is just a plain multiple regression, like the others in this and the previous chapter.</p>
+<p>The linear model is this: <span class="math inline">\(\mu_i= \alpha mid[i] + \beta AA_i\)</span> where mid[i] is an index for the marriage status of individual i, with 1 meaning single and 2 meaning married. It’s easier to make priors, when we use multiple intercepts, one for each category, than when we use indicator variables.</p>
+<p>Now we should do our duty and think about the priors.</p>
+<ul>
+<li><p>Let’s consider the slope <span class="math inline">\(\beta A\)</span> first, because how we scale the predictor A will determine the meaning of the intercept. We’ll focus only on the adult sample, those 18 or over. Imagine a very strong relationship between age and happiness, such that happiness is at its maximum at age 18 and its minimum at age 65. It’ll be easier if we rescale age so that the range from 18 to 65 is one unit. Now this new variable A ranges from 0 to 1, where 0 is age 18 and 1 is age 65.</p></li>
+<li><p>Happiness is on an arbitrary scale, in these data, from −2 to +2. So our imaginary strongest relationship, taking happiness from maximum to minimum, has a slope with rise over run of (2 − (−2))/1 = 4. Remember that 95% of the mass of a normal distribution is contained within 2 standard deviations. So if we set the standard deviation of the prior to half of 4, we are saying that we expect 95% of plausible slopes to be less than maximally strong. That isn’t a very strong prior, but again, it at least helps bound inference to realistic ranges.</p></li>
+<li><p>Now for the intercepts. Each α is the value of <span class="math inline">\(\mu_i\)</span> when Ai = 0. In this case, that means at age 18. So we need to allow <span class="math inline">\(\alpha\)</span> to cover the full range of happiness scores. Normal(0, 1) will put 95% of the mass in the −2 to +2 interval.</p></li>
+<li><p>We need to construct the marriage status index variable, as well.</p></li>
+</ul>
+<p>Finally, let’s approximate the posterior.</p>
+<pre class="r"><code>d &lt;- sim_happiness( seed=1977 , N_years=1000 )
+d2 &lt;- d[ d$age&gt;17 , ] # only adults
+d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )
+d2$mid &lt;- d2$married + 1</code></pre>
+<p>Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path.</p>
+<div id="rethinking" class="section level3">
+<h3>2.1 rethinking</h3>
+<pre class="r"><code>#contains both marriage status and age
+
+m6.9 &lt;- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu &lt;- a[mid] + bA*A,
+        a[mid] ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.9,depth=2)</code></pre>
+<pre><code>##             mean         sd       5.5%      94.5%
+## a[1]  -0.2350877 0.06348986 -0.3365568 -0.1336186
+## a[2]   1.2585517 0.08495989  1.1227694  1.3943340
+## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
+## sigma  0.9897080 0.02255800  0.9536559  1.0257600</code></pre>
+</div>
+<div id="inla" class="section level3">
+<h3>2.1 INLA</h3>
+<p>In order to code a separate intercept for being married/not, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on ( in this case marriage) and NAs for all other values.</p>
+<pre class="r"><code>d3 &lt;- d2 %&gt;% 
+  mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
+         i_married= na_if(married, 0)) 
+
+m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
+                        control.fixed = list(
+        mean= 0, 
+        prec= list(i_notmarried=2, i_married= 1, A=2)),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m6.9.inla.prior )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, 
+##    control.compute = list(dic = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
+## Time used:
+##     Pre = 1.11, Running = 0.443, Post = 0.201, Total = 1.76 
+## Fixed effects:
+##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
+## i_married     1.251 0.084      1.085    1.251      1.416  1.251   0
+## A            -0.736 0.112     -0.956   -0.736     -0.516 -0.736   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.02 0.046       0.93     1.02       1.11 1.02
+## 
+## Expected number of effective parameters(stdev): 2.97(0.002)
+## Number of equivalent replicates : 323.69 
+## 
+## Deviance Information Criterion (DIC) ...............: 2714.19
+## Deviance Information Criterion (DIC, saturated) ....: 967.05
+## Effective number of parameters .....................: 4.00
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2713.83
+## Effective number of parameters .................: 3.62
+## 
+## Marginal log-Likelihood:  -1374.21 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+</div>
+<div id="rethinking-1" class="section level3">
+<h3>2.2 rethinking</h3>
+<pre class="r"><code>#this model to a model that omits marriage status.
+m6.10 &lt;- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu &lt;- a + bA*A,
+        a ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.10)</code></pre>
+<pre><code>##                mean         sd       5.5%     94.5%
+## a     -1.469528e-06 0.07675016 -0.1226630 0.1226601
+## bA     2.378318e-06 0.13225977 -0.2113743 0.2113790
+## sigma  1.213188e+00 0.02766081  1.1689804 1.2573950</code></pre>
+</div>
+<div id="inla-1" class="section level3">
+<h3>2.2 INLA</h3>
+<pre class="r"><code>m6.10.inla.prior &lt;- inla(happiness~ A , data= d3, 
+                        control.fixed = list(
+        mean= 0, 
+        prec= 1/(2^2),
+        mean.intercept= 0, 
+        prec.intercept= 1),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m6.10.inla.prior )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = 
+##    TRUE), control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept 
+##    = 1))&quot;) 
+## Time used:
+##     Pre = 1.12, Running = 0.467, Post = 0.174, Total = 1.76 
+## Fixed effects:
+##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
+## (Intercept)    0 0.077     -0.151        0      0.151    0   0
+## A              0 0.132     -0.260        0      0.260    0   0
+## 
+## Model hyperparameters:
+##                                          mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 0.679 0.031       0.62    0.678       0.74 0.677
+## 
+## Expected number of effective parameters(stdev): 1.99(0.001)
+## Number of equivalent replicates : 481.52 
+## 
+## Deviance Information Criterion (DIC) ...............: 3102.67
+## Deviance Information Criterion (DIC, saturated) ....: 966.07
+## Effective number of parameters .....................: 3.03
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 3102.05
+## Effective number of parameters .................: 2.41
+## 
+## Marginal log-Likelihood:  -1566.72 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+</div>
+<div id="to-compare-these-models-using-waic" class="section level3">
+<h3>To compare these models using WAIC:</h3>
+</div>
+<div id="compare-rethinking" class="section level3">
+<h3>compare rethinking</h3>
+<pre class="r"><code>#rethinking
+ compare( m6.9 , m6.10 )</code></pre>
+<pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m6.9  2713.964 37.55324   0.0000       NA 3.732484 1.000000e+00
+## m6.10 3101.906 27.74820 387.9425 35.41158 2.337316 5.745894e-85</code></pre>
+</div>
+<div id="compare-inla" class="section level3">
+<h3>compare INLA</h3>
+<pre class="r"><code>m6.9.inla.prior$waic$waic</code></pre>
+<pre><code>## [1] 2713.829</code></pre>
+<pre class="r"><code>m6.10.inla.prior$waic$waic</code></pre>
+<pre><code>## [1] 3102.055</code></pre>
+<p>The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.</p>
+</div>
+</div>
+<div id="section-2" class="section level2">
+<h2>3.</h2>
+<p><strong>Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:</strong> (1) avgfood + groupsize + area (2) avgfood + groupsize (3) groupsize + area (4) avgfood (5) area</p>
+<p><strong>Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).</strong></p>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
+<p><img src="rethinkingINLA_HW4_files/figure-html/hw3%20dag-1.png" width="672" /></p>
+<pre class="r"><code>library(rethinking)
+data(foxes)
+d &lt;- foxes
+d$W &lt;- standardize(d$weight)
+d$A &lt;- standardize(d$area)
+d$F &lt;- standardize(d$avgfood)
+d$G &lt;- standardize(d$groupsize)</code></pre>
+<div id="rethinking-2" class="section level3">
+<h3>3. rethinking</h3>
+<pre class="r"><code>m1 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- a + bF*F + bG*G + bA*A,
+        a ~ dnorm(0,0.2),
+        c(bF,bG,bA) ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ), data=d )
+m2 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- a + bF*F + bG*G,
+        a ~ dnorm(0,0.2),
+        c(bF,bG) ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ), data=d )
+m3 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- a + bG*G + bA*A,
+        a ~ dnorm(0,0.2),
+        c(bG,bA) ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ), data=d )
+m4 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- a + bF*F,
+        a ~ dnorm(0,0.2),
+        bF ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ), data=d )
+m5 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu &lt;- a + bA*A,
+        a ~ dnorm(0,0.2),
+        bA ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+), data=d )
+
+
+ compare( m1 , m2 , m3 , m4 , m5 )</code></pre>
+<pre><code>##        WAIC       SE     dWAIC      dSE    pWAIC      weight
+## m1 322.8570 16.27702  0.000000       NA 4.643026 0.464863619
+## m3 323.8852 15.67222  1.028262 2.911577 3.711944 0.277997758
+## m2 324.0754 16.12771  1.218433 3.584892 3.818873 0.252782029
+## m4 333.4369 13.78791 10.579891 7.194478 2.423844 0.002343859
+## m5 333.7415 13.79359 10.884499 7.243278 2.659040 0.002012735</code></pre>
+</div>
+<div id="inla-2" class="section level3">
+<h3>3. INLA</h3>
+<pre class="r"><code>m1.i &lt;- inla(W~F+G+A, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2), A= 1/(0.5^2)), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+), 
+control.compute = list(waic= TRUE))
+#summary(m1.i)
+
+m2.i &lt;- inla(W~F+G, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2)), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+), 
+control.compute = list(waic= TRUE))
+#summary(m2.i)
+
+m3.i &lt;- inla(W~A+G, data= d, control.fixed = list(
+        mean= list(0), 
+        prec= list(A=1/(0.5^2), G=1/(0.5^2)), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+), 
+control.compute = list(waic= TRUE))
+#summary(m3.i)
+
+m4.i &lt;- inla(W~F, data= d, control.fixed = list(
+        mean= 0, 
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+), 
+control.compute = list(waic= TRUE))
+#summary(m4.i)
+
+m5.i &lt;- inla(W~A, data= d, control.fixed = list(
+        mean= 0, 
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+), 
+control.compute = list(waic= TRUE))
+#summary(m5.i)
+
+m1.i$waic$waic</code></pre>
+<pre><code>## [1] 322.9293</code></pre>
+<pre class="r"><code>m2.i$waic$waic</code></pre>
+<pre><code>## [1] 323.6849</code></pre>
+<pre class="r"><code>m3.i$waic$waic</code></pre>
+<pre><code>## [1] 323.767</code></pre>
+<pre class="r"><code>m4.i$waic$waic</code></pre>
+<pre><code>## [1] 333.412</code></pre>
+<pre class="r"><code>m5.i$waic$waic</code></pre>
+<pre><code>## [1] 333.6651</code></pre>
+<p>Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of good, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths. What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:</p>
+<pre class="r"><code>coeftab(m4,m5)</code></pre>
+<pre><code>##       m4      m5     
+## a           0       0
+## bF      -0.02      NA
+## sigma    0.99    0.99
+## bA         NA    0.02
+## nobs      116     116</code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

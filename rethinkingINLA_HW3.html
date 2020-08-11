@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Rethinking 2nd edition Homework 3 in INLA</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="rethinkingINLA_HW2.html">Homework 2</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW3.html">Homework 3</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW4.html">Homework 4</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 3 in INLA</h1>
+
+</div>
+
+
+<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Homework Solutions of Statistical Rethinking by Richard McElreath</a></p>
+<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">Bayesian inference with INLA by Virgilio Gómez-Rubio</a></p>
+<pre class="r"><code>library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)</code></pre>
+<div id="homework-3" class="section level1">
+<h1>HOMEWORK 3</h1>
+<p>All three problems below are based on the same data. The data in data(foxes) are 116 foxes from 30 different urban groups in England. These foxes are like street gangs. Group size varies from 2 to 8 individuals. Each group maintains its own (almost exclusive) urban territory. Some territories are larger than others. The area variable encodes this information. Some territories also have more avgfood than others. We want to model the weight of each fox. For the problems below, assume this DAG:</p>
+<pre class="r"><code>hw3dag &lt;- dagitty(&quot;dag{
+                  avgfood &lt;- area
+                  weight &lt;- avgfood
+                  weight &lt;- groupsize
+                  groupsize &lt;- avgfood
+                  }&quot;)
+
+plot(hw3dag)</code></pre>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
+<p><img src="rethinkingINLA_HW3_files/figure-html/hw3%20dag-1.png" width="672" /></p>
+<div id="section" class="section level2">
+<h2>1.</h2>
+<p><strong>Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.</strong></p>
+<div id="rethinking" class="section level3">
+<h3>1. rethinking</h3>
+<p>Because there are no back-door paths from area to weight,we only need to include area. No other variables are needed. Territory size seems to have no total causal influence on weight, at least not in this sample.</p>
+<pre class="r"><code>data(foxes)
+f &lt;- foxes
+
+f$A &lt;- scale( f$area )
+f$F &lt;- scale( f$avgfood )
+f$G &lt;- scale( f$groupsize )
+f$W &lt;- scale( f$weight)
+
+m1 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m1)</code></pre>
+<pre><code>##                mean         sd       5.5%     94.5%
+## a     -1.307166e-06 0.08360864 -0.1336241 0.1336215
+## bA     1.883282e-02 0.09089579 -0.1264362 0.1641018
+## sigma  9.912657e-01 0.06466642  0.8879163 1.0946151</code></pre>
+</div>
+<div id="inla" class="section level3">
+<h3>1. INLA</h3>
+<p><strong>default priors</strong></p>
+<p>By default, the intercept has a Gaussian prior with mean and precision equal to zero. Coefficients of the fixed effects also have a Gaussian prior by default with zero mean and precision equal to<br />
+0.001. The prior on the precision of the error term is, by default, a Gamma distribution with parameters 1 and 0.00005 (shape and rate, respectively) ( so this is different from the statistical rethinking book’s prior on the variance which is exp(1))</p>
+<pre class="r"><code>#using default priors
+
+m1.inla &lt;- inla(W~A, data= f)
+summary(m1.inla)</code></pre>
+<pre><code>## 
+## Call:
+##    &quot;inla(formula = W ~ A, data = f)&quot; 
+## Time used:
+##     Pre = 1.44, Running = 0.14, Post = 0.158, Total = 1.74 
+## Fixed effects:
+##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+## (Intercept) 0.000 0.093     -0.183    0.000      0.183 0.000   0
+## A           0.019 0.094     -0.165    0.019      0.203 0.019   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.28 0.992
+## 
+## Expected number of effective parameters(stdev): 2.00(0.00)
+## Number of equivalent replicates : 57.98 
+## 
+## Marginal log-Likelihood:  -182.37</code></pre>
+<p>The precision is the inverse of the variance. If we want to set the sd to 0.5, we have to set the precision to 1/(0.5^2)</p>
+<pre class="r"><code>m1.inla.prior &lt;- inla(W~A, data= f, control.fixed = list(
+        mean= 0, 
+        prec= 1/(0.5^2), # sd = 0.5 --&gt; precision =1/variance --&gt; 1/(sd^2)
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+))
+
+summary(m1.inla.prior)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
+##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+## Time used:
+##     Pre = 1.26, Running = 0.131, Post = 0.14, Total = 1.53 
+## Fixed effects:
+##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+## (Intercept) 0.000 0.084     -0.166    0.000      0.166 0.000   0
+## A           0.019 0.092     -0.162    0.019      0.199 0.019   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.29 0.993
+## 
+## Expected number of effective parameters(stdev): 1.79(0.025)
+## Number of equivalent replicates : 64.84 
+## 
+## Marginal log-Likelihood:  -177.65</code></pre>
+</div>
+</div>
+<div id="section-1" class="section level2">
+<h2>2.</h2>
+<p><strong>Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?</strong></p>
+<div id="rethinking-1" class="section level3">
+<h3>2.rethinking</h3>
+<p>To infer the causal influence of avg food on weight,we need to close any back-door paths. There are no back-door paths in the DAG. So again, just use a model with a single predictor. If you include groupsize, to block the indirect path, then you won’t get the total causal influence of food. You’ll just get the direct influence. But I asked for the effect of adding food, and that would mean through all forward paths.</p>
+<p>Again nothing. Adding food does not change weight. This shouldn’t surprise you, if the DAG is correct, because area is upstream of avgfood.</p>
+<pre class="r"><code># food on weight
+m2 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bF*F,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m2)</code></pre>
+<pre><code>##                mean         sd       5.5%     94.5%
+## a     -1.122563e-07 0.08360015 -0.1336093 0.1336091
+## bF    -2.421131e-02 0.09088499 -0.1694631 0.1210405
+## sigma  9.911437e-01 0.06465854  0.8878068 1.0944805</code></pre>
+</div>
+<div id="inla-1" class="section level3">
+<h3>2.INLA</h3>
+<p><strong>INLA default priors</strong></p>
+<pre class="r"><code>#using default priors
+
+m2.inla &lt;- inla(W~F, data= f)
+summary(m2.inla)</code></pre>
+<pre><code>## 
+## Call:
+##    &quot;inla(formula = W ~ F, data = f)&quot; 
+## Time used:
+##     Pre = 1.22, Running = 0.139, Post = 0.139, Total = 1.5 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept)  0.000 0.093     -0.183    0.000      0.183  0.000   0
+## F           -0.025 0.094     -0.209   -0.025      0.159 -0.025   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.28 0.992
+## 
+## Expected number of effective parameters(stdev): 2.00(0.00)
+## Number of equivalent replicates : 57.98 
+## 
+## Marginal log-Likelihood:  -182.36</code></pre>
+<p><strong>INLA custom priors</strong></p>
+<pre class="r"><code>#using custom priors
+
+m2.prec.prior &lt;-  
+    
+m2.inla.prior &lt;- inla(W~F, data= f, control.fixed = list(
+        mean= 0, 
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+))
+summary(m2.inla.prior)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
+##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+## Time used:
+##     Pre = 1.24, Running = 0.135, Post = 0.141, Total = 1.51 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept)  0.000 0.084     -0.166    0.000      0.166  0.000   0
+## F           -0.024 0.092     -0.205   -0.024      0.156 -0.024   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.29 0.994
+## 
+## Expected number of effective parameters(stdev): 1.79(0.025)
+## Number of equivalent replicates : 64.84 
+## 
+## Marginal log-Likelihood:  -177.64</code></pre>
+</div>
+</div>
+<div id="section-2" class="section level2">
+<h2>3.</h2>
+<p><strong>Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?</strong></p>
+<div id="rethinking-2" class="section level3">
+<h3>3. rethinking</h3>
+<p>The variable groupsize does have a back-door path, passing through avgfood. So to infer the causal influence of groupsize, we need to close that path. This implies a model with both groupsize and avgfood as predictors.</p>
+<p>It looks like group size is negatively associated with weight, controlling for food. Similarly, food is positively associated with weight, controlling for group size. So the causal influence of group size is to reduce weight—less food for each fox. And the direct causal influence of food is positive, of course. But the total causal influence of food is still nothing, since it causes larger groups. This is a masking effect, like in the milk energy example. But the causal explanation here is that more foxes move into a territory until the food available to each is no better than the food in a neighboring territory. Every territory ends up equally good/bad on average. This is known in be- havioral ecology as an ideal free distribution.</p>
+<pre class="r"><code># groupsize on weight
+#need to include avgfood
+m3 &lt;- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu &lt;- a + bF*F + bG*G,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bF ~ dnorm( 0 , 0.5 ) ,
+        bG ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+) , data=f )
+
+precis(m3)</code></pre>
+<pre><code>##                mean         sd       5.5%      94.5%
+## a      2.986072e-07 0.08013715 -0.1280743  0.1280749
+## bF     4.769506e-01 0.17912416  0.1906756  0.7632256
+## bG    -5.732887e-01 0.17914192 -0.8595920 -0.2869853
+## sigma  9.420311e-01 0.06175046  0.8433419  1.0407202</code></pre>
+</div>
+<div id="inla-2" class="section level3">
+<h3>3. INLA</h3>
+<p><strong>INLA default priors</strong></p>
+<pre class="r"><code>#using default priors
+
+m3.inla &lt;- inla(W~ F + G,family = c(&quot;gaussian&quot;),  data= f)
+summary(m3.inla)</code></pre>
+<pre><code>## 
+## Call:
+##    &quot;inla(formula = W ~ F + G, family = c(\&quot;gaussian\&quot;), data = f)&quot; 
+## Time used:
+##     Pre = 1.32, Running = 0.138, Post = 0.158, Total = 1.62 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept)  0.000 0.089     -0.174    0.000      0.174  0.000   0
+## F            0.641 0.206      0.236    0.641      1.045  0.641   0
+## G           -0.739 0.206     -1.144   -0.739     -0.335 -0.739   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.11 0.147      0.845     1.11
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.42 1.09
+## 
+## Expected number of effective parameters(stdev): 3.00(0.00)
+## Number of equivalent replicates : 38.66 
+## 
+## Marginal log-Likelihood:  -181.14</code></pre>
+<p><strong>INLA custom priors</strong></p>
+<p>Prior mean for all fixed effects except the intercept. Alternatively, a named list with specific means where name=default applies to unmatched names. For example control.fixed=list(mean=list(a=1, b=2, default=0)) assign ‘mean=1’ to fixed effect ‘a’ , ‘mean=2’ to effect ‘b’ and ‘mean=0’ to all others. (default 0.0)</p>
+<pre class="r"><code>#using custom priors
+m3.inla.prior &lt;- inla(W~F+G, data= f, control.fixed = list(
+        mean= list(F=0, G=0), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2)), 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.2^2)
+))
+summary(m3.inla.prior)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = 
+##    list(F = 0, &quot;, &quot; G = 0), prec = list(F = 1/(0.5^2), G = 1/(0.5^2)), 
+##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
+## Time used:
+##     Pre = 1.3, Running = 0.137, Post = 0.138, Total = 1.57 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept)  0.000 0.081     -0.159    0.000      0.159  0.000   0
+## F            0.474 0.181      0.116    0.475      0.827  0.477   0
+## G           -0.570 0.181     -0.923   -0.571     -0.213 -0.573   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.11 0.147      0.843     1.11
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.42 1.09
+## 
+## Expected number of effective parameters(stdev): 2.58(0.047)
+## Number of equivalent replicates : 45.03 
+## 
+## Marginal log-Likelihood:  -173.84</code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

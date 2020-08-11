@@ -1,4 +1,5 @@
 name: "Statistical Rethinking homeworks in INLA"
+output_dir: "."
 navbar:
   title: "Home"
   left:
@@ -8,4 +9,8 @@ navbar:
     href: rethinkingINLA_HW3.html
   - text: "Homework 4"
     href: rethinkingINLA_HW4.html
+output:
+  html_document:
+    theme: yeti
+    highlight: textmate
     
