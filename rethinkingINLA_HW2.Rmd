@@ -1,16 +1,14 @@
 ---
 title: "Statistical Rethinking Homework 2 in INLA"
-author: "Ania Kawiecki"
-date: "8/4/2020"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[Statistical rethinking homework solutions](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
+[Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
-[INLA book](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
+[Bayesian inference with INLA by Virgilio Gómez-Rubio](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
 
 ```{r libraries, message= FALSE}
 library(tidyverse)

@@ -23,8 +23,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
-<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -275,10 +273,13 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="rethinkingINLA_HW2.html">Homework 2</a>
 </li>
 <li>
-  <a href="rethinkingINLA_HW2.html">Homework 2</a>
+  <a href="rethinkingINLA_HW3.html">Homework 3</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW4.html">Homework 4</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -299,8 +300,8 @@ $(document).ready(function () {
 </div>
 
 
-<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Statistical rethinking homework solutions</a></p>
-<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">INLA book</a></p>
+<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Homework Solutions of Statistical Rethinking by Richard McElreath</a></p>
+<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">Bayesian inference with INLA by Virgilio Gómez-Rubio</a></p>
 <pre class="r"><code>library(tidyverse)
 library(rethinking)
 library(dagitty)
@@ -310,7 +311,7 @@ library(knitr)</code></pre>
 <h1>HOMEWORK 4</h1>
 <div id="section" class="section level2">
 <h2>1.</h2>
-<p>Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:</p>
+<p><strong>Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:</strong></p>
 <pre class="r"><code>IB1 &lt;- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
 IB2&lt;- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
 IB3 &lt;- c( 0.05 , 0.15 , 0.7 , 0.05 , 0.05 )
@@ -362,10 +363,10 @@ kable(df)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Notice that each column sums to 1, all the birbs. This problem has two parts. It is not computationally complicated. But it is conceptually tricky.</p>
-<p>First, compute the entropy of each island’s birb distribution. Interpret these entropy values.</p>
-<p>Second, use each island’s birb distribution to predict the other two. This means to compute the K-L Divergence of each island from the others, treat- ing each island as if it were a statistical model of the other islands. You should end up with 6 different K-L Divergence values. Which island predicts the others best? Why?</p>
-<p>SOL: To compute the entropies,we just need a function to compute the entropy.Information entropy, as defined in lecture and the book, is simply: <span class="math inline">\(H(p) = - \sum_{i}p_i log(p_i)\)</span></p>
+<p><strong>Notice that each column sums to 1, all the birbs. This problem has two parts. It is not computationally complicated. But it is conceptually tricky.</strong></p>
+<p><strong>First, compute the entropy of each island’s birb distribution. Interpret these entropy values.</strong></p>
+<p><strong>Second, use each island’s birb distribution to predict the other two. This means to compute the K-L Divergence of each island from the others, treat- ing each island as if it were a statistical model of the other islands. You should end up with 6 different K-L Divergence values. Which island predicts the others best? Why?</strong></p>
+<p>To compute the entropies,we just need a function to compute the entropy.Information entropy, as defined in lecture and the book, is simply: <span class="math inline">\(H(p) = - \sum_{i}p_i log(p_i)\)</span></p>
 <p>where p is a vector of probabilities summing to 1. In R code this would look like:</p>
 <pre class="r"><code>H &lt;- function(p) -sum(p*log(p))
 
@@ -402,8 +403,8 @@ round( Dm , 2 )</code></pre>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW4_files/figure-html/hw4.2%20dag-1.png" width="672" /></p>
 <p>Happiness (H) and age (A) both cause marriage (M). Marriage is therefore a collider. Even though there is no causal association between happiness and age, if we condition on marriage— which means here, if we include it as a predictor in a regression—then it will induce a statistical association between age and happiness. And this can mislead us to think that happiness changes with age, when in fact it is constant.</p>
-<p>Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree?</p>
-<p>SOL: So let’s consider a multiple regression model aimed at inferring the influence of age on happiness, while controlling for marriage status. This is just a plain multiple regression, like the others in this and the previous chapter.</p>
+<p><strong>Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree?</strong></p>
+<p>So let’s consider a multiple regression model aimed at inferring the influence of age on happiness, while controlling for marriage status. This is just a plain multiple regression, like the others in this and the previous chapter.</p>
 <p>The linear model is this: <span class="math inline">\(\mu_i= \alpha mid[i] + \beta AA_i\)</span> where mid[i] is an index for the marriage status of individual i, with 1 meaning single and 2 meaning married. It’s easier to make priors, when we use multiple intercepts, one for each category, than when we use indicator variables.</p>
 <p>Now we should do our duty and think about the priors.</p>
 <ul>
@@ -419,7 +420,7 @@ d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )
 d2$mid &lt;- d2$married + 1</code></pre>
 <p>Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path.</p>
 <div id="rethinking" class="section level3">
-<h3>rethinking</h3>
+<h3>2.1 rethinking</h3>
 <pre class="r"><code>#contains both marriage status and age
 
 m6.9 &lt;- quap(
@@ -431,14 +432,14 @@ m6.9 &lt;- quap(
         sigma ~ dexp(1)
     ) , data=d2 )
 precis(m6.9,depth=2)</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["mean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["5.5%"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["94.5%"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.2350877","2":"0.06348986","3":"-0.3365568","4":"-0.1336186","_rn_":"a[1]"},{"1":"1.2585517","2":"0.08495989","3":"1.1227694","4":"1.3943340","_rn_":"a[2]"},{"1":"-0.7490274","2":"0.11320112","3":"-0.9299447","4":"-0.5681102","_rn_":"bA"},{"1":"0.9897080","2":"0.02255800","3":"0.9536559","4":"1.0257600","_rn_":"sigma"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<pre><code>##             mean         sd       5.5%      94.5%
+## a[1]  -0.2350877 0.06348986 -0.3365568 -0.1336186
+## a[2]   1.2585517 0.08495989  1.1227694  1.3943340
+## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
+## sigma  0.9897080 0.02255800  0.9536559  1.0257600</code></pre>
 </div>
 <div id="inla" class="section level3">
-<h3>INLA</h3>
+<h3>2.1 INLA</h3>
 <p>In order to code a separate intercept for being married/not, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on ( in this case marriage) and NAs for all other values.</p>
 <pre class="r"><code>d3 &lt;- d2 %&gt;% 
   mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
@@ -446,7 +447,7 @@ precis(m6.9,depth=2)</code></pre>
 
 m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
                         control.fixed = list(
-        mean= list(0), 
+        mean= 0, 
         prec= list(i_notmarried=2, i_married= 1, A=2)),
         control.compute = list(dic=TRUE, waic= TRUE)
 )
@@ -455,10 +456,10 @@ summary(m6.9.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, 
-##    control.compute = list(dic = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean 
-##    = list(0), prec = list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
+##    control.compute = list(dic = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
 ## Time used:
-##     Pre = 1.29, Running = 0.461, Post = 0.279, Total = 2.03 
+##     Pre = 1.16, Running = 0.467, Post = 0.218, Total = 1.85 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -484,7 +485,7 @@ summary(m6.9.inla.prior )</code></pre>
 ##  the fitted values are computed</code></pre>
 </div>
 <div id="rethinking-1" class="section level3">
-<h3>rethinking</h3>
+<h3>2.2 rethinking</h3>
 <pre class="r"><code>#this model to a model that omits marriage status.
 m6.10 &lt;- quap(
     alist(
@@ -495,18 +496,17 @@ m6.10 &lt;- quap(
         sigma ~ dexp(1)
     ) , data=d2 )
 precis(m6.10)</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["mean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["5.5%"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["94.5%"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"-1.469528e-06","2":"0.07675016","3":"-0.1226630","4":"0.1226601","_rn_":"a"},{"1":"2.378318e-06","2":"0.13225977","3":"-0.2113743","4":"0.2113790","_rn_":"bA"},{"1":"1.213188e+00","2":"0.02766081","3":"1.1689804","4":"1.2573950","_rn_":"sigma"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<pre><code>##                mean         sd       5.5%     94.5%
+## a     -1.469528e-06 0.07675016 -0.1226630 0.1226601
+## bA     2.378318e-06 0.13225977 -0.2113743 0.2113790
+## sigma  1.213188e+00 0.02766081  1.1689804 1.2573950</code></pre>
 </div>
 <div id="inla-1" class="section level3">
-<h3>INLA</h3>
+<h3>2.2 INLA</h3>
 <pre class="r"><code>m6.10.inla.prior &lt;- inla(happiness~ A , data= d3, 
                         control.fixed = list(
-        mean= list(0), 
-        prec= list(2),
+        mean= 0, 
+        prec= 1/(2^2),
         mean.intercept= 0, 
         prec.intercept= 1),
         control.compute = list(dic=TRUE, waic= TRUE)
@@ -515,55 +515,58 @@ precis(m6.10)</code></pre>
 summary(m6.10.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, 
-##    &quot;, &quot; waic = TRUE), control.fixed = list(mean = list(0), prec = list(2), &quot;, &quot; 
-##    mean.intercept = 0, prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = 
+##    TRUE), control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, 
+##    prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.1, Running = 0.463, Post = 0.199, Total = 1.76 
+##     Pre = 1.15, Running = 0.478, Post = 0.212, Total = 1.84 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
-## A              0 0.133     -0.261        0      0.260    0   0
+## A              0 0.132     -0.260        0      0.260    0   0
 ## 
 ## Model hyperparameters:
 ##                                          mean    sd 0.025quant 0.5quant 0.975quant  mode
 ## Precision for the Gaussian observations 0.679 0.031       0.62    0.678       0.74 0.677
 ## 
-## Expected number of effective parameters(stdev): 2.00(0.00)
-## Number of equivalent replicates : 480.47 
+## Expected number of effective parameters(stdev): 1.99(0.001)
+## Number of equivalent replicates : 481.52 
 ## 
-## Deviance Information Criterion (DIC) ...............: 3102.68
+## Deviance Information Criterion (DIC) ...............: 3102.67
 ## Deviance Information Criterion (DIC, saturated) ....: 966.07
-## Effective number of parameters .....................: 3.04
+## Effective number of parameters .....................: 3.03
 ## 
-## Watanabe-Akaike information criterion (WAIC) ...: 3102.06
+## Watanabe-Akaike information criterion (WAIC) ...: 3102.05
 ## Effective number of parameters .................: 2.41
 ## 
-## Marginal log-Likelihood:  -1569.48 
+## Marginal log-Likelihood:  -1566.72 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 </div>
 <div id="to-compare-these-models-using-waic" class="section level3">
 <h3>To compare these models using WAIC:</h3>
+</div>
+<div id="compare-rethinking" class="section level3">
+<h3>compare rethinking</h3>
 <pre class="r"><code>#rethinking
  compare( m6.9 , m6.10 )</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["WAIC"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["SE"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["dWAIC"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["dSE"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pWAIC"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["weight"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2713.964","2":"37.55324","3":"0.0000","4":"NA","5":"3.732484","6":"1.000000e+00","_rn_":"m6.9"},{"1":"3101.906","2":"27.74820","3":"387.9425","4":"35.41158","5":"2.337316","6":"5.745894e-85","_rn_":"m6.10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
+<pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m6.9  2713.964 37.55324   0.0000       NA 3.732484 1.000000e+00
+## m6.10 3101.906 27.74820 387.9425 35.41158 2.337316 5.745894e-85</code></pre>
 </div>
-<pre class="r"><code># INLA 
-m6.9.inla.prior$waic$waic</code></pre>
+<div id="compare-inla" class="section level3">
+<h3>compare INLA</h3>
+<pre class="r"><code>m6.9.inla.prior$waic$waic</code></pre>
 <pre><code>## [1] 2713.829</code></pre>
 <pre class="r"><code>m6.10.inla.prior$waic$waic</code></pre>
-<pre><code>## [1] 3102.064</code></pre>
+<pre><code>## [1] 3102.055</code></pre>
 <p>The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.</p>
 </div>
 </div>
 <div id="section-2" class="section level2">
 <h2>3.</h2>
-<p>Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables: (1) avgfood + groupsize + area (2) avgfood + groupsize (3) groupsize + area (4) avgfood (5) area</p>
-<p>Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).</p>
+<p><strong>Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:</strong> (1) avgfood + groupsize + area (2) avgfood + groupsize (3) groupsize + area (4) avgfood (5) area</p>
+<p><strong>Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).</strong></p>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW4_files/figure-html/hw3%20dag-1.png" width="672" /></p>
 <pre class="r"><code>library(rethinking)
@@ -574,7 +577,7 @@ d$A &lt;- standardize(d$area)
 d$F &lt;- standardize(d$avgfood)
 d$G &lt;- standardize(d$groupsize)</code></pre>
 <div id="rethinking-2" class="section level3">
-<h3>rethinking</h3>
+<h3>3. rethinking</h3>
 <pre class="r"><code>m1 &lt;- quap(
     alist(
         W ~ dnorm( mu , sigma ),
@@ -618,69 +621,70 @@ m5 &lt;- quap(
 
 
  compare( m1 , m2 , m3 , m4 , m5 )</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["WAIC"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["SE"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["dWAIC"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["dSE"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pWAIC"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["weight"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"322.8570","2":"16.27702","3":"0.000000","4":"NA","5":"4.643026","6":"0.464863619","_rn_":"m1"},{"1":"323.8852","2":"15.67222","3":"1.028262","4":"2.911577","5":"3.711944","6":"0.277997758","_rn_":"m3"},{"1":"324.0754","2":"16.12771","3":"1.218433","4":"3.584892","5":"3.818873","6":"0.252782029","_rn_":"m2"},{"1":"333.4369","2":"13.78791","3":"10.579891","4":"7.194478","5":"2.423844","6":"0.002343859","_rn_":"m4"},{"1":"333.7415","2":"13.79359","3":"10.884499","4":"7.243278","5":"2.659040","6":"0.002012735","_rn_":"m5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+<pre><code>##        WAIC       SE     dWAIC      dSE    pWAIC      weight
+## m1 322.8570 16.27702  0.000000       NA 4.643026 0.464863619
+## m3 323.8852 15.67222  1.028262 2.911577 3.711944 0.277997758
+## m2 324.0754 16.12771  1.218433 3.584892 3.818873 0.252782029
+## m4 333.4369 13.78791 10.579891 7.194478 2.423844 0.002343859
+## m5 333.7415 13.79359 10.884499 7.243278 2.659040 0.002012735</code></pre>
 </div>
 <div id="inla-2" class="section level3">
-<h3>INLA</h3>
+<h3>3. INLA</h3>
 <pre class="r"><code>m1.i &lt;- inla(W~F+G+A, data= d, control.fixed = list(
         mean= list(0), 
-        prec= list(F=0.5, G=0.5, A= 0.5), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2), A= 1/(0.5^2)), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ), 
 control.compute = list(waic= TRUE))
 #summary(m1.i)
 
 m2.i &lt;- inla(W~F+G, data= d, control.fixed = list(
         mean= list(0), 
-        prec= list(F=0.5, G=0.5), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2)), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ), 
 control.compute = list(waic= TRUE))
 #summary(m2.i)
 
 m3.i &lt;- inla(W~A+G, data= d, control.fixed = list(
         mean= list(0), 
-        prec= list(A=0.5, G=0.5), 
+        prec= list(A=1/(0.5^2), G=1/(0.5^2)), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ), 
 control.compute = list(waic= TRUE))
 #summary(m3.i)
 
 m4.i &lt;- inla(W~F, data= d, control.fixed = list(
-        mean= list(0), 
-        prec= list(0.5), 
+        mean= 0, 
+        prec= 1/(0.5^2), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ), 
 control.compute = list(waic= TRUE))
 #summary(m4.i)
 
 m5.i &lt;- inla(W~A, data= d, control.fixed = list(
-        mean= list(0), 
-        prec= list(0.5), 
+        mean= 0, 
+        prec= 1/(0.5^2), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ), 
 control.compute = list(waic= TRUE))
 #summary(m5.i)
 
 m1.i$waic$waic</code></pre>
-<pre><code>## [1] 323.5388</code></pre>
+<pre><code>## [1] 322.9293</code></pre>
 <pre class="r"><code>m2.i$waic$waic</code></pre>
-<pre><code>## [1] 323.8215</code></pre>
+<pre><code>## [1] 323.6849</code></pre>
 <pre class="r"><code>m3.i$waic$waic</code></pre>
-<pre><code>## [1] 324.1259</code></pre>
+<pre><code>## [1] 323.767</code></pre>
 <pre class="r"><code>m4.i$waic$waic</code></pre>
-<pre><code>## [1] 333.8307</code></pre>
+<pre><code>## [1] 333.412</code></pre>
 <pre class="r"><code>m5.i$waic$waic</code></pre>
-<pre><code>## [1] 334.0923</code></pre>
+<pre><code>## [1] 333.6651</code></pre>
 <p>Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of good, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths. What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:</p>
 <pre class="r"><code>coeftab(m4,m5)</code></pre>
 <pre><code>##       m4      m5     

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ania Kawiecki" />
+
+
+<title>rethinkingINLA_HW5</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="rethinkingINLA_HW2.html">Homework 2</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW3.html">Homework 3</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW4.html">Homework 4</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">rethinkingINLA_HW5</h1>
+<h4 class="author">Ania Kawiecki</h4>
+<h4 class="date">8/3/2020</h4>
+
+</div>
+
+
+<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Statistical rethinking homework solutions</a></p>
+<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">INLA gitbook</a></p>
+<pre class="r"><code>library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)</code></pre>
+<div id="homework-5" class="section level1">
+<h1>HOMEWORK 5</h1>
+<div id="section" class="section level2">
+<h2>1.</h2>
+<p>Consider the data (Wines2012) data table.These data are expert ratings of 20 different French and American wines by 9 different French and American judges. Your goal is to model score, the subjective rating assigned by each judge to each wine. I recommend standardizing it.</p>
+<p>In this first problem, consider only variation among judges and wines. Construct index variables of judge and wine and then use these index variables to construct a linear regression model. Justify your priors. You should end up with 9 judge parameters and 20 wine parameters. Use ulam instead of quap to build this model, and be sure to check the chains for convergence. If you’d rather build the model directly in Stan or PyMC3, go ahead. I just want you to use Hamiltonian Monte Carlo instead of quadratic approximation. How do you interpret the variation among individual judges and individual wines? Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?</p>
+<pre class="r"><code>library(rethinking)
+data(Wines2012)
+d &lt;- Wines2012
+
+dat_list &lt;- list(
+    S = standardize(d$score),
+    jid = as.integer(d$judge),
+    wid = as.integer(d$wine)
+)
+
+str(dat_list)</code></pre>
+<pre><code>## List of 3
+##  $ S  : num [1:180] -1.5766 -0.4505 -0.0751 0.3003 -2.3274 ...
+##   ..- attr(*, &quot;scaled:center&quot;)= num 14.2
+##   ..- attr(*, &quot;scaled:scale&quot;)= num 2.66
+##  $ jid: int [1:180] 4 4 4 4 4 4 4 4 4 4 ...
+##  $ wid: int [1:180] 1 3 5 7 9 11 13 15 17 19 ...</code></pre>
+<p>The model is straightforward. The only issue is the priors. Since I’ve standardized the outcome, we can use the ordinary N(0,0.5) prior from the examples in the text with standardized outcomes. Then the prior outcomes will stay largely within the possible outcome space. A bit more regularization than that wouldn’t be a bad idea either.</p>
+<p>diagnostics that precis provides: The n_eff values are all actually higher than the number of samples (2000), and all the Rhat values at exactly 1. Looks good so far. These diagnostics can mislead, however, so let’s look at the trace plots too: These pass the hairy-caterpillar-ocular-inspection-test: all the chains mix in the same region, and they move quickly through it, not getting stuck anyplace. Now let’s plot these parameters so they are easier to interpret:</p>
+<div id="rethinking" class="section level3">
+<h3>1. rethinking</h3>
+<pre class="r"><code>#How do you interpret the variation among individual judges and indi- vidual wines?
+#Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?
+
+m1 &lt;- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu &lt;- a[jid] + b[wid], 
+    a[jid] ~ dnorm(0, 0.5), 
+    b[wid] ~ dnorm(0, 0.5), 
+    sigma ~dexp(1)
+    
+  ), data=dat_list, chains=4 , cores=4)
+
+precis(m1, 2)</code></pre>
+<pre><code>##              mean         sd        5.5%        94.5%    n_eff     Rhat4
+## a[1]  -0.28456935 0.18244849 -0.57655372  0.007940745 2337.546 0.9987276
+## a[2]   0.20620935 0.19891832 -0.10529185  0.526439589 2401.703 0.9986654
+## a[3]   0.20104814 0.19327657 -0.10378734  0.515449300 2507.671 0.9991754
+## a[4]  -0.54908667 0.18545137 -0.84727888 -0.250156595 2054.116 0.9995357
+## a[5]   0.78312014 0.18924306  0.47471264  1.083629540 2066.952 0.9987144
+## a[6]   0.46468818 0.19656102  0.14122244  0.774990187 2868.345 0.9987185
+## a[7]   0.12534703 0.19358745 -0.19112406  0.431617002 2122.989 0.9989241
+## a[8]  -0.65681781 0.19765859 -0.97138649 -0.347380359 2423.641 0.9984746
+## a[9]  -0.35382508 0.19091203 -0.64930455 -0.046985129 2468.202 0.9990944
+## b[1]   0.12576225 0.25245369 -0.27622219  0.532855185 3189.370 0.9989837
+## b[2]   0.09487463 0.25305174 -0.30059851  0.493873764 3380.437 0.9983242
+## b[3]   0.23394061 0.25843820 -0.18948039  0.643586921 3084.082 0.9986572
+## b[4]   0.47516853 0.25360756  0.06494031  0.880570578 2759.755 0.9987220
+## b[5]  -0.10018953 0.26904416 -0.51848074  0.341992520 3603.007 0.9993904
+## b[6]  -0.30511432 0.25722615 -0.71453007  0.107363031 3243.426 0.9988293
+## b[7]   0.25013892 0.25579423 -0.17192054  0.652582797 3224.042 0.9983954
+## b[8]   0.23482461 0.25523562 -0.16579080  0.656578423 4608.826 0.9985614
+## b[9]   0.07743381 0.24942789 -0.32651375  0.472886967 3076.735 0.9986942
+## b[10]  0.11065175 0.26301421 -0.32687385  0.523688968 2828.181 0.9989681
+## b[11] -0.01253733 0.26748273 -0.41489668  0.423804175 2953.959 0.9995380
+## b[12] -0.01561847 0.26136100 -0.43208123  0.402551769 3961.068 0.9982981
+## b[13] -0.08633619 0.25624363 -0.49212819  0.327378630 2718.963 0.9986956
+## b[14]  0.02049832 0.26755859 -0.41973850  0.450164176 3077.406 0.9987507
+## b[15] -0.17537163 0.25870130 -0.58214874  0.243659740 2938.236 0.9987985
+## b[16] -0.15715860 0.25612563 -0.56939030  0.248434740 3584.190 0.9986760
+## b[17] -0.11108560 0.25548478 -0.53921987  0.296133255 3866.343 0.9985989
+## b[18] -0.71224101 0.26681182 -1.14505477 -0.286406405 3546.807 0.9984760
+## b[19] -0.12961389 0.26213113 -0.54021521  0.288183086 3654.057 0.9988095
+## b[20]  0.32867082 0.25098577 -0.06766971  0.734961386 3201.377 0.9991989
+## sigma  0.84743607 0.04697524  0.77516782  0.928286153 3262.519 0.9999055</code></pre>
+<pre class="r"><code>traceplot(m1)</code></pre>
+<pre><code>## [1] 1000
+## [1] 1
+## [1] 1000</code></pre>
+<pre><code>## Waiting to draw page 2 of 2</code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-1.png" width="672" /><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-2.png" width="672" /></p>
+<pre class="r"><code>plot(precis(m1, 2))</code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-3.png" width="672" /></p>
+</div>
+<div id="inla" class="section level3">
+<h3>1. INLA</h3>
+<p>In order to code a separate intercept for each judge and wine, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on and NAs for all other values.</p>
+<pre class="r"><code>d.i &lt;- d %&gt;% 
+  mutate(S = standardize(d$score),
+    jid = paste(&quot;j&quot;,as.integer(d$judge), sep= &quot;.&quot;),
+    wid =  paste(&quot;w&quot;,as.integer(d$wine), sep= &quot;.&quot;), 
+    j.value= 1, 
+    w.value= 1) %&gt;% 
+  spread(jid, j.value) %&gt;% 
+  spread(wid, w.value)
+
+j &lt;- paste(&quot;j&quot;, 1:9, sep=&quot;.&quot;)
+
+w &lt;- paste(&quot;w&quot;, 1:20, sep=&quot;.&quot;)
+
+est &lt;- c(j,w)
+
+m1.i&lt;- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
+                          w.1+w.2+ w.3+w.4+w.5+w.6+w.7+w.8+w.9+w.10+w.11+w.12+w.13+w.14+w.15+ w.16+w.17+ w.18+w.19+w.20, data= d.i,
+                        control.fixed = list(
+        mean= 0, 
+        prec= 0.5),
+        control.compute = list(dic=TRUE, waic= TRUE)
+)
+
+summary(m1.i )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 + 
+##    w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 
+##    + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; 
+##    waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
+## Time used:
+##     Pre = 3.44, Running = 0.33, Post = 0.462, Total = 4.24 
+## Fixed effects:
+##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
+## j.2   0.240 0.320     -0.388    0.240      0.867  0.240   0
+## j.3   0.230 0.320     -0.397    0.230      0.858  0.230   0
+## j.4  -0.608 0.320     -1.236   -0.608      0.019 -0.608   0
+## j.5   0.894 0.320      0.266    0.894      1.522  0.894   0
+## j.6   0.535 0.320     -0.093    0.535      1.162  0.535   0
+## j.7   0.147 0.320     -0.480    0.147      0.775  0.148   0
+## j.8  -0.737 0.320     -1.365   -0.738     -0.110 -0.738   0
+## j.9  -0.387 0.320     -1.015   -0.387      0.240 -0.387   0
+## w.1   0.148 0.377     -0.593    0.148      0.889  0.148   0
+## w.2   0.108 0.377     -0.633    0.108      0.849  0.108   0
+## w.3   0.289 0.377     -0.452    0.289      1.029  0.289   0
+## w.4   0.590 0.377     -0.152    0.590      1.330  0.590   0
+## w.5  -0.132 0.377     -0.873   -0.132      0.608 -0.132   0
+## w.6  -0.393 0.377     -1.134   -0.393      0.348 -0.393   0
+## w.7   0.309 0.377     -0.432    0.309      1.049  0.309   0
+## w.8   0.289 0.377     -0.452    0.289      1.029  0.289   0
+## w.9   0.088 0.377     -0.653    0.088      0.829  0.088   0
+## w.10  0.128 0.377     -0.613    0.128      0.869  0.128   0
+## w.11 -0.012 0.377     -0.753   -0.012      0.728 -0.012   0
+## w.12 -0.032 0.377     -0.773   -0.032      0.708 -0.032   0
+## w.13 -0.112 0.377     -0.853   -0.112      0.628 -0.112   0
+## w.14  0.008 0.377     -0.733    0.008      0.748  0.008   0
+## w.15 -0.233 0.377     -0.974   -0.233      0.508 -0.233   0
+## w.16 -0.213 0.377     -0.954   -0.213      0.528 -0.213   0
+## w.17 -0.152 0.377     -0.893   -0.152      0.588 -0.152   0
+## w.18 -0.914 0.377     -1.655   -0.915     -0.174 -0.915   0
+## w.19 -0.172 0.377     -0.913   -0.172      0.568 -0.173   0
+## w.20  0.409 0.377     -0.332    0.409      1.149  0.409   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.41 0.159       1.11     1.40       1.74 1.39
+## 
+## Expected number of effective parameters(stdev): 27.12(0.101)
+## Number of equivalent replicates : 6.64 
+## 
+## Deviance Information Criterion (DIC) ...............: 481.08
+## Deviance Information Criterion (DIC, saturated) ....: 211.59
+## Effective number of parameters .....................: 28.36
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 482.39
+## Effective number of parameters .................: 26.24
+## 
+## Marginal log-Likelihood:  -273.56 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>## Pull out summaries from the model object
+m1.i.sum &lt;- summary(m1.i)
+ 
+## Summarise results
+m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
+                       lower = m1.i.sum$fixed[,&quot;0.025quant&quot;],
+                       upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
+                       stringsAsFactors = FALSE)
+
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1</code></pre>
+<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
+  mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
+  ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
+    xlab(&quot;coefficient&quot;) +
+    ylab(&quot;Estimate&quot;)+
+  coord_flip()+
+    theme_bw()
+
+m1.i.plot </code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20INLA-1.png" width="672" /></p>
+<p>The a/j parameters are the judges. Each represents an average deviation of the scores. So judges with lower values are harsher on average. Judges with higher values liked the wines more on average. There is some noticeable variation here. It is fairly easy to tell the judges apart.</p>
+<p>The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.</p>
+</div>
+</div>
+<div id="section-1" class="section level2">
+<h2>2.</h2>
+<p>Now consider three features of the wines and judges:</p>
+<ol style="list-style-type: decimal">
+<li><p>flight: Whether the wine is red or white.</p></li>
+<li><p>wine.amer: Indicator variable for American wines.</p></li>
+<li><p>judge.amer: Indicator variable for American judges.</p></li>
+</ol>
+<p>Use indicator or index variables to model the influence of these features on the scores. Omit the individual judge and wine index variables from Problem 1. Do not include interaction effects yet. Again use ulam, justify your priors, and be sure to check the chains. What do you conclude about the differences among the wines and judges? Try to relate the results to the inferences in Problem 1.</p>
+<p>The easiest way to code the data is to use indicator variables. Let’s look at that approach first. I’ll do an index variable version next. I’ll use the three indicator variables W (NJ wine), J (American NJ), and R (red wine).</p>
+</div>
+<div id="a-indicator-variables" class="section level2">
+<h2>2.a indicator variables</h2>
+<div id="a-rethinking" class="section level3">
+<h3>2.a rethinking</h3>
+<pre class="r"><code>dat_list2 &lt;- list(
+    S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    F= if_else(d$flight == &quot;white&quot;, 0, 1))
+
+m2a &lt;- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu &lt;- a + bW*W + bJ*J + bF*F, 
+    a ~ dnorm(0, 0.2), 
+    bW~ dnorm(0, 0.5),
+    bJ~ dnorm(0, 0.5),
+    bF~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2, chains=4 , cores=4)
+
+precis(m2a)</code></pre>
+<pre><code>##               mean         sd          5.5%     94.5%    n_eff     Rhat4
+## a     -0.015106047 0.12659361 -0.2150224636 0.1881938 1595.729 1.0011814
+## bW    -0.180550118 0.13893182 -0.4002781036 0.0489065 1756.814 0.9987974
+## bJ     0.225884935 0.14068947 -0.0001966947 0.4466232 1728.246 1.0001453
+## bF    -0.004929157 0.13457742 -0.2262693044 0.2063808 1738.007 1.0001428
+## sigma  0.999968848 0.05261749  0.9225525370 1.0880751 1828.629 0.9987323</code></pre>
+<pre class="r"><code>traceplot(m2a)</code></pre>
+<pre><code>## [1] 1000
+## [1] 1
+## [1] 1000</code></pre>
+<pre class="r"><code>plot(precis(m2a, 2))</code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/HW5%202a%20re-1.png" width="672" /></p>
+</div>
+<div id="a-inla" class="section level3">
+<h3>2.a INLA</h3>
+<pre class="r"><code>d.i2a &lt;- d %&gt;% 
+  mutate(S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == &quot;red&quot;, 1, 0))
+
+m2a.i &lt;- inla(S~W+J+R, data= d.i2a, control.fixed = list(
+        mean= 0, 
+        prec= list(R=0.5, W=0.5, J= 0.5), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+
+summary(m2a.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = list(waic = TRUE), &quot;, &quot; 
+##    control.fixed = list(mean = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 
+##    0, prec.intercept = 0.2))&quot; ) 
+## Time used:
+##     Pre = 1.37, Running = 0.196, Post = 0.197, Total = 1.76 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
+## W           -0.190 0.150     -0.486   -0.190      0.106 -0.190   0
+## J            0.246 0.148     -0.045    0.246      0.538  0.246   0
+## R           -0.004 0.148     -0.294   -0.004      0.286 -0.004   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+## 
+## Expected number of effective parameters(stdev): 3.96(0.004)
+## Number of equivalent replicates : 45.42 
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 515.36
+## Effective number of parameters .................: 4.79
+## 
+## Marginal log-Likelihood:  -274.11 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>## Pull out summaries from the model object
+m1.i.sum &lt;- summary(m1.i)
+ 
+## Summarise results
+m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
+                       lower = m1.i.sum$fixed[,&quot;0.025quant&quot;],
+                       upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
+                       stringsAsFactors = FALSE)
+
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1</code></pre>
+<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
+  mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
+  ggplot() + 
+    geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
+    xlab(&quot;coefficient&quot;) +
+    ylab(&quot;Estimate&quot;)+
+  coord_flip()+
+    theme_bw()
+
+m1.i.plot </code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/HW5%202a%20INLA-1.png" width="672" /> As expected, red and wines are on average the same—bR is right on top of zero. American judges seem to be more on average slightly more generous with ratings—bJ is slightly but reliably above zero. American wines have slightly lower average ratings than French wines—bW is mostly below zero, but not very large in absolute size.</p>
+</div>
+</div>
+<div id="b-index-variables" class="section level2">
+<h2>2.b index variables</h2>
+<p>Okay, now for an index variable version. The thing about index variables is that you can easily end up with more parameters than in an equivalent indicator variable model. But it’s still the same posterior distribution. You can convert from one to the other (if the priors are also equivalent).</p>
+<p>We’ll need three index variables: wid, jid, fid. Now wid is 1 for a French wine and 2 for a NJ wine,jid is 1 for a French judge and 2 for an American judge, and fid is 1 for red and 2 for white. Those 1L numbers are just the R way to type the number as an integer—“1L” is the integer 1, while “1” is the real number 1. We want integers for an index variable.</p>
+<p>Now let’s think about priors for the parameters that correspond to each index value. Now the question isn’t how big the difference could be, but rather how far from the mean an indexed category could be. If we use Normal(0,0.5) priors, that would make a full standard deviation difference from the global mean rare. It will also match what we had above, in a crude sense. Again, I’d be tempted to something narrow, for the sake of regularization. But certainly something like Normal(0,10) is flat out silly, because it makes impossible values routine. Let’s see what we get:</p>
+<div id="b-rethinking" class="section level3">
+<h3>2.b rethinking</h3>
+<pre class="r"><code>dat_list2b &lt;- list(
+    S = standardize(d$score),
+    wid = d$wine.amer + 1,
+    jid = d$judge.amer + 1, 
+    fid= if_else(d$flight==&quot;red&quot;,1L,2L)
+    )
+
+m2b &lt;- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu &lt;- w[wid]+j[jid]+f[fid], 
+    w[wid]~ dnorm(0, 0.5),
+    j[wid]~ dnorm(0, 0.5),
+    f[wid]~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2b, chains=4 , cores=4
+  )
+
+precis(m2b, depth=2)</code></pre>
+<pre><code>##                mean         sd       5.5%     94.5%     n_eff     Rhat4
+## w[1]   0.0966267636 0.29498558 -0.3790303 0.5679111  952.8610 1.0027771
+## w[2]  -0.0858346645 0.29947353 -0.5696441 0.3905461  960.2548 1.0019704
+## j[1]  -0.1183499721 0.29633195 -0.6031432 0.3496110 1059.9772 1.0018204
+## j[2]   0.1154412829 0.29126457 -0.3508953 0.5882257 1074.1928 1.0029881
+## f[1]   0.0008060561 0.30871637 -0.4826726 0.5079951  784.3149 1.0026981
+## f[2]   0.0043154703 0.30890116 -0.4659775 0.5120941  771.1461 1.0033839
+## sigma  1.0016452222 0.05383488  0.9198169 1.0912787 1372.6385 0.9993503</code></pre>
+<p>To see that this model is the same as the previous, let’s compute contrasts. The contrast between American and French wines is:</p>
+<pre class="r"><code>post &lt;- extract.samples(m2b)
+diff_w &lt;- post$w[,2] - post$w[,1]
+precis( diff_w )</code></pre>
+<pre><code>##              mean        sd      5.5%      94.5%   histogram
+## diff_w -0.1824614 0.1421492 -0.416711 0.04384475 ▁▁▁▂▃▇▇▅▂▁▁</code></pre>
+<p>That’s almost exactly the same mean and standard deviation as bW in the first model. The other contrasts match as well.</p>
+<p>Something to notice about the two models is that the second one does sample less efficiently. The n_eff values are lower. This isn’t a problem, but it is a consequence of the higher correlations in the posterior, a result of the redundant parameterization. If you look at the pairs(m2b) plot, you’ll see tight correlations for each pair of index parameters of the same type. This is because really it is a difference that matters, and many combinations of two numbers can produce the same difference. But the priors keep this from ruining our inference. if you tried the same thing without priors, it would likely fall apart and return very large standard errors.</p>
+<pre class="r"><code>pairs(m2b)</code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5%202b-1.png" width="672" /></p>
+</div>
+<div id="b-inla" class="section level3">
+<h3>2.b INLA</h3>
+<p>Note that here we have used the selection argument to keep just the sampled values of the coefficients of wine.amer.no and wine.amer.yes. Note that the expression wine.amer.no = 1 means that we want to keep the first element in effect wine.amer.no. Note that in this case there is only a single value associated with wine.amer.no (i.e., the coefficient) but this can be extended to other latent random effects with possibly more values.</p>
+<p>The object returned by inla.posterior.sample() is a list of length 100, where each element contains the samples of the different effects in the model in a name list.</p>
+<p>Finally, function inla.posterior.sample.eval() is used to compute the product of the two coefficients. The output is a matrix with 1 row and 100 columns so that summary statistics can be computed from the posterior as usual:</p>
+<pre class="r"><code>d.i2b &lt;- d %&gt;% 
+  mutate(S = standardize(d$score),
+   wine.amer.no= na_if(if_else(wine.amer==0, 1, 0), 0), 
+         wine.amer.yes= na_if(wine.amer, 0), 
+         judge.amer.no= na_if(if_else(judge.amer==0, 1, 0), 0), 
+         judge.amer.yes= na_if(judge.amer, 0), 
+         f.red= na_if(if_else(flight==&quot;red&quot;, 1, 0), 0), 
+   f.white= na_if(if_else(flight==&quot;white&quot;, 1, 0), 0)
+         ) 
+
+
+m2b.i&lt;- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer.yes + f.red + f.white, data= d.i2b,
+                        control.fixed = list(
+        mean= 0, 
+        prec= 0.5),
+        control.compute = list(
+          dic=TRUE, waic= TRUE, config=TRUE)
+)
+
+summary(m2b.i )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; 
+##    judge.amer.yes + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic 
+##    = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
+## Time used:
+##     Pre = 1.59, Running = 0.213, Post = 0.279, Total = 2.08 
+## Fixed effects:
+##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
+## wine.amer.yes  -0.094 0.820     -1.703   -0.094      1.515 -0.094   0
+## judge.amer.no  -0.122 0.821     -1.733   -0.122      1.488 -0.122   0
+## judge.amer.yes  0.126 0.820     -1.484    0.126      1.734  0.126   0
+## f.red           0.000 0.820     -1.611    0.000      1.609  0.000   0
+## f.white         0.004 0.820     -1.607    0.004      1.613  0.004   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+## 
+## Expected number of effective parameters(stdev): 3.98(0.002)
+## Number of equivalent replicates : 45.20 
+## 
+## Deviance Information Criterion (DIC) ...............: 515.53
+## Deviance Information Criterion (DIC, saturated) ....: 188.15
+## Effective number of parameters .....................: 5.07
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 515.40
+## Effective number of parameters .................: 4.81
+## 
+## Marginal log-Likelihood:  -274.88 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>## Pull out summaries from the model object
+m2b.i.sum &lt;- summary(m2b.i)
+ 
+m2b.i.samp &lt;- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
+
+m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
+   m2b.i.samp)</code></pre>
+<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function &#39;inla.posterior.sample.eval()&#39; is
+## experimental.</code></pre>
+<pre class="r"><code>summary(as.vector(m2b.i.contrast))</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.5123 -0.2953 -0.2100 -0.1937 -0.0987  0.1594</code></pre>
+</div>
+</div>
+</div>
+<div id="section-2" class="section level1">
+<h1>3.</h1>
+<p><strong>Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead. What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?</strong></p>
+<p>Again I’ll show both the indicator approach and the index variable approach.</p>
+<div id="a-indicator-variables-1" class="section level2">
+<h2>3.a indicator variables</h2>
+<div id="a-rethinking-1" class="section level3">
+<h3>3.a rethinking</h3>
+<p>For the indicator approach, we can use the same predictor variables as before, it’s the model that’s different. I used the same priors as before for the main effects. I used tighter priors for the interactions. Why? Because interactions represent sub-categories of data, and if we keep slicing up the sample, differences can’t keep getting bigger. Again, the most important thing is not to use flat priors like Nor- mal(0,10) that produce impossible outcomes.</p>
+<pre class="r"><code>library(rethinking)
+data(Wines2012)
+d &lt;- Wines2012
+
+dat_list2 &lt;- list(
+    S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == &quot;red&quot;, 1, 0))
+
+m3a &lt;- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu &lt;- a + bW*W + bJ*J + bR*R + 
+      bWJ*W*J + bWR*W*R + bJR*J*R, 
+    a ~ dnorm(0, 0.2), 
+   c(bW,bJ,bR) ~ dnorm(0,0.5),
+    c(bWJ,bWR,bJR) ~ dnorm(0,0.25),
+  sigma ~ dexp(1)
+    ), data=dat_list2, chains=4 , cores=4)
+
+precis(m3a)</code></pre>
+<pre><code>##              mean         sd        5.5%     94.5%     n_eff     Rhat4
+## a     -0.05001514 0.13053594 -0.25735302 0.1583739  907.1065 0.9996431
+## bR     0.08722749 0.18435834 -0.21952709 0.3821642  939.8246 0.9994441
+## bJ     0.21311842 0.17777370 -0.06826854 0.5018780 1241.5379 1.0011227
+## bW    -0.07010677 0.17309924 -0.34546478 0.2055894  977.1175 1.0029427
+## bJR    0.04492822 0.18317460 -0.24884781 0.3320738 1219.4018 1.0011258
+## bWR   -0.22580763 0.18009988 -0.50579686 0.0696629 1196.6973 1.0000129
+## bWJ   -0.03285475 0.17892221 -0.31443471 0.2560875 1280.9285 1.0025097
+## sigma  0.99449691 0.05197665  0.91540590 1.0808165 1854.8918 1.0006698</code></pre>
+<p>Reading the parameters this way is not easy. But right away you might notice that bW is now close to zero and overlaps it a lot on both sides. NJ wines are no longer on average worse. So the interactions did something. Glancing at the interaction parameters, you can see that only one of them has much mass away from zero, bWR, the interaction between NJ wines and red flight, so red NJ wines. To get the predicted scores for red and white wines from both NJ and France, for both types of judges, we can use link:</p>
+<pre class="r"><code>pred_dat &lt;- data.frame(
+    W = rep( 0:1 , times=4 ),
+    J = rep( 0:1 , each=4 ),
+    R = rep( c(0,0,1,1) , times=2 )
+)
+mu &lt;- link( m3a )
+
+row_labels &lt;- paste( ifelse(pred_dat$W==1,&quot;A&quot;,&quot;F&quot;) ,
+                 ifelse(pred_dat$J==1,&quot;A&quot;,&quot;F&quot;) ,
+                 ifelse(pred_dat$R==1,&quot;R&quot;,&quot;W&quot;) , sep=&quot;&quot; )
+
+plot( precis( list(mu=mu) , 2 ) , labels=row_labels )</code></pre>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5%203.a%20plot-1.png" width="672" /></p>
+</div>
+<div id="a-inla-1" class="section level3">
+<h3>3.a INLA</h3>
+<pre class="r"><code>d.i3a &lt;- d %&gt;% 
+  mutate(S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == &quot;red&quot;, 1, 0))
+
+m3a.i &lt;- inla(S~W+J+R+ W*J + W*R + J*R, data= d.i3a, 
+              
+              control.fixed = list(
+        mean= 0, 
+        prec= list(R=0.5, W=0.5, J= 0.5, WJ = 0.25, WR=0.25, JR= 0.25), 
+        mean.intercept= 0, 
+        prec.intercept= 0.2
+), 
+control.compute = list(waic= TRUE))
+
+summary(m3a.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute 
+##    = list(waic = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = list(R = 0.5, W = 0.5, J = 
+##    0.5, WJ = 0.25, WR = 0.25, &quot;, &quot; JR = 0.25), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
+## Time used:
+##     Pre = 1.59, Running = 0.217, Post = 0.253, Total = 2.06 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.210 0.220     -0.642   -0.210      0.221 -0.211   0
+## W            0.153 0.265     -0.368    0.153      0.674  0.153   0
+## J            0.285 0.271     -0.249    0.285      0.818  0.285   0
+## R            0.310 0.279     -0.239    0.310      0.858  0.310   0
+## W:J         -0.107 0.299     -0.695   -0.107      0.480 -0.108   0
+## W:R         -0.576 0.298     -1.161   -0.576      0.009 -0.576   0
+## J:R          0.050 0.294     -0.528    0.050      0.627  0.049   0
+## 
+## Model hyperparameters:
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.03 0.109      0.823     1.02       1.25 1.01
+## 
+## Expected number of effective parameters(stdev): 6.88(0.013)
+## Number of equivalent replicates : 26.16 
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 517.23
+## Effective number of parameters .................: 7.55
+## 
+## Marginal log-Likelihood:  -286.15 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>#m3a.i.predicted.scores &lt;- </code></pre>
+<p>Overthinking: How link works. The function link is not really very sophisticated. All it is doing is using the formula you provided when you fit the model to compute the value of the linear model. It does this for each sample from the posterior distribution, for each case in the data. You could accomplish the same thing for any model, fit by any means, by performing these steps yourself. This is how it’d look for m4.3.</p>
+<pre class="r"><code>post &lt;- extract.samples(m4.3)
+mu.link &lt;- function(weight) post$a + post$b*( weight - xbar ) weight.seq &lt;- seq( from=25 , to=70 , by=1 )
+mu &lt;- sapply( weight.seq , mu.link )
+mu.mean &lt;- apply( mu , 2 , mean )
+mu.CI &lt;- apply( mu , 2 , PI , prob=0.89 )</code></pre>
+<p>And the values in mu.mean and mu.CI should be very similar (allowing for simulation variance) to what you got the automated way, using link. Knowing this manual method is useful both for (1) understanding and (2) sheer power. What- ever the model you find yourself with, this approach can be used to generate posterior predictions for any component of it. Automated tools like link save effort, but they are never as flexible as the code you can write yourself.</p>
+<pre class="r"><code>dat_list2b &lt;- list(
+    S = standardize(d$score),
+    wid = d$wine.amer + 1,
+    jid = d$judge.amer + 1, 
+    fid= if_else(d$flight==&quot;red&quot;,1L,2L)
+    )
+
+# define an array
+# in STAN
+ mcode &lt;- &quot;
+data{
+    vector[180] S;
+
+
+m2b &lt;- ulam(
+  alist(
+    S ~ dnorm(mu, sigma),
+    mu &lt;- w[wid]+j[jid]+f[fid], 
+    w[wid]~ dnorm(0, 0.5),
+    j[wid]~ dnorm(0, 0.5),
+    f[wid]~ dnorm(0, 0.5),
+  sigma ~ dexp(1)
+    ), data=dat_list2b, chains=4 , cores=4
+  )
+   int fid[180];
+    int jid[180];
+    int wid[180];
+}
+parameters{
+    real w[2,2,2];
+    real&lt;lower=0&gt; sigma;
+}
+model{
+    vector[180] mu;
+    sigma ~ exponential( 1 );
+    for ( i in 1:2 )
+        for ( j in 1:2 )
+            for ( k in 1:2 )
+                w[i,j,k] ~ normal( 0 , 0.5 );
+    for ( i in 1:180 ) {
+        mu[i] = w[wid[i], jid[i], fid[i]];
+    }
+    S ~ normal( mu , sigma );
+}
+&quot;
+
+
+#in ulam 
+
+m3b &lt;- ulam(
+    alist(
+        S ~ dnorm( mu , sigma ),
+        mu &lt;- w[wid,jid,fid],
+        real[&#39;2,2,2&#39;]:w ~ normal(0,0.5),
+        sigma ~ dexp(1)
+    ), data=dat_list2b , chains=4 , cores=4 )
+precis(m3b, depth=3)</code></pre>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

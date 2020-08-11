@@ -1,20 +1,14 @@
 ---
-title: "INLArethinking_HW3"
-author: "Ania Kawiecki"
-date: "7/30/2020"
-output:
-  pdf_document: default
-  html_document: default
+title: "Statistical Rethinking 2nd edition Homework 3 in INLA"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
 
-Statistical rethinking homework solutions link: https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework
+[Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
-INLA book: https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html
+[Bayesian inference with INLA by Virgilio Gómez-Rubio](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
 
 ```{r libraries, message= FALSE}
 library(tidyverse)
@@ -42,11 +36,15 @@ plot(hw3dag)
 
 ```
 
-## 1. Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.
+## 1. 
+**Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.**
 
 
-SOL: Because there are no back-door paths from area to weight,we only need to include area. No other variables are needed.
+### 1. rethinking
+Because there are no back-door paths from area to weight,we only need to include area. No other variables are needed.
 Territory size seems to have no total causal influence on weight, at least not in this sample.
+
+
 ```{r hw3 1 rethinking}
 
 data(foxes)
@@ -69,7 +67,10 @@ m1 <- quap(
 precis(m1)
 
 ```
-### default priors
+
+### 1. INLA
+
+**default priors**
 
 By default, the intercept has a Gaussian prior with mean and precision equal to zero. Coefficients of the fixed effects also have a Gaussian prior by default with zero mean and precision equal to  
 0.001. The prior on the precision of the error term is, by default, a Gamma distribution with parameters 1 and 0.00005 (shape and rate, respectively) ( so this is different from the statistical rethinking book's prior on the variance which is exp(1))
@@ -83,21 +84,27 @@ summary(m1.inla)
 
 ```
 
+The precision is the inverse of the variance. If we want to set the sd to 0.5, we have to set the precision to 1/(0.5^2)
+
 ```{r hw3 1 INLA custom priors}
 
 m1.inla.prior <- inla(W~A, data= f, control.fixed = list(
         mean= 0, 
-        prec= 0.5, 
+        prec= 1/(0.5^2), # sd = 0.5 --> precision =1/variance --> 1/(sd^2)
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ))
 
 summary(m1.inla.prior)
 ```
 
-## 2. Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?
+## 2. 
 
-SOL: To infer the causal influence of avg food on weight,we need to close any back-door paths. There are no back-door paths in the DAG. So again, just use a model with a single predictor. If you include groupsize, to block the indirect path, then you won’t get the total causal influence of food. You’ll just get the direct influence. But I asked for the effect of adding food, and that would mean through all forward paths.
+**Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?**
+
+### 2.rethinking
+
+To infer the causal influence of avg food on weight,we need to close any back-door paths. There are no back-door paths in the DAG. So again, just use a model with a single predictor. If you include groupsize, to block the indirect path, then you won’t get the total causal influence of food. You’ll just get the direct influence. But I asked for the effect of adding food, and that would mean through all forward paths.
 
 Again nothing. Adding food does not change weight. This shouldn’t surprise you, if the DAG is correct, because area is upstream of avgfood.
 
@@ -119,6 +126,11 @@ precis(m2)
 
 ```
 
+
+### 2.INLA 
+
+**INLA default priors**
+
 ```{r hw3 2 INLA default priors}
 
 #using default priors
@@ -128,6 +140,8 @@ summary(m2.inla)
 
 ```
 
+
+**INLA custom priors**
 ```{r hw3 2 INLA custom priors}
 #using custom priors
 
@@ -135,17 +149,21 @@ m2.prec.prior <-
     
 m2.inla.prior <- inla(W~F, data= f, control.fixed = list(
         mean= 0, 
-        prec= 0.5, 
+        prec= 1/(0.5^2), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ))
 summary(m2.inla.prior)
 
 ```
 
-## 3.  Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?
+## 3.  
 
-SOL: The variable groupsize does have a back-door path, passing through avgfood. So to infer the causal influence of groupsize, we need to close that path. This implies a model with both groupsize and avgfood as predictors.
+**Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?**
+
+
+### 3. rethinking
+The variable groupsize does have a back-door path, passing through avgfood. So to infer the causal influence of groupsize, we need to close that path. This implies a model with both groupsize and avgfood as predictors.
 
 It looks like group size is negatively associated with weight, controlling for food. Similarly, food is positively associated with weight, controlling for group size. So the causal influence of group size is to reduce weight—less food for each fox. And the direct causal influence of food is positive, of course. But the total causal influence of food is still nothing, since it causes larger groups. This is a masking effect, like in the milk energy example. But the causal explanation here is that more foxes move into a territory until the food available to each is no better than the food in a neighboring territory. Every territory ends up equally good/bad on average. This is known in be- havioral ecology as an ideal free distribution.
 
@@ -170,7 +188,9 @@ precis(m3)
 
 ```
 
+### 3. INLA
 
+**INLA default priors**
 ```{r hw3 3 INLA default priors}
 
 #using default priors
@@ -180,8 +200,8 @@ summary(m3.inla)
 
 ```
 
+**INLA custom priors**
 
-	
 Prior mean for all fixed effects except the intercept. Alternatively, a named list with specific means where name=default applies to unmatched names. For example control.fixed=list(mean=list(a=1, b=2, default=0)) assign 'mean=1' to fixed effect 'a' , 'mean=2' to effect 'b' and 'mean=0' to all others. (default 0.0)
 
 ```{r hw3 3 INLA  priors}
@@ -189,9 +209,9 @@ Prior mean for all fixed effects except the intercept. Alternatively, a named li
 #using custom priors
 m3.inla.prior <- inla(W~F+G, data= f, control.fixed = list(
         mean= list(F=0, G=0), 
-        prec= list(F=0.5, G=0.5), 
+        prec= list(F=1/(0.5^2), G=1/(0.5^2)), 
         mean.intercept= 0, 
-        prec.intercept= 0.2
+        prec.intercept= 1/(0.2^2)
 ))
 summary(m3.inla.prior)
 
