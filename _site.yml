@@ -1,6 +1,4 @@
 name: "Statistical Rethinking homeworks in INLA"
-output_dir: '.'
-output: html_document
 navbar:
   title: "Home"
   left:

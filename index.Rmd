@@ -2,7 +2,5 @@
 title: "Statistical Rethinking homeworks reworked in R-INLA"
 author: "Anna B. Kawiecki"
 date: "8/10/2020"
-output: html_document
-  fig_width: 1
 ---
 

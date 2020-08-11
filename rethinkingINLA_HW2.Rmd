@@ -1,8 +1,7 @@
 ---
-title: "rethinkingINLA_HW2"
+title: "Statistical Rethinking Homework 2 in INLA"
 author: "Ania Kawiecki"
 date: "8/4/2020"
-output: html_document
 ---
 
 ```{r setup, include=FALSE}
