@@ -300,8 +300,8 @@ $(document).ready(function () {
 </div>
 
 
-<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Statistical rethinking homework solutions</a></p>
-<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">INLA gitbook</a></p>
+<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Homework Solutions of Statistical Rethinking by Richard McElreath</a></p>
+<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">Bayesian inference with INLA by Virgilio Gómez-Rubio</a></p>
 <pre class="r"><code>library(tidyverse)
 library(rethinking)
 library(dagitty)
@@ -423,7 +423,7 @@ summary(m1.i )</code></pre>
 ##    w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; 
 ##    waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 3.17, Running = 0.333, Post = 0.472, Total = 3.98 
+##     Pre = 3.29, Running = 0.285, Post = 0.487, Total = 4.06 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -569,7 +569,7 @@ summary(m2a.i)</code></pre>
 ##    control.fixed = list(mean = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 
 ##    0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.37, Running = 0.2, Post = 0.207, Total = 1.77 
+##     Pre = 1.38, Running = 0.208, Post = 0.195, Total = 1.78 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -691,7 +691,7 @@ summary(m2b.i )</code></pre>
 ##    + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = 
 ##    TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.46, Running = 0.215, Post = 0.255, Total = 1.93 
+##     Pre = 1.63, Running = 0.212, Post = 0.258, Total = 2.1 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -727,8 +727,8 @@ m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - w
    m2b.i.samp)
 
 summary(as.vector(m2b.i.contrast))</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## -0.4990 -0.2855 -0.2248 -0.2088 -0.1342  0.1658</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.57640 -0.26914 -0.17459 -0.16931 -0.07742  0.12288</code></pre>
 </div>
 </div>
 </div>
@@ -812,7 +812,7 @@ summary(m3a.i)</code></pre>
 ##    list(waic = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = list(R = 0.5, W = 0.5, J = 0.5, 
 ##    WJ = 0.25, WR = 0.25, &quot;, &quot; JR = 0.25), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.51, Running = 0.208, Post = 0.249, Total = 1.97 
+##     Pre = 1.74, Running = 0.226, Post = 0.249, Total = 2.22 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.210 0.220     -0.642   -0.210      0.221 -0.211   0

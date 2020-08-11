@@ -1,11 +1,6 @@
 name: "Statistical Rethinking homeworks in INLA"
 navbar:
   title: "Home"
-  output:
-  html_document:
-    toc: true
-    toc_float: true
-    theme: flatly
   left:
   - text: "Homework 2"
     href: rethinkingINLA_HW2.html
