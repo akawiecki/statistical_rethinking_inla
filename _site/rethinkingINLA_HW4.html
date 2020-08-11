@@ -9,17 +9,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Ania Kawiecki" />
 
 
-<title>INLArethinking_HW4</title>
+<title>Statistical Rethinking 2nd edition Homework 4 in INLA</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -103,33 +105,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 60px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .dropdown-submenu {
   position: relative;
@@ -249,6 +251,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -256,6 +321,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -293,9 +368,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">INLArethinking_HW4</h1>
-<h4 class="author">Ania Kawiecki</h4>
-<h4 class="date">8/3/2020</h4>
+<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 4 in INLA</h1>
 
 </div>
 
@@ -459,7 +532,7 @@ summary(m6.9.inla.prior )</code></pre>
 ##    control.compute = list(dic = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = 
 ##    list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
 ## Time used:
-##     Pre = 1.16, Running = 0.467, Post = 0.218, Total = 1.85 
+##     Pre = 1.56, Running = 0.521, Post = 0.248, Total = 2.33 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -516,10 +589,10 @@ summary(m6.10.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = 
-##    TRUE), control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, 
-##    prec.intercept = 1))&quot;) 
+##    TRUE), control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept 
+##    = 1))&quot;) 
 ## Time used:
-##     Pre = 1.15, Running = 0.478, Post = 0.212, Total = 1.84 
+##     Pre = 1.21, Running = 0.473, Post = 0.219, Total = 1.9 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
@@ -699,6 +772,8 @@ m1.i$waic$waic</code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -731,6 +806,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

@@ -4,7 +4,6 @@ navbar:
   output:
   html_document:
     toc: true
-    toc_depth: 2
     toc_float: true
     theme: flatly
   left:
@@ -14,3 +13,4 @@ navbar:
     href: rethinkingINLA_HW3.html
   - text: "Homework 4"
     href: rethinkingINLA_HW4.html
+    

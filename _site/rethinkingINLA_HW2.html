@@ -15,10 +15,13 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -102,33 +105,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 60px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .dropdown-submenu {
   position: relative;
@@ -248,6 +251,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -255,6 +321,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -831,33 +907,33 @@ summary(m2.i)</code></pre>
 ##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = 
 ##    list(theta = list(prior = \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, 
 ##    control.compute = list(config = TRUE), &quot;, &quot; control.predictor = list(compute = TRUE), 
-##    control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 178, 
-##    prec.intercept = 1/(20^2)))&quot; ) 
+##    control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 178, prec.intercept 
+##    = 1/(20^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.35, Running = 3.69, Post = 0.636, Total = 5.68 
+##     Pre = 1.41, Running = 1.53, Post = 0.329, Total = 3.26 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant    mode kld
-## (Intercept) 136.873 0.221    136.439  136.873    137.306 136.873   0
+## (Intercept) 136.875 0.221     136.44  136.875    137.308 136.875   0
 ## 
 ## Random effects:
 ##   Name     Model
 ##     log_w Constrained linear
 ## 
 ## Model hyperparameters:
-##                                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for the Gaussian observations  0.032 0.002      0.029    0.032      0.036  0.031
-## Beta for log_w                          43.646 0.303     43.182   43.601     44.342 43.435
+##                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations  0.032 0.003      0.029    0.032      0.038  0.03
+## Beta for log_w                          46.856 0.550     45.610   46.934     47.706 47.24
 ## 
 ## Expected number of effective parameters(stdev): 1.00(0.00)
 ## Number of equivalent replicates : 543.99 
 ## 
-## Marginal log-Likelihood:  -1738.05 
+## Marginal log-Likelihood:  -1701.66 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.i)</code></pre>
-<pre><code>##                                       mean        sd    q0.025      q0.5    q0.975      mode
-## SD for the Gaussian observations  5.604959 0.1443060  5.304288  5.613049  5.867342  5.646666
-## Beta for log_w                   43.645930 0.3034055 43.182368 43.600424 44.336411 43.419670</code></pre>
+<pre><code>##                                       mean        sd    q0.025      q0.5   q0.975     mode
+## SD for the Gaussian observations  5.572813 0.2104474  5.103148  5.600013  5.90239  5.72164
+## Beta for log_w                   46.856323 0.5497904 45.612953 46.932628 47.70006 47.26748</code></pre>
 <pre class="r"><code>#indices of the weights with missing values of height 
 d2.i.na &lt;- which(is.na(d2.i$height))
 
@@ -877,6 +953,8 @@ m2.i.plot </code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -909,6 +987,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

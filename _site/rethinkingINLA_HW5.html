@@ -419,11 +419,11 @@ summary(m1.i )</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 + 
-##    w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 
-##    + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; 
+##    w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + 
+##    w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; 
 ##    waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 3.44, Running = 0.33, Post = 0.462, Total = 4.24 
+##     Pre = 3.17, Running = 0.333, Post = 0.472, Total = 3.98 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -569,7 +569,7 @@ summary(m2a.i)</code></pre>
 ##    control.fixed = list(mean = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 
 ##    0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.37, Running = 0.196, Post = 0.197, Total = 1.76 
+##     Pre = 1.37, Running = 0.2, Post = 0.207, Total = 1.77 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -687,11 +687,11 @@ m2b.i&lt;- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer
 summary(m2b.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; 
-##    judge.amer.yes + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic 
-##    = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; judge.amer.yes 
+##    + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = 
+##    TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.59, Running = 0.213, Post = 0.279, Total = 2.08 
+##     Pre = 1.46, Running = 0.215, Post = 0.255, Total = 1.93 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -724,12 +724,11 @@ m2b.i.sum &lt;- summary(m2b.i)
 m2b.i.samp &lt;- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
 
 m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
-   m2b.i.samp)</code></pre>
-<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function &#39;inla.posterior.sample.eval()&#39; is
-## experimental.</code></pre>
-<pre class="r"><code>summary(as.vector(m2b.i.contrast))</code></pre>
+   m2b.i.samp)
+
+summary(as.vector(m2b.i.contrast))</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## -0.5123 -0.2953 -0.2100 -0.1937 -0.0987  0.1594</code></pre>
+## -0.4990 -0.2855 -0.2248 -0.2088 -0.1342  0.1658</code></pre>
 </div>
 </div>
 </div>
@@ -809,11 +808,11 @@ control.compute = list(waic= TRUE))
 summary(m3a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute 
-##    = list(waic = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = list(R = 0.5, W = 0.5, J = 
-##    0.5, WJ = 0.25, WR = 0.25, &quot;, &quot; JR = 0.25), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute = 
+##    list(waic = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = list(R = 0.5, W = 0.5, J = 0.5, 
+##    WJ = 0.25, WR = 0.25, &quot;, &quot; JR = 0.25), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.59, Running = 0.217, Post = 0.253, Total = 2.06 
+##     Pre = 1.51, Running = 0.208, Post = 0.249, Total = 1.97 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.210 0.220     -0.642   -0.210      0.221 -0.211   0

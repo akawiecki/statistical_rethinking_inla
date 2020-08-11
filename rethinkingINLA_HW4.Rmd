@@ -1,7 +1,10 @@
 ---
-title: "INLArethinking_HW4"
-author: "Ania Kawiecki"
-date: "8/3/2020"
+title: "Statistical Rethinking 2nd edition Homework 4 in INLA"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
 ---
 
 ```{r setup, include=FALSE}
