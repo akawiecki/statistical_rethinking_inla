@@ -2,10 +2,7 @@ name: "Statistical Rethinking homeworks in INLA"
 output_dir: '.'
 output:
   html_document:
-    theme: flatly
-    css: style.css
-    lib_dir: site_libs
-    self_contained: no
+    theme: yeti
 navbar:
   title: Home
   left:
