@@ -7,3 +7,18 @@ output:
     fig_width: 1
 ---
 
+This is an attempt to re-code the homework from the 2nd edition of Statistical Rethinking by Richard McElreath using R-INLA. 
+
+Solutions to the homework exercises using the rethinking package are provided for comparison.
+
+**Resources used for this work:** 
+
+[Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
+
+[Bayesian inference with INLA by Virgilio Gómez-Rubio](https://becarioprecario.bitbucket.io/inla-gitbook/)
+
+* INLA linear regression examples: 
+
+https://people.bath.ac.uk/jjf23/brinla/chicago.html
+
+https://haakonbakka.bitbucket.io/btopic112.html

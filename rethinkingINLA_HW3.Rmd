@@ -10,10 +10,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
-
-[Bayesian inference with INLA by Virgilio Gómez-Rubio](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
-
 ```{r libraries, message= FALSE}
 library(tidyverse)
 library(rethinking)
