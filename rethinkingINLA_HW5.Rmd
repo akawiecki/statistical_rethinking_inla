@@ -1,13 +1,9 @@
 ---
-title: "rethinkingINLA_HW5"
+title: "Statistical Rethinking 2nd edition Homework 5 in INLA"
 author: "Ania Kawiecki"
 date: "8/3/2020"
 output: html_document
 ---
-
-[Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
-
-[Bayesian inference with INLA by Virgilio Gómez-Rubio](https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html)
 
 ```{r libraries, message= FALSE}
 library(tidyverse)
@@ -434,8 +430,12 @@ m3a.i.postmean.plot
 ```
 
 
+## 3.b index variables
+Now let’s do an index version. The way to think of this is to make unique parameters for each combination. If we consider all the interactions—including a three-way interaction between nation, judge and flight—there would be 8 combinations and so 8 parameters to estimate. Let’s go ahead and do that, so we can simultaneously consider the 3-way interaction.
 
+### 3.b rethinking
 
+There are several ways to go about coding this. I’m going to use a trick and make an array of parameters. An array is like a matrix, but can have more than 2 dimensions. If we make a 2-by-2-by-2 array of parameters, then there will be 8 parameters total and we can access each by just using these index variables.
 
 ```{r hw5.3b , eval=FALSE}
 dat_list2b <- list(
@@ -445,45 +445,12 @@ dat_list2b <- list(
     fid= if_else(d$flight=="red",1L,2L)
     )
 
-# define an array
-# in STAN
- mcode <- "
-data{
-    vector[180] S;
+d3 <- data.frame(dat_list2b)
+```
 
-
-m2b <- ulam(
-  alist(
-    S ~ dnorm(mu, sigma),
-    mu <- w[wid]+j[jid]+f[fid], 
-    w[wid]~ dnorm(0, 0.5),
-    j[wid]~ dnorm(0, 0.5),
-    f[wid]~ dnorm(0, 0.5),
-  sigma ~ dexp(1)
-    ), data=dat_list2b, chains=4 , cores=4
-  )
-   int fid[180];
-    int jid[180];
-    int wid[180];
-}
-parameters{
-    real w[2,2,2];
-    real<lower=0> sigma;
-}
-model{
-    vector[180] mu;
-    sigma ~ exponential( 1 );
-    for ( i in 1:2 )
-        for ( j in 1:2 )
-            for ( k in 1:2 )
-                w[i,j,k] ~ normal( 0 , 0.5 );
-    for ( i in 1:180 ) {
-        mu[i] = w[wid[i], jid[i], fid[i]];
-    }
-    S ~ normal( mu , sigma );
-}
-"
-
+** in rethinking::ulam** 
+The '2,2,2' literal is not very elegant, so I’m likely to improve this is a later version. Either way, the result is displayed on the next page (for sake of line breaks).
+```{r in ulam}
 
 #in ulam 
 
@@ -494,9 +461,62 @@ m3b <- ulam(
         real['2,2,2']:w ~ normal(0,0.5),
         sigma ~ dexp(1)
     ), data=dat_list2b , chains=4 , cores=4 )
+
 precis(m3b, depth=3)
 
-
-
+row_labels = c("FFR","FFW","FAR","FAW","AFR","AFW","AAR","AAW" ) 
+plot( precis( m3b , 3 , pars="w" ) , labels=row_labels )
 
 ```
+
+### 3.b INLA 
+
+Note that here we have used the selection argument to keep just the sampled values of the coefficients of wine.amer.no and wine.amer.yes. Note that the expression wine.amer.no = 1 means that we want to keep the first element in effect wine.amer.no. Note that in this case there is only a single value associated with wine.amer.no (i.e., the coefficient) but this can be extended to other latent random effects with possibly more values.
+
+The object returned by inla.posterior.sample() is a list of length 100, where each element contains the samples of the different effects in the model in a name list.
+
+Finally, function inla.posterior.sample.eval() is used to compute the product of the two coefficients. The output is a matrix with 1 row and 100 columns so that summary statistics can be computed from the posterior as usual:
+
+```{r hw5.3b INLA}
+
+d.i2b <- d %>% 
+  mutate(S = standardize(d$score),
+   wine.amer.no= na_if(if_else(wine.amer==0, 1, 0), 0), 
+         wine.amer.yes= na_if(wine.amer, 0), 
+         judge.amer.no= na_if(if_else(judge.amer==0, 1, 0), 0), 
+         judge.amer.yes= na_if(judge.amer, 0), 
+         f.red= na_if(if_else(flight=="red", 1, 0), 0), 
+   f.white= na_if(if_else(flight=="white", 1, 0), 0)
+         ) 
+
+#names of predicted scores
+row_labels <- paste( ifelse(pred_dat$W==1,"Aw","Fw") ,
+ifelse(pred_dat$J==1,"Aj","Fj") ,
+ifelse(pred_dat$R==1,"Red","Wh") , sep="" )
+
+d3b.i <- d %>% 
+  mutate(S = standardize(d$score),
+         
+
+
+m2b.i<- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer.yes + f.red + f.white, data= d.i2b,
+                        control.fixed = list(
+        mean= 0, 
+        prec= 0.5),
+        control.compute = list(
+          dic=TRUE, waic= TRUE, config=TRUE)
+)
+
+summary(m2b.i )
+
+## Pull out summaries from the model object
+m2b.i.sum <- summary(m2b.i)
+ 
+m2b.i.samp <- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
+
+m2b.i.contrast <- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
+   m2b.i.samp)
+
+summary(as.vector(m2b.i.contrast))
+
+
