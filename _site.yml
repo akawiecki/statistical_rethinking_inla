@@ -1,12 +1,12 @@
 name: "Statistical Rethinking homeworks in INLA"
 output_dir: '.'
 output:
-  html_document:
+html_document:
     theme: yeti
 navbar:
-  title: Home
+  title: "Home"
   left:
-  - text: Home
+  - text: "Home"
     href: index.html
-  - text: Homework 2
+  - text: "Homework 2"
     href: rethinkingINLA_HW2.html
