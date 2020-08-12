@@ -356,6 +356,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW4.html">Homework 4</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW5.html">Homework 5</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -373,15 +376,12 @@ div.tocify {
 </div>
 
 
-<p><a href="https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework">Homework Solutions of Statistical Rethinking by Richard McElreath</a></p>
-<p><a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-intro.html">Bayesian inference with INLA by Virgilio Gómez-Rubio</a></p>
 <pre class="r"><code>library(tidyverse)
 library(rethinking)
 library(dagitty)
 library(INLA)
 library(knitr)
-library(stringr)
-library(&quot;rmarkdown&quot;)</code></pre>
+library(stringr)</code></pre>
 <div id="intro-to-linear-prediction-from-statistical-rethinking-2nd-edition-chapter-4." class="section level1">
 <h1>Intro to linear prediction from Statistical Rethinking 2nd edition Chapter 4.</h1>
 <p><strong>Finding the posterior distribution</strong></p>
@@ -771,13 +771,6 @@ print(hw2.1)</code></pre>
 </div>
 <div id="inla" class="section level2">
 <h2>1. inla</h2>
-<p>inla linear regression examples:</p>
-<p><a href="https://people.bath.ac.uk/jjf23/brinla/chicago.html" class="uri">https://people.bath.ac.uk/jjf23/brinla/chicago.html</a></p>
-<p><a href="https://haakonbakka.bitbucket.io/btopic112.html" class="uri">https://haakonbakka.bitbucket.io/btopic112.html</a></p>
-<pre class="r"><code>library(devtools)
-install_github(&quot;julianfaraway/brinla&quot;)</code></pre>
-<pre><code>## Skipping install of &#39;brinla&#39; from a github remote, the SHA1 (95181536) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
 <pre class="r"><code>library(brinla)
 library(&quot;inlabru&quot;)</code></pre>
 <p>The default mean and precision for fixed effects are:</p>
@@ -905,15 +898,15 @@ summary(m2.i)</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = 
-##    list(theta = list(prior = \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, 
-##    control.compute = list(config = TRUE), &quot;, &quot; control.predictor = list(compute = TRUE), 
-##    control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 178, prec.intercept 
-##    = 1/(20^2)))&quot; ) 
+##    list(theta = list(prior = \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = 
+##    TRUE, control.compute = list(config = TRUE), &quot;, &quot; control.predictor = list(compute = 
+##    TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 178, 
+##    prec.intercept = 1/(20^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.39, Running = 1.64, Post = 0.406, Total = 3.44 
+##     Pre = 1.59, Running = 8.92, Post = 1.75, Total = 12.3 
 ## Fixed effects:
-##                mean   sd 0.025quant 0.5quant 0.975quant    mode kld
-## (Intercept) 136.873 0.22     136.44  136.873    137.305 136.873   0
+##                mean    sd 0.025quant 0.5quant 0.975quant    mode kld
+## (Intercept) 136.873 0.221    136.439  136.873    137.306 136.873   0
 ## 
 ## Random effects:
 ##   Name     Model
@@ -921,19 +914,19 @@ summary(m2.i)</code></pre>
 ## 
 ## Model hyperparameters:
 ##                                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for the Gaussian observations  0.034 0.002      0.031    0.034      0.039  0.033
-## Beta for log_w                          47.320 0.382     46.519   47.341     48.021 47.420
+## Precision for the Gaussian observations  0.019 0.001      0.017    0.019      0.021  0.018
+## Beta for log_w                          38.943 0.569     38.119   38.847     40.277 38.480
 ## 
 ## Expected number of effective parameters(stdev): 1.00(0.00)
 ## Number of equivalent replicates : 543.99 
 ## 
-## Marginal log-Likelihood:  -1698.48 
+## Marginal log-Likelihood:  -1876.01 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.i)</code></pre>
-<pre><code>##                                       mean        sd    q0.025      q0.5    q0.975      mode
-## SD for the Gaussian observations  5.422215 0.1498937  5.098642  5.435991  5.678245  5.495854
-## Beta for log_w                   47.319653 0.3821989 46.522436 47.340088 48.013730 47.424472</code></pre>
+<pre><code>##                                       mean        sd    q0.025      q0.5   q0.975     mode
+## SD for the Gaussian observations  7.308269 0.2097979  6.829608  7.340101  7.61790  7.48945
+## Beta for log_w                   38.943357 0.5687572 38.129274 38.844439 40.26721 38.43846</code></pre>
 <pre class="r"><code>#indices of the weights with missing values of height 
 d2.i.na &lt;- which(is.na(d2.i$height))
 
