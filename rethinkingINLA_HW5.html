@@ -409,7 +409,7 @@ str(dat_list)</code></pre>
 <p>diagnostics that precis provides: The n_eff values are all actually higher than the number of samples (2000), and all the Rhat values at exactly 1. Looks good so far. These diagnostics can mislead, however, so let’s look at the trace plots too: These pass the hairy-caterpillar-ocular-inspection-test: all the chains mix in the same region, and they move quickly through it, not getting stuck anyplace. Now let’s plot these parameters so they are easier to interpret:</p>
 <div id="rethinking" class="section level3">
 <h3>1. rethinking</h3>
-<pre class="r"><code>#How do you interpret the variation among individual judges and indi- vidual wines?
+<pre class="r"><code>#How do you interpret the variation among individual judges and individual wines?
 #Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?
 
 m1 &lt;- ulam(
@@ -497,7 +497,7 @@ summary(m1.i )</code></pre>
 ##    w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = 
 ##    TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 2.94, Running = 0.275, Post = 0.456, Total = 3.67 
+##     Pre = 3.49, Running = 0.48, Post = 0.526, Total = 4.5 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -643,7 +643,7 @@ summary(m2a.i)</code></pre>
 ##    control.fixed = list(mean = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), 
 ##    mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.64, Running = 0.261, Post = 0.239, Total = 2.14 
+##     Pre = 1.4, Running = 0.238, Post = 0.183, Total = 1.82 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -765,7 +765,7 @@ summary(m2b.i )</code></pre>
 ##    judge.amer.yes + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; 
 ##    waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.34, Running = 0.204, Post = 0.274, Total = 1.82 
+##     Pre = 1.47, Running = 0.216, Post = 0.272, Total = 1.96 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -798,12 +798,11 @@ m2b.i.sum &lt;- summary(m2b.i)
 m2b.i.samp &lt;- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
 
 m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
-   m2b.i.samp)</code></pre>
-<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function &#39;inla.posterior.sample.eval()&#39; is
-## experimental.</code></pre>
-<pre class="r"><code>summary(as.vector(m2b.i.contrast))</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## -0.6022 -0.3047 -0.2002 -0.2029 -0.0912  0.1834</code></pre>
+   m2b.i.samp)
+
+summary(as.vector(m2b.i.contrast))</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.60469 -0.26759 -0.17395 -0.17399 -0.09092  0.26872</code></pre>
 </div>
 </div>
 <div id="section-2" class="section level2">
@@ -910,7 +909,7 @@ summary(m3a.i)</code></pre>
 ##    J = 1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), mean.intercept = 
 ##    0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.42, Running = 0.222, Post = 0.256, Total = 1.9 
+##     Pre = 2.25, Running = 0.352, Post = 0.405, Total = 3.01 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.073 0.138     -0.344   -0.073      0.199 -0.073   0
@@ -1043,7 +1042,7 @@ summary(m3b.i)</code></pre>
 ##    AwAjRed + AwAjWh, data = d3b.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, 
 ##    config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 1.59, Running = 0.206, Post = 0.278, Total = 2.07 
+##     Pre = 1.82, Running = 0.226, Post = 0.286, Total = 2.33 
 ## Fixed effects:
 ##           mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## FwFjRed  0.204 0.221     -0.231    0.204      0.637  0.204   0
@@ -1088,7 +1087,9 @@ m3b.i.postmean.plot &lt;-  ggplot(data= m3b.i.postmean, aes(y=label, x=mean, lab
 m3b.i.postmean.plot</code></pre>
 <p><img src="rethinkingINLA_HW5_files/figure-html/hw5.3b%20INLA-1.png" width="672" /> The previous predictions, for comparison:</p>
 <pre class="r"><code>m3a.i.postmean.plot</code></pre>
-<p><img src="rethinkingINLA_HW5_files/figure-html/inla%203a-1.png" width="672" /> The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters: μi =α+βW +βJ +βR +βWJ +βWR +βJR This of course limits means that these parameters have to account for the AAR wine. In the full interaction mode, an AAR wine gets its own parameter, as does every other combination. None of the parameters get polluted by averaging over different combinations. Of course, there isn’t a lot of evidence that prediction is improved much by allowing this extra parameter. The differences are small, overall. These wines are all quite good. But it is worth understand how the full interaction model gains additional flexibility. This additional flexibility typically requires some addition regularization. When we arrive at multilevel models later, you’ll see how we can handle regularization more naturally inside of a model.</p>
+<p><img src="rethinkingINLA_HW5_files/figure-html/inla%203a-1.png" width="672" /> The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:</p>
+<p>μi =α+βW +βJ +βR +βWJ +βWR +βJR</p>
+<p>This of course limits means that these parameters have to account for the AAR wine. In the full interaction mode, an AAR wine gets its own parameter, as does every other combination. None of the parameters get polluted by averaging over different combinations. Of course, there isn’t a lot of evidence that prediction is improved much by allowing this extra parameter. The differences are small, overall. These wines are all quite good. But it is worth understand how the full interaction model gains additional flexibility. This additional flexibility typically requires some addition regularization. When we arrive at multilevel models later, you’ll see how we can handle regularization more naturally inside of a model.</p>
 </div>
 </div>
 </div>

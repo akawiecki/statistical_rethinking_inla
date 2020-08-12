@@ -46,7 +46,7 @@ Now let’s plot these parameters so they are easier to interpret:
 ### 1. rethinking
 ```{r hw5.1 re}
 
-#How do you interpret the variation among individual judges and indi- vidual wines?
+#How do you interpret the variation among individual judges and individual wines?
 #Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?
 
 m1 <- ulam(
@@ -541,5 +541,7 @@ The previous predictions, for comparison:
 m3a.i.postmean.plot
 ```
 The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:
+
 μi =α+βW +βJ +βR +βWJ +βWR +βJR
+
 This of course limits means that these parameters have to account for the AAR wine. In the full interaction mode, an AAR wine gets its own parameter, as does every other combination. None of the parameters get polluted by averaging over different combinations. Of course, there isn’t a lot of evidence that prediction is improved much by allowing this extra parameter. The differences are small, overall. These wines are all quite good. But it is worth understand how the full interaction model gains additional flexibility. This additional flexibility typically requires some addition regularization. When we arrive at multilevel models later, you’ll see how we can handle regularization more naturally inside of a model.
