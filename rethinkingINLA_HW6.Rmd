@@ -1,0 +1,212 @@
+---
+title: "Statistical Rethinking 2nd edition Homework 6 in INLA"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r libraries, message= FALSE}
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)
+```
+
+# Intro to link functions from Statistical Rethinking 2nd edition Chapter.10
+
+## Logit link: 
+
+The logit link maps a parameter that is defined as a probability mass, and therefore constrained to lie between zero and one, onto a linear model that can take on any real value. This link is extremely common when working with binomial GLMs. In the context of a model definition, it looks like this:
+
+yi ∼ Binomial(n, pi) 
+
+logit(pi) = α + βxi
+
+And the logit function itself is defined as the log-odds: 
+
+logit(pi) = log (pi/(1 − pi))
+
+The “odds” of an event are just the probability it happens divided by the probability it does not happen. So really all that is being stated here is:
+
+log (pi/(1 − pi)) = α + βxi
+
+So to figure out the definition of pi implied here, just do a little algebra and solve the above equation for pi:
+
+pi = exp(α + βxi) / 1 + exp(α + βxi)
+
+The above function is usually called the **logistic**. In this context, it is also commonly called the **inverse-logit**, because it inverts the logit transform.
+
+No longer does a unit change in a predictor variable produce a constant change in the mean of the outcome variable. Instead, a unit change in xi may produce a larger or smaller change in the probability pi, depending upon how far from zero the log-odds are. For example, in Figure 10.7, when x = 0 the linear model has a value of zero on the log-odds scale. A half- unit increase in x results in about a 0.25 increase in probability. But each addition half-unit will produce less and less of an increase in probability, until any increase is vanishingly small.
+
+The key lesson for now is just that no regression coefficient, such as β, from a GLM ever produces a constant change on the outcome scale. Recall that we defined interaction (Chapter 7) as a situation in which the effect of a predictor depends upon the value of another predictor. Well now every predictor essentially interacts with itself, because the impact of a change in a predictor depends upon the value of the predictor before the change. More generally, every predic- tor variable effectively interacts with every other predictor variable, whether you explicitly model them as interactions or not. This fact makes the visualization of counter-factual pre- dictions even more important for understanding what the model is telling you.
+
+## Log link: 
+
+This link function maps a parameter that is defined over only positive real values onto a linear model. For example, suppose we want to model the standard deviation σ of a Gaussian distribution so it is a function of a predictor variable x. The parameter σ must be positive, because a standard deviation cannot be negative nor can it be zero. The model might look like:
+
+yi ∼ Normal(μ, σi) 
+
+log(σi) = α + βxi
+
+In this model, the mean μ is constant, but the standard deviation scales with the value xi. A log link is both conventional and useful in this situation. It prevents σ from taking on a negative value.
+What the log link effectively assumes is that the parameter’s value is the exponentiation of the linear model. Solving log(σi) = α + βxi for σi yields the inverse link:
+
+σi = exp(α + βxi)
+
+Using a log link for a linear model (left) implies an exponential scaling of the outcome with the predictor variable (right). Another way to think of this relationship is to remember that logarithms are magnitudes. An increase of one unit on the log scale means an increase of an order of magnitude on the un- transformed scale. And this fact is reflected in the widening intervals between the horizontal lines in the right-hand plot of Figure 10.8.
+While using a log link does solve the problem of constraining the parameter to be posi- tive, it may also create a problem when the model is asked to predict well outside the range of data used to fit it. Exponential relationships grow, well, exponentially. Just like a lin- ear model cannot be linear forever, an exponential model cannot be exponential forever. Human height cannot be linearly related to weight forever, because very heavy people stop getting taller and start getting wider. Likewise, the property damage caused by a hurricane may be approximately exponentially related to wind speed for smaller storms. But for very big storms, damage may be capped by the fact that everything gets destroyed.
+
+# HOMEWORK 6
+
+## 1. 
+**The data in data(NWOGrants) are outcomes for scientific funding applications for the Netherlands Organization for Scientific Research (NWO) from 2010–2012 (see van der Lee and Ellemers doi:10.1073/pnas.1510159112). These data have a very similar structure to the UCBAdmit data discussed in Chapter 11.
+I want you to consider a similar question: What are the total and indirect causal effects of gender on grant awards? Consider a mediation path (a pipe) through discipline. Draw the corresponding DAG and then use one or more binomial GLMs to answer the question.
+What is your causal interpretation? If NWO’s goal is to equalize rates of funding between the genders, what type of intervention would be most effective?**
+
+The implied DAG is:
+
+```{r 6.1 dag}
+
+hw6.1dag <- dagitty("dag{
+                  A <- G
+                  A<- D
+                  D <- G
+                  }")
+plot(hw6.1dag)
+```
+
+G is gender, D is discipline, and A is award. The direct causal effect of gender is the path G → A. The total effect includes that path and the indirect path G → D → A. 
+
+## 1.a total causal effect of gender
+
+We can estimate the total causal influence (assuming this DAG is correct) with a model that conditions only on gender. I’ll use a N(-1,1) prior for the intercepts, because we know from domain knowledge that less than half of applicants get awards.
+
+### 1.a rethinking
+
+```{r 6.1.a re}
+data(NWOGrants)
+d <- NWOGrants
+dat_list <- list(
+awards = as.integer(d$awards),
+apps = as.integer(d$applications),
+gid = ifelse( d$gender=="m" , 1L , 2L )
+)
+
+m1_total <- ulam(
+alist(
+awards ~ binomial( apps , p ), 
+logit(p) <- a[gid],
+a[gid] ~ normal(-1,1)
+), data=dat_list , chains=4 ) 
+
+precis(m1_total,2)
+```
+
+
+Gender 1 here is male and 2 is female. So males have higher rates of award, on average. How big is the difference? Let’s look at the contrast on absolute (penguin) scale:
+
+```{r 6.1.a re diff}
+post <- extract.samples(m1_total)
+diff <- inv_logit( post$a[,1] ) - inv_logit(post$a[,2]) 
+precis( list( diff=diff ) )
+```
+
+
+So a small 3% difference on average. Still, with such low funding rates (in some disciplines), 3% is a big advantage.
+
+### 1.a inla
+
+```{r 6.1.a inla }
+data(NWOGrants)
+d <- NWOGrants
+
+d1.i <- d %>% 
+  mutate(g_val= 1, 
+         d= paste("d", as.integer(discipline), sep = "."),
+         d_val= 1) %>% 
+  spread(gender, g_val) %>% 
+  spread(d, d_val)
+
+# number of trials is d1.i$applications
+
+m1a.i <- inla(awards ~ -1 + m + f , data= d1.i, family = "binomial", 
+              Ntrials = applications, 
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean= -1, 
+        prec= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m1a.i)
+
+#computed in the outcome scale 
+m1a.i$summary.fitted.values
+
+
+#contrast between male and female
+
+n.samples = 1000
+
+#pi = exp(α + βxi) / 1 + exp(α + βxi)
+
+inverse_logit <- function (x){
+    p <- 1/(1 + exp(-x))
+    p <- ifelse(x == Inf, 1, p)
+    p }
+
+m1a.i.samples = inla.posterior.sample(n.samples, result = m1a.i)
+
+m1a.i.contrast1 <- inla.posterior.sample.eval(function(...) {
+    inverse_logit(m) - 
+    inverse_logit(f)
+},
+   m1a.i.samples)
+summary(as.vector(m1a.i.contrast1))
+
+```
+
+## 1.b direct effect of gender 
+
+Now for the direct influence of gender, we condition on discipline as well:
+
+### 1.b rethinking
+```{r 6.1.b re}
+dat_list$disc <- as.integer(d$discipline) 
+
+m1_direct <- ulam(
+alist(
+awards ~ binomial( apps , p ), 
+logit(p) <- a[gid] + d[disc], 
+a[gid] ~ normal(-1,1),
+d[disc] ~ normal(0,1)
+),
+data=dat_list , chains=4 , cores=4 , iter=3000 ) 
+
+precis(m1_direct,2)
+```
+
+Those chains didn’t sample very efficiently. This likely because the model is over- parameterized—it has more parameters than absolutely necessary. This doesn’t break it. It just makes the sampling less efficient. Anyway, now we can compute the gender difference again. On the relative scale:
+
+```{r 6.1.b re diff}
+post <- extract.samples(m1_direct) 
+diff_a <- post$a[,1] - post$a[,2] 
+precis( list( diff_a=diff_a ) )
+
+```
+Still an advantage for the males, but reduced and overlapping zero a bit. To see this difference on the absolute scale, we need to account for the base rates in each discipline as well. If you look at the postcheck(m1_direct) display, you’ll see the predictive difference is very small. There are also several disciplines that reverse the advantage. If there is a direct influence of gender here, it is small, much smaller than before we accounted for discipline. Why? Because again the disciplines have different funding rates and women apply more to the disciplines with lower funding rates. But it would be hasty, I think, to conclude there are no other influences. There are after all lots of unmeasured confounds...
+
+## 2. 
+** Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, schol- ars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant.
+Add these influences to your DAG from Problem 1. What happens now when you condition on discipline? Does it provide an un-confounded estimate of the direct path from gender to an award? Why or why not? Justify your answer with the back-door criterion. Hint: This is structurally a lot like the grandparents-parents- children-neighborhoods example from a previous week.
+If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you con- clude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?**
+
+## 3. 
+
+**The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.
+First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.
+Second, some species are studied much more than others. So the number of re- ported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?
+Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured asso- ciations in the two models above (and any other models you used).**
+

@@ -1,7 +1,6 @@
 ---
-title: "Statistical Rethinking homeworks reworked in R-INLA"
+title: "Statistical Rethinking homework reworked in R-INLA and the tidyverse"
 author: "Anna B. Kawiecki"
-date: "8/10/2020"
 output:
   html_document:
     fig_width: 1
@@ -12,6 +11,8 @@ This is an attempt to re-code the homework from the 2nd edition of Statistical R
 Solutions to the homework exercises using the rethinking package are provided for comparison.
 
 **Resources used for this work:** 
+
+[Statistical Rethinking: A Bayesian Course with Examples in R and Stan. Second edition](http://xcelab.net/rm/statistical-rethinking/)
 
 [Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
