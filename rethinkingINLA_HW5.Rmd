@@ -1,8 +1,9 @@
 ---
 title: "Statistical Rethinking 2nd edition Homework 5 in INLA"
-author: "Ania Kawiecki"
-date: "8/3/2020"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r libraries, message= FALSE}
@@ -478,16 +479,11 @@ The object returned by inla.posterior.sample() is a list of length 100, where ea
 Finally, function inla.posterior.sample.eval() is used to compute the product of the two coefficients. The output is a matrix with 1 row and 100 columns so that summary statistics can be computed from the posterior as usual:
 
 ```{r hw5.3b INLA}
-
-d.i2b <- d %>% 
-  mutate(S = standardize(d$score),
-   wine.amer.no= na_if(if_else(wine.amer==0, 1, 0), 0), 
-         wine.amer.yes= na_if(wine.amer, 0), 
-         judge.amer.no= na_if(if_else(judge.amer==0, 1, 0), 0), 
-         judge.amer.yes= na_if(judge.amer, 0), 
-         f.red= na_if(if_else(flight=="red", 1, 0), 0), 
-   f.white= na_if(if_else(flight=="white", 1, 0), 0)
-         ) 
+library(INLA)
+library(rethinking)
+library(tidyverse)
+data(Wines2012)
+d <- Wines2012
 
 #names of predicted scores
 row_labels <- paste( ifelse(pred_dat$W==1,"Aw","Fw") ,
@@ -496,27 +492,54 @@ ifelse(pred_dat$R==1,"Red","Wh") , sep="" )
 
 d3b.i <- d %>% 
   mutate(S = standardize(d$score),
+    W = d$wine.amer,
+    J = d$judge.amer,
+    R= if_else(d$flight == "red", 1, 0)) %>% 
+  mutate(index= paste(ifelse(W==1,"Aw","Fw") ,
+ifelse(J==1,"Aj","Fj") ,
+ifelse(R==1,"Red","Wh"), sep="" ), 
+value= 1) %>% 
+  spread(index, value)
+  
          
+labels <- paste( ifelse(d3b.i$W==1,"Aw","Fw"),
+ifelse(d3b.i$J==1,"Aj","Fj") ,
+ifelse(d3b.i$R==1,"Red","Wh") , sep="" )
 
 
-m2b.i<- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer.yes + f.red + f.white, data= d.i2b,
+m3b.i<- inla(S~ -1 + FwFjRed +FwFjWh+ FwAjRed+ FwAjWh + AwFjRed + AwFjWh +AwAjRed + AwAjWh, data= d3b.i,
                         control.fixed = list(
         mean= 0, 
-        prec= 0.5),
+        prec= 1/(0.5^2)),
         control.compute = list(
           dic=TRUE, waic= TRUE, config=TRUE)
 )
 
-summary(m2b.i )
-
-## Pull out summaries from the model object
-m2b.i.sum <- summary(m2b.i)
- 
-m2b.i.samp <- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
-
-m2b.i.contrast <- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
-   m2b.i.samp)
-
-summary(as.vector(m2b.i.contrast))
+summary(m3b.i)
 
 
+m3b.i.postmean <- m3b.i$summary.fixed %>% 
+  rownames_to_column( "label") %>% 
+  select(c("label", "mean", "sd", "0.025quant",  "0.975quant"))
+
+names(m3b.i.postmean) <- c("label", "mean", "sd", "LCI", "UCI")
+
+m3b.i.postmean.plot <-  ggplot(data= m3b.i.postmean, aes(y=label, x=mean, label=label)) +
+    geom_point(size=4, shape=19) +
+    geom_errorbarh(aes(xmin=LCI, xmax=UCI), height=.3) +
+    coord_fixed(ratio=.3) +
+    geom_vline(xintercept=0, linetype='longdash') +
+    theme_bw()
+
+m3b.i.postmean.plot
+
+
+```
+The previous predictions, for comparison:
+
+```{r inla 3a}
+m3a.i.postmean.plot
+```
+The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:
+μi =α+βW +βJ +βR +βWJ +βWR +βJR
+This of course limits means that these parameters have to account for the AAR wine. In the full interaction mode, an AAR wine gets its own parameter, as does every other combination. None of the parameters get polluted by averaging over different combinations. Of course, there isn’t a lot of evidence that prediction is improved much by allowing this extra parameter. The differences are small, overall. These wines are all quite good. But it is worth understand how the full interaction model gains additional flexibility. This additional flexibility typically requires some addition regularization. When we arrive at multilevel models later, you’ll see how we can handle regularization more naturally inside of a model.
