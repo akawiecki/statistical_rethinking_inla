@@ -367,9 +367,59 @@ summary(m2b.i)
 
 **The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.**
 
-**1. First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.**
+## 3.1
+**First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.** 
 
-**2. Second, some species are studied much more than others. So the number of re- ported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
+Now we first want a model with social learning as the outcome and brain size as a predictor. For this Poisson GLM, I’m going to use a N(0,1) prior on the intercept, since we know the counts should be small.
 
-**3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured asso- ciations in the two models above (and any other models you used).**
+### 3.1 rethinking
+
+```{r 6.3.1 re}
+
+library(rethinking)
+data(Primates301)
+d <- Primates301
+d3 <- d[ complete.cases( d$social_learning , d$brain , d$research_effort),]
+
+dat <- list(
+soc_learn = d3$social_learning,
+log_brain = standardize( log(d3$brain) ), log_effort = log(d3$research_effort)
+)
+
+m3_1 <- ulam( alist(
+soc_learn ~ poisson( lambda ), log(lambda) <- a + bb*log_brain, a ~ normal(0,1),
+bb ~ normal(0,0.5)
+), data=dat , chains=4 , cores=4 ) 
+precis( m3_1 )
+```
+
+### 3.1 INLA
+
+```{r 6.3.1 inla}
+
+library(rethinking)
+data(Primates301)
+d <- Primates301
+d3.i <- d[ complete.cases( d$social_learning , d$brain , d$research_effort),] %>% 
+  mutate(soc_learn = social_learning,
+log_brain = standardize( log(brain) ), 
+log_effort = log(research_effort))
+
+m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
+   data=d3.i,
+   control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.5^2)),
+   control.family=list(link='log'),
+   control.predictor=list(link=1, compute=TRUE),
+   control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
+
+summary(m3.1.i)
+```
+
+**2. Second, some species are studied much more than others. So the number of reported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
+
+**3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured associations in the two models above (and any other models you used).**
 
