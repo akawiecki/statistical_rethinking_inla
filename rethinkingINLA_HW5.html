@@ -359,6 +359,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW5.html">Homework 5</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW6.html">Homework 6</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -492,12 +495,13 @@ m1.i&lt;- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
 summary(m1.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 
-##    + w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + 
-##    w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, control.compute = list(dic = 
-##    TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
+##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, 
+##    &quot; j.8 + j.9 + w.1 + w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + 
+##    w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 
+##    + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = 
+##    TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 3.49, Running = 0.48, Post = 0.526, Total = 4.5 
+##     Pre = 2.89, Running = 0.271, Post = 0.477, Total = 3.63 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -531,8 +535,10 @@ summary(m1.i )</code></pre>
 ## w.20  0.409 0.377     -0.332    0.409      1.149  0.409   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.41 0.159       1.11     1.40       1.74 1.39
+##                                         mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for the Gaussian observations 1.41 0.159       1.11     1.40       1.74
+##                                         mode
+## Precision for the Gaussian observations 1.39
 ## 
 ## Expected number of effective parameters(stdev): 27.12(0.101)
 ## Number of equivalent replicates : 6.64 
@@ -639,11 +645,12 @@ control.compute = list(waic= TRUE))
 summary(m2a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = list(waic = TRUE), &quot;, &quot; 
-##    control.fixed = list(mean = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), 
-##    mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = 
+##    list(waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 
+##    0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 0, prec.intercept = 0.2))&quot; 
+##    ) 
 ## Time used:
-##     Pre = 1.4, Running = 0.238, Post = 0.183, Total = 1.82 
+##     Pre = 1.24, Running = 0.191, Post = 0.171, Total = 1.6 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -652,8 +659,10 @@ summary(m2a.i)</code></pre>
 ## R           -0.004 0.148     -0.294   -0.004      0.286 -0.004   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+##                                         mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24
+##                                         mode
+## Precision for the Gaussian observations 1.01
 ## 
 ## Expected number of effective parameters(stdev): 3.96(0.004)
 ## Number of equivalent replicates : 45.42 
@@ -761,11 +770,12 @@ m2b.i&lt;- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer
 summary(m2b.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; 
-##    judge.amer.yes + f.red + f.white, data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; 
-##    waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no 
+##    + &quot;, &quot; judge.amer.yes + f.red + f.white, data = d.i2b, control.compute = 
+##    list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = 
+##    list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.47, Running = 0.216, Post = 0.272, Total = 1.96 
+##     Pre = 1.46, Running = 0.213, Post = 0.208, Total = 1.88 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -776,8 +786,10 @@ summary(m2b.i )</code></pre>
 ## f.white         0.004 0.820     -1.607    0.004      1.613  0.004   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+##                                         mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24
+##                                         mode
+## Precision for the Gaussian observations 1.01
 ## 
 ## Expected number of effective parameters(stdev): 3.98(0.002)
 ## Number of equivalent replicates : 45.20 
@@ -801,8 +813,8 @@ m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - w
    m2b.i.samp)
 
 summary(as.vector(m2b.i.contrast))</code></pre>
-<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.60469 -0.26759 -0.17395 -0.17399 -0.09092  0.26872</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.5429 -0.2897 -0.2031 -0.2130 -0.1315  0.1929</code></pre>
 </div>
 </div>
 <div id="section-2" class="section level2">
@@ -903,13 +915,14 @@ control.predictor=list(compute=TRUE),
 summary(m3a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; 
-##    control.compute = list(config = TRUE, waic = TRUE), control.predictor = list(compute = 
-##    TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 1/(0.5^2), &quot;, &quot; W = 1/(0.5^2), 
-##    J = 1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), mean.intercept = 
-##    0, prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, 
+##    &quot;, &quot; control.compute = list(config = TRUE, waic = TRUE), 
+##    control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = list(mean 
+##    = 0, prec = list(R = 1/(0.5^2), &quot;, &quot; W = 1/(0.5^2), J = 1/(0.5^2), WJ = 
+##    1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), mean.intercept = 0, 
+##    prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 2.25, Running = 0.352, Post = 0.405, Total = 3.01 
+##     Pre = 1.45, Running = 0.212, Post = 0.245, Total = 1.9 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.073 0.138     -0.344   -0.073      0.199 -0.073   0
@@ -921,8 +934,10 @@ summary(m3a.i)</code></pre>
 ## J:R          0.142 0.271     -0.389    0.141      0.673  0.141   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.03 0.109      0.825     1.02       1.25 1.02
+##                                         mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for the Gaussian observations 1.03 0.109      0.825     1.02       1.25
+##                                         mode
+## Precision for the Gaussian observations 1.02
 ## 
 ## Expected number of effective parameters(stdev): 5.96(0.064)
 ## Number of equivalent replicates : 30.18 
@@ -1038,11 +1053,12 @@ m3b.i&lt;- inla(S~ -1 + FwFjRed +FwFjWh+ FwAjRed+ FwAjWh + AwFjRed + AwFjWh +AwA
 summary(m3b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; AwFjRed + AwFjWh + 
-##    AwAjRed + AwAjWh, data = d3b.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, 
-##    config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2)))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; 
+##    AwFjRed + AwFjWh + AwAjRed + AwAjWh, data = d3b.i, control.compute = 
+##    list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = 
+##    list(mean = 0, &quot;, &quot; prec = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 1.82, Running = 0.226, Post = 0.286, Total = 2.33 
+##     Pre = 1.49, Running = 0.202, Post = 0.231, Total = 1.93 
 ## Fixed effects:
 ##           mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## FwFjRed  0.204 0.221     -0.231    0.204      0.637  0.204   0
@@ -1055,8 +1071,10 @@ summary(m3b.i)</code></pre>
 ## AwAjWh   0.039 0.169     -0.294    0.039      0.371  0.039   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.04 0.111      0.833     1.03       1.27 1.03
+##                                         mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for the Gaussian observations 1.04 0.111      0.833     1.03       1.27
+##                                         mode
+## Precision for the Gaussian observations 1.03
 ## 
 ## Expected number of effective parameters(stdev): 6.78(0.115)
 ## Number of equivalent replicates : 26.57 
@@ -1085,9 +1103,11 @@ m3b.i.postmean.plot &lt;-  ggplot(data= m3b.i.postmean, aes(y=label, x=mean, lab
     theme_bw()
 
 m3b.i.postmean.plot</code></pre>
-<p><img src="rethinkingINLA_HW5_files/figure-html/hw5.3b%20INLA-1.png" width="672" /> The previous predictions, for comparison:</p>
+<p><img src="rethinkingINLA_HW5_files/figure-html/hw5.3b%20INLA-1.png" width="672" /></p>
+<p>The previous predictions, for comparison:</p>
 <pre class="r"><code>m3a.i.postmean.plot</code></pre>
-<p><img src="rethinkingINLA_HW5_files/figure-html/inla%203a-1.png" width="672" /> The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:</p>
+<p><img src="rethinkingINLA_HW5_files/figure-html/inla%203a-1.png" width="672" /></p>
+<p>The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:</p>
 <p>μi =α+βW +βJ +βR +βWJ +βWR +βJR</p>
 <p>This of course limits means that these parameters have to account for the AAR wine. In the full interaction mode, an AAR wine gets its own parameter, as does every other combination. None of the parameters get polluted by averaging over different combinations. Of course, there isn’t a lot of evidence that prediction is improved much by allowing this extra parameter. The differences are small, overall. These wines are all quite good. But it is worth understand how the full interaction model gains additional flexibility. This additional flexibility typically requires some addition regularization. When we arrive at multilevel models later, you’ll see how we can handle regularization more naturally inside of a model.</p>
 </div>

@@ -271,7 +271,7 @@ S is stage of career (unobserved). This DAG has the same structure as the grandp
 Here’s a simulation to demonstrate the potential issue: This code simulates 1000 applicants. There are 2 genders (G 0/1), 2 stages of career (S 0/1), and 2 disciplines (D 0/1). Discipline 1 is chosen more by gender 1 and career stage 1. So that could mean more by males and later stage of career. Then awards A have a consistent bias towards gender 1, and discipline 1 has a higher award rate, and stage 1 also a higher award rate. If we analyze these data:
 
 ### 2.a rethinking 
-```{r 6.2 sim}
+```{r 6.2a sim}
 
 set.seed(1913)
 N <- 1000
@@ -323,7 +323,7 @@ summary(m2a.i)
 **It is also possible to have no gender influence and infer it by accident.**
 Try these settings:
 ### 2.b rethinking 
-```{r 6.2 sim2}
+```{r 6.2b sim2}
 set.seed(1913)
 N <- 1000
 G <- rbern(N)
@@ -339,7 +339,7 @@ precis(m2_sim_2,2)
 Now it looks like gender 1 has a consistent advantage, but in fact there is no advan- tage in the simulation.
 
 ### 2.b INLA
-```{r 6.2 sim}
+```{r 6.2b sim inla}
 
 set.seed(1913)
 N <- 1000
@@ -480,16 +480,6 @@ postcheck(m3_2,window=50)
 Brain size bb is still positively associated, but much less. Research effort be is strongly associated. To see how these models disagree, let’s use pointwise WAIC to see which cases each predicts well.
 
 
-```{r re waic}
-waic1 <- WAIC( m3_1 , pointwise=TRUE )
-waic2 <- WAIC( m3_2 , pointwise=TRUE )
-plot( waic1 - waic2 , dat$log_effort , col=rangi2 , pch=16 ) 
-identify( waic1-waic2 , dat$log_effort , d2$genus , cex=0.8 ) abline(v=0,lty=2,lwd=0.5)
-
-```
-
-
-
 ### 3.2 INLA
 
 ```{r 6.3.2 inla}
@@ -554,4 +544,5 @@ hw6.3dag <- dagitty("dag{
                   }")
 plot(hw6.3dag)
 ```
-B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning
+B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, 
+which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning

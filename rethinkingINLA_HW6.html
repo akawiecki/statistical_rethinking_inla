@@ -359,6 +359,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW5.html">Homework 5</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW6.html">Homework 6</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -444,33 +447,11 @@ awards ~ binomial( apps , p ),
 logit(p) &lt;- a[gid],
 a[gid] ~ normal(-1,1)
 ), data=dat_list , chains=4 ) </code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1
-## 
+<pre><code>## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 1.6e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.16 seconds.
+## Chain 1: Gradient evaluation took 1.8e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.18 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -487,15 +468,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.010318 seconds (Warm-up)
-## Chain 1:                0.009842 seconds (Sampling)
-## Chain 1:                0.02016 seconds (Total)
+## Chain 1:  Elapsed Time: 0.010754 seconds (Warm-up)
+## Chain 1:                0.009185 seconds (Sampling)
+## Chain 1:                0.019939 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 5e-06 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.05 seconds.
+## Chain 2: Gradient evaluation took 1.5e-05 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -512,15 +493,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.010781 seconds (Warm-up)
-## Chain 2:                0.011986 seconds (Sampling)
-## Chain 2:                0.022767 seconds (Total)
+## Chain 2:  Elapsed Time: 0.01079 seconds (Warm-up)
+## Chain 2:                0.009998 seconds (Sampling)
+## Chain 2:                0.020788 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 6e-06 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.06 seconds.
+## Chain 3: Gradient evaluation took 9e-06 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -537,15 +518,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.009884 seconds (Warm-up)
-## Chain 3:                0.00975 seconds (Sampling)
-## Chain 3:                0.019634 seconds (Total)
+## Chain 3:  Elapsed Time: 0.009834 seconds (Warm-up)
+## Chain 3:                0.010039 seconds (Sampling)
+## Chain 3:                0.019873 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 6e-06 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.06 seconds.
+## Chain 4: Gradient evaluation took 8e-06 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -562,20 +543,20 @@ a[gid] ~ normal(-1,1)
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.010134 seconds (Warm-up)
-## Chain 4:                0.010029 seconds (Sampling)
-## Chain 4:                0.020163 seconds (Total)
+## Chain 4:  Elapsed Time: 0.011784 seconds (Warm-up)
+## Chain 4:                0.009242 seconds (Sampling)
+## Chain 4:                0.021026 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis(m1_total,2)</code></pre>
-<pre><code>##           mean         sd      5.5%     94.5%    n_eff     Rhat4
-## a[1] -1.533555 0.06341160 -1.634666 -1.432265 1389.227 1.0017324
-## a[2] -1.741056 0.08125923 -1.873641 -1.611949 1470.574 0.9996455</code></pre>
+<pre><code>##           mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a[1] -1.534215 0.06419862 -1.636220 -1.433608 1270.353 1.001674
+## a[2] -1.739403 0.08338316 -1.876282 -1.605273 1458.263 1.002103</code></pre>
 <p>Gender 1 here is male and 2 is female. So males have higher rates of award, on average. How big is the difference? Let’s look at the contrast on absolute (penguin) scale:</p>
 <pre class="r"><code>post &lt;- extract.samples(m1_total)
 diff &lt;- inv_logit( post$a[,1] ) - inv_logit(post$a[,2]) 
 precis( list( diff=diff ) )</code></pre>
-<pre><code>##            mean        sd        5.5%      94.5%  histogram
-## diff 0.02819097 0.0137448 0.006210256 0.05030241 ▁▁▂▅▇▇▃▁▁▁</code></pre>
+<pre><code>##            mean         sd        5.5%      94.5% histogram
+## diff 0.02787365 0.01386206 0.005582129 0.05019898 ▁▁▂▅▇▇▃▁▁</code></pre>
 <p>So a small 3% difference on average. Still, with such low funding rates (in some disciplines), 3% is a big advantage.</p>
 </div>
 <div id="a-inla" class="section level3">
@@ -609,7 +590,7 @@ summary(m1a.i)</code></pre>
 ##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = -1, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.53, Running = 0.13, Post = 0.161, Total = 1.82 
+##     Pre = 1.12, Running = 0.113, Post = 0.117, Total = 1.35 
 ## Fixed effects:
 ##     mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m -1.532 0.065     -1.660   -1.531     -1.407 -1.530   0
@@ -678,12 +659,10 @@ m1a.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
     inverse_logit(m) - 
     inverse_logit(f)
 },
-   m1a.i.samples)</code></pre>
-<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function
-## &#39;inla.posterior.sample.eval()&#39; is experimental.</code></pre>
-<pre class="r"><code>summary(as.vector(m1a.i.contrast1))</code></pre>
+   m1a.i.samples)
+summary(as.vector(m1a.i.contrast1))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.01704  0.01849  0.02778  0.02776  0.03685  0.06620</code></pre>
+## -0.01781  0.01824  0.02734  0.02780  0.03794  0.07189</code></pre>
 </div>
 </div>
 <div id="b-direct-effect-of-gender" class="section level2">
@@ -700,48 +679,27 @@ logit(p) &lt;- a[gid] + d[disc],
 a[gid] ~ normal(-1,1),
 d[disc] ~ normal(0,1)
 ),
-data=dat_list , chains=4 , cores=4 , iter=3000 ) </code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
-<pre class="r"><code>precis(m1_direct,2)</code></pre>
-<pre><code>##             mean        sd       5.5%       94.5%    n_eff    Rhat4
-## a[1] -1.37640627 0.2930947 -1.8544298 -0.92059033 526.3959 1.022250
-## a[2] -1.51712812 0.2994153 -1.9972960 -1.05768394 537.2252 1.021344
-## d[1]  0.36527687 0.3451853 -0.1711130  0.93107218 634.7418 1.018842
-## d[2]  0.03345556 0.3211677 -0.4731436  0.54923280 608.0561 1.018232
-## d[3] -0.19712371 0.3140759 -0.6985213  0.30972480 577.6020 1.019000
-## d[4] -0.23733383 0.3476127 -0.7809032  0.32559192 643.2966 1.015890
-## d[5] -0.29872896 0.3146379 -0.7830003  0.21636968 508.8088 1.020034
-## d[6]  0.01586217 0.3392665 -0.5143669  0.56532927 698.9365 1.017039
-## d[7]  0.32730702 0.3687497 -0.2595086  0.91728992 903.8266 1.011284
-## d[8] -0.42095010 0.3035280 -0.8915287  0.07574184 581.4162 1.019618
-## d[9] -0.16867346 0.3272697 -0.6941306  0.36454489 648.5808 1.017450</code></pre>
+data=dat_list , chains=4 , cores=4 , iter=3000 ) 
+
+precis(m1_direct,2)</code></pre>
+<pre><code>##              mean        sd       5.5%       94.5%    n_eff    Rhat4
+## a[1] -1.360704267 0.3065706 -1.8587853 -0.86263022 586.7668 1.003143
+## a[2] -1.501544865 0.3128893 -2.0028811 -0.99711205 611.3386 1.002769
+## d[1]  0.342608770 0.3559347 -0.2262837  0.90898810 768.4841 1.002029
+## d[2]  0.020314490 0.3303936 -0.5055576  0.55236030 691.4877 1.003546
+## d[3] -0.213318382 0.3260893 -0.7367684  0.31247347 705.1018 1.002649
+## d[4] -0.252491812 0.3552531 -0.8202482  0.31097573 820.0334 1.001536
+## d[5] -0.315338973 0.3256869 -0.8271814  0.21124122 644.0385 1.002919
+## d[6]  0.001451087 0.3458133 -0.5616136  0.55976413 812.7953 1.001885
+## d[7]  0.312613425 0.3807893 -0.2961343  0.92932199 977.8970 1.000619
+## d[8] -0.435891933 0.3182044 -0.9471851  0.09015475 592.5001 1.002909
+## d[9] -0.190623298 0.3346838 -0.7231056  0.35118272 708.5796 1.002368</code></pre>
 <p>Those chains didn’t sample very efficiently. This likely because the model is over- parameterized—it has more parameters than absolutely necessary. This doesn’t break it. It just makes the sampling less efficient. Anyway, now we can compute the gender difference again. On the relative scale:</p>
 <pre class="r"><code>post &lt;- extract.samples(m1_direct) 
 diff_a &lt;- post$a[,1] - post$a[,2] 
 precis( list( diff_a=diff_a ) )</code></pre>
 <pre><code>##             mean        sd       5.5%     94.5% histogram
-## diff_a 0.1407218 0.1080754 -0.0311229 0.3150632 ▁▁▂▅▇▅▁▁▁</code></pre>
+## diff_a 0.1408406 0.1083074 -0.0312027 0.3181228 ▁▁▂▅▇▅▁▁▁</code></pre>
 <p>Still an advantage for the males, but reduced and overlapping zero a bit. To see this difference on the absolute scale, we need to account for the base rates in each discipline as well. If you look at the postcheck(m1_direct) display, you’ll see the predictive difference is very small. There are also several disciplines that reverse the advantage. If there is a direct influence of gender here, it is small, much smaller than before we accounted for discipline. Why? Because again the disciplines have different funding rates and women apply more to the disciplines with lower funding rates. But it would be hasty, I think, to conclude there are no other influences. There are after all lots of unmeasured confounds…</p>
 <pre class="r"><code>postcheck(m1_direct)</code></pre>
 <p><img src="rethinkingINLA_HW6_files/figure-html/6.1.b%20postcheck-1.png" width="672" /></p>
@@ -773,15 +731,15 @@ m1b.i &lt;- inla(awards ~ -1 + m + f + d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9, data
 summary(m1b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; 
-##    d.5 + d.6 + d.7 + d.8 + d.9, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; 
+##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; d.5 
+##    + d.6 + d.7 + d.8 + d.9, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; 
 ##    Ntrials = applications, control.compute = list(config = T), &quot;, &quot; 
 ##    control.predictor = list(link = 1, compute = T), control.family = 
 ##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = list(m = -1, f = -1, d.1 = 0, &quot;, &quot; d.2 = 0, d.3 = 0, d.4 = 
 ##    0, d.5 = 0, d.6 = 0, d.7 = 0, &quot;, &quot; d.8 = 0, d.9), prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.97, Running = 0.15, Post = 0.228, Total = 2.35 
+##     Pre = 1.79, Running = 0.141, Post = 0.225, Total = 2.16 
 ## Fixed effects:
 ##       mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m   -1.348 0.308     -1.953   -1.348     -0.745 -1.348   0
@@ -815,21 +773,376 @@ m1b.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
    m1b.i.samples)
 summary(as.vector(m1b.i.contrast1))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.23234  0.07141  0.14467  0.14028  0.21743  0.45625</code></pre>
+## -0.18425  0.07761  0.14523  0.14810  0.21830  0.50381</code></pre>
 </div>
 </div>
 <div id="section-1" class="section level2">
 <h2>2.</h2>
-<p>** Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, scholars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant. Add these influences to your DAG from Problem 1. What happens now when you condition on discipline? Does it provide an un-confounded estimate of the direct path from gender to an award? Why or why not? Justify your answer with the back-door criterion. Hint: This is structurally a lot like the grandparents-parents- children-neighborhoods example from a previous week. If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you con- clude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?**</p>
+<p><strong>Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, scholars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant. Add these influences to your DAG from Problem 1. What happens now when you condition on discipline? Does it provide an un-confounded estimate of the direct path from gender to an award? Why or why not? Justify your answer with the back-door criterion. Hint: This is structurally a lot like the grandparents-parents- children-neighborhoods example from a previous week. If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you conclude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?</strong></p>
+<pre class="r"><code>hw6.2dag &lt;- dagitty(&quot;dag{
+                  A &lt;- G
+                  A&lt;- D
+                  D &lt;- G
+                  D &lt;- S
+                  A &lt;- S
+                  }&quot;)
+plot(hw6.2dag)</code></pre>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/6.2%20dag-1.png" width="672" /></p>
+<p>S is stage of career (unobserved). This DAG has the same structure as the grandparents-parents-children-neighborhoods example from earlier in the course. When we condition on discipline D it opens a backdoor path through S to A.</p>
+<p><strong>It is not possible here to get an unconfounded estimate of gender on awards.</strong></p>
+<p>Here’s a simulation to demonstrate the potential issue: This code simulates 1000 applicants. There are 2 genders (G 0/1), 2 stages of career (S 0/1), and 2 disciplines (D 0/1). Discipline 1 is chosen more by gender 1 and career stage 1. So that could mean more by males and later stage of career. Then awards A have a consistent bias towards gender 1, and discipline 1 has a higher award rate, and stage 1 also a higher award rate. If we analyze these data:</p>
+<div id="a-rethinking-1" class="section level3">
+<h3>2.a rethinking</h3>
+<pre class="r"><code>set.seed(1913)
+N &lt;- 1000
+G &lt;- rbern(N)
+S &lt;- rbern(N)
+D &lt;- rbern( N , p=inv_logit( G + S ) )
+A &lt;- rbern( N , p=inv_logit( 0.25*G + D + 2*S - 2 ) ) 
+dat_sim &lt;- list( G=G , D=D , A=A )
+
+m2_sim &lt;- ulam( alist(
+A ~ bernoulli(p), 
+logit(p) &lt;- a + d*D + g*G, 
+c(a,d,g) ~ normal(0,1)
+), data=dat_sim , chains=4 , cores=4 ) 
+
+precis(m2_sim)</code></pre>
+<pre><code>##         mean        sd       5.5%      94.5%    n_eff    Rhat4
+## g  0.3396301 0.1301321  0.1257989  0.5480141 826.6339 1.003988
+## d  1.2227536 0.1588039  0.9707247  1.4763537 731.3829 1.004335
+## a -1.0780455 0.1421107 -1.3062138 -0.8520954 729.2983 1.004582</code></pre>
+<p>The parameter g is the advantage of gender 1. It is smaller than the true advantage and the estimate straddles zero quite a lot, even with 1000 applicants.</p>
+</div>
+<div id="a-inla-1" class="section level3">
+<h3>2.a INLA</h3>
+<p>Reference: <a href="https://rpubs.com/corey_sparks/431920" class="uri">https://rpubs.com/corey_sparks/431920</a></p>
+<pre class="r"><code>set.seed(1913)
+N &lt;- 1000
+G &lt;- rbern(N)
+S &lt;- rbern(N)
+D &lt;- rbern( N , p=inv_logit( G + S ) )
+A &lt;- rbern( N , p=inv_logit( 0.25*G + D + 2*S - 2 ) ) 
+dat_sim &lt;- list( G=G , D=D , A=A )
+
+m2a.i &lt;- inla(A ~ D+G, data= dat_sim, family = &quot;binomial&quot;, 
+              Ntrials = 1, #Ntrials=1 for bernoulli, logistic regression
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m2a.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim, &quot;, &quot; 
+##    Ntrials = 1, control.compute = list(config = T), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
+##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 1.21, Running = 0.245, Post = 0.186, Total = 1.64 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -1.073 0.143     -1.358   -1.072     -0.798 -1.069   0
+## D            1.216 0.155      0.914    1.214      1.523  1.212   0
+## G            0.345 0.132      0.085    0.345      0.604  0.345   0
+## 
+## Expected number of effective parameters(stdev): 2.94(0.00)
+## Number of equivalent replicates : 340.19 
+## 
+## Marginal log-Likelihood:  -657.91 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<p><strong>It is also possible to have no gender influence and infer it by accident.</strong> Try these settings: ### 2.b rethinking</p>
+<pre class="r"><code>set.seed(1913)
+N &lt;- 1000
+G &lt;- rbern(N)
+S &lt;- rbern(N)
+D &lt;- rbern( N , p=inv_logit( 2*G - S ) )
+A &lt;- rbern( N , p=inv_logit( 0*G + D + S - 2 ) ) 
+dat_sim2 &lt;- list( G=G , D=D , A=A )
+m2_sim_2 &lt;- ulam( m2_sim , data=dat_sim2 , chains=4 , cores=4 ) 
+
+precis(m2_sim_2,2)</code></pre>
+<pre><code>##         mean        sd         5.5%      94.5%     n_eff     Rhat4
+## g  0.2500214 0.1468850  0.007746612  0.4856631  931.1880 0.9999269
+## d  0.2719462 0.1543328  0.023773557  0.5164615  962.4796 0.9987312
+## a -1.1241445 0.1196152 -1.313980496 -0.9409501 1070.1102 1.0003390</code></pre>
+<p>Now it looks like gender 1 has a consistent advantage, but in fact there is no advan- tage in the simulation.</p>
+</div>
+<div id="b-inla-1" class="section level3">
+<h3>2.b INLA</h3>
+<pre class="r"><code>set.seed(1913)
+N &lt;- 1000
+G &lt;- rbern(N)
+S &lt;- rbern(N)
+D &lt;- rbern( N , p=inv_logit( 2*G - S ) )
+A &lt;- rbern( N , p=inv_logit( 0*G + D + S - 2 ) ) 
+dat_sim2 &lt;- list( G=G , D=D , A=A )
+
+m2b.i &lt;- inla(A ~ D+G, data= dat_sim2, family = &quot;binomial&quot;, 
+              Ntrials = 1, #Ntrials=1 for bernoulli, logistic regression
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m2b.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim2, &quot;, 
+##    &quot; Ntrials = 1, control.compute = list(config = T), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
+##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 1.2, Running = 0.251, Post = 0.19, Total = 1.64 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -1.120 0.119     -1.358   -1.119     -0.889 -1.116   0
+## D            0.269 0.156     -0.036    0.269      0.576  0.268   0
+## G            0.251 0.151     -0.044    0.251      0.548  0.251   0
+## 
+## Expected number of effective parameters(stdev): 2.94(0.00)
+## Number of equivalent replicates : 340.13 
+## 
+## Marginal log-Likelihood:  -616.04 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+</div>
 </div>
 <div id="section-2" class="section level2">
 <h2>3.</h2>
-<p>**The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.</p>
-<ol style="list-style-type: decimal">
-<li><p>First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.</p></li>
-<li><p>Second, some species are studied much more than others. So the number of re- ported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?</p></li>
-<li><p>Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured asso- ciations in the two models above (and any other models you used).**</p></li>
-</ol>
+<p><strong>The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.</strong></p>
+</div>
+<div id="section-3" class="section level2">
+<h2>3.1</h2>
+<p><strong>First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.</strong></p>
+<p>Now we first want a model with social learning as the outcome and brain size as a predictor. For this Poisson GLM, I’m going to use a N(0,1) prior on the intercept, since we know the counts should be small.</p>
+<div id="a-rethinking-2" class="section level3">
+<h3>3.1.a rethinking</h3>
+<pre class="r"><code>library(rethinking)
+data(Primates301)
+d &lt;- Primates301
+d3 &lt;- d[ complete.cases( d$social_learning , d$brain , d$research_effort),]
+
+dat &lt;- list(
+soc_learn = d3$social_learning,
+log_brain = standardize( log(d3$brain) ), log_effort = log(d3$research_effort)
+)
+
+m3_1 &lt;- ulam( alist(
+soc_learn ~ poisson( lambda ), log(lambda) &lt;- a + bb*log_brain, a ~ normal(0,1),
+bb ~ normal(0,0.5)
+), data=dat , chains=4 , cores=4 ) </code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre class="r"><code>precis( m3_1 )</code></pre>
+<pre><code>##        mean        sd      5.5%      94.5%    n_eff    Rhat4
+## a  -1.18137 0.1197506 -1.375183 -0.9890849 362.9303 1.001218
+## bb  2.76474 0.0762447  2.644873  2.8864750 380.3295 1.001877</code></pre>
+<pre class="r"><code>postcheck(m3_1,window=50)</code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/6.3.1%20re-1.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.1%20re-2.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.1%20re-3.png" width="672" /></p>
+</div>
+<div id="a-inla-2" class="section level3">
+<h3>3.1.a INLA</h3>
+<pre class="r"><code>library(rethinking)
+data(Primates301)
+d &lt;- Primates301
+d3.i &lt;- d[ complete.cases( d$social_learning , d$brain , d$research_effort),] %&gt;% 
+  mutate(soc_learn = social_learning,
+log_brain = standardize( log(brain) ), 
+log_effort = log(research_effort), 
+case= row_number())
+
+m3.1a.i &lt;- inla( soc_learn~ log_brain, family=&#39;poisson&#39;,
+   data=d3.i,
+   control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.5^2)),
+   control.family=list(link=&#39;log&#39;),
+   control.predictor=list(link=1, compute=TRUE),
+   control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
+
+summary(m3.1a.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = soc_learn ~ log_brain, family = \&quot;poisson\&quot;, data = 
+##    d3.i, &quot;, &quot; control.compute = list(dic = TRUE, cpo = TRUE, waic = TRUE), 
+##    &quot;, &quot; control.predictor = list(link = 1, compute = TRUE), control.family 
+##    = list(link = \&quot;log\&quot;), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
+##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.5^2)))&quot;) 
+## Time used:
+##     Pre = 1.25, Running = 0.153, Post = 0.14, Total = 1.54 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -1.190 0.116     -1.421   -1.188     -0.966 -1.185   0
+## log_brain    2.778 0.074      2.634    2.778      2.924  2.777   0
+## 
+## Expected number of effective parameters(stdev): 1.94(0.00)
+## Number of equivalent replicates : 77.20 
+## 
+## Deviance Information Criterion (DIC) ...............: 1237.72
+## Deviance Information Criterion (DIC, saturated) ....: 1123.01
+## Effective number of parameters .....................: 1.94
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 1405.31
+## Effective number of parameters .................: 138.86
+## 
+## Marginal log-Likelihood:  -628.73 
+## CPO and PIT are computed
+## 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<p>inla postcheck</p>
+<pre class="r"><code>m3.1.i.postcheck &lt;- bind_cols(d3.i[, c(&quot;case&quot;, &quot;soc_learn&quot;)], m3.1.i$summary.fitted.values)
+
+names(m3.1.i.postcheck) &lt;- c(&quot;case&quot;, &quot;soc_learn&quot;, &quot;mean&quot;, &quot;sd&quot;, &quot;LCI&quot;, &quot;MCI&quot;, 
+&quot;UCI&quot;, &quot;mode&quot;)
+
+m3.1.i.postcheck.plot &lt;- ggplot() +
+  geom_point(data= m3.1.i.postcheck, aes(x= case, y= soc_learn), color= &quot;blue&quot;, alpha= 0.5)+
+  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= &quot;red&quot;, alpha= 0.3, size= 0.15)+
+  theme_bw()
+  
+
+m3.1.i.postcheck.plot </code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/inla%206.3.1%20postcheck-1.png" width="672" /></p>
+<p>The blue points are the raw data, recall. These are not great posterior predictions. Clearly other factors are in play.</p>
+<p>Let’s try the research effort variable now.</p>
+</div>
+</div>
+<div id="section-4" class="section level2">
+<h2>3.2</h2>
+<p><strong>Second, some species are studied much more than others. So the number of reported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predictor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?</strong></p>
+<div id="rethinking" class="section level3">
+<h3>3.2 rethinking</h3>
+<pre class="r"><code>library(rethinking)
+data(Primates301)
+d &lt;- Primates301
+d3 &lt;- d[ complete.cases( d$social_learning , d$brain , d$research_effort),]
+
+dat &lt;- list(
+soc_learn = d3$social_learning,
+log_brain = standardize( log(d3$brain) ), log_effort = log(d3$research_effort)
+)
+
+m3_2 &lt;- ulam( alist(
+soc_learn ~ poisson( lambda ),
+log(lambda) &lt;- a + be*log_effort + bb*log_brain, 
+a ~ normal(0,1),
+c(bb,be) ~ normal(0,0.5)
+), data=dat , chains=4 , cores=4 ) </code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre class="r"><code>precis( m3_2 )</code></pre>
+<pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
+## a  -5.9171107 0.31274462 -6.4346177 -5.4068060 408.0794 1.015240
+## be  1.5192787 0.06683390  1.4129849  1.6267579 371.0824 1.016968
+## bb  0.4766562 0.08401341  0.3443683  0.6125972 477.1532 1.009209</code></pre>
+<pre class="r"><code>precis( m3_2)</code></pre>
+<pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
+## a  -5.9171107 0.31274462 -6.4346177 -5.4068060 408.0794 1.015240
+## be  1.5192787 0.06683390  1.4129849  1.6267579 371.0824 1.016968
+## bb  0.4766562 0.08401341  0.3443683  0.6125972 477.1532 1.009209</code></pre>
+<pre class="r"><code>postcheck(m3_2,window=50)</code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-1.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-2.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-3.png" width="672" /></p>
+<p>Brain size bb is still positively associated, but much less. Research effort be is strongly associated. To see how these models disagree, let’s use pointwise WAIC to see which cases each predicts well.</p>
+</div>
+<div id="inla" class="section level3">
+<h3>3.2 INLA</h3>
+<pre class="r"><code>library(rethinking)
+data(Primates301)
+d &lt;- Primates301
+d3.i &lt;- d[ complete.cases( d$social_learning , d$brain , d$research_effort),] %&gt;% 
+  mutate(soc_learn = social_learning,
+log_brain = standardize( log(brain) ), 
+log_effort = log(research_effort), 
+case= row_number())
+
+m3.2.i &lt;- inla( soc_learn~ log_brain + log_effort, family=&#39;poisson&#39;,
+   data=d3.i,
+   control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.5^2)),
+   control.family=list(link=&#39;log&#39;),
+   control.predictor=list(link=1, compute=TRUE),
+   control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
+
+summary(m3.2.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = soc_learn ~ log_brain + log_effort, family = 
+##    \&quot;poisson\&quot;, &quot;, &quot; data = d3.i, control.compute = list(dic = TRUE, cpo = 
+##    TRUE, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, compute = 
+##    TRUE), &quot;, &quot; control.family = list(link = \&quot;log\&quot;), control.fixed = 
+##    list(mean = 0, &quot;, &quot; prec = 1, mean.intercept = 0, prec.intercept = 
+##    1/(0.5^2)))&quot; ) 
+## Time used:
+##     Pre = 1.3, Running = 0.161, Post = 0.181, Total = 1.65 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -4.833 0.239     -5.310   -4.831     -4.372 -4.825   0
+## log_brain    0.614 0.080      0.461    0.613      0.774  0.611   0
+## log_effort   1.300 0.054      1.195    1.300      1.406  1.299   0
+## 
+## Expected number of effective parameters(stdev): 2.77(0.00)
+## Number of equivalent replicates : 54.26 
+## 
+## Deviance Information Criterion (DIC) ...............: 529.44
+## Deviance Information Criterion (DIC, saturated) ....: 414.73
+## Effective number of parameters .....................: 2.76
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 600.90
+## Effective number of parameters .................: 59.68
+## 
+## Marginal log-Likelihood:  -317.98 
+## CPO and PIT are computed
+## 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>waic.i1 &lt;- m3.1.i$waic$local.waic
+waic.i2 &lt;- m3.2.i$waic$local.waic
+
+d3.i &lt;- d3.i %&gt;% 
+  mutate(waic.i1= waic.i1a, 
+         waic.i2= waic.i1b, 
+         waic.diff= waic.i1a-waic.i1b)
+
+waic.i.3plot &lt;- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= genus))+
+  geom_point()+
+  geom_text(aes(label=genus),hjust=0, vjust=0)+
+  geom_vline(xintercept=0, linetype=&#39;longdash&#39;) +
+    theme_bw()
+  
+  
+waic.i.3plot</code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/inla%206.3%20waic%20compare-1.png" width="672" /> Species on the right of the vertical line fit better for model m3_2, the model with research effort. These are mostly species that are studied a lot, like chimpanzees (Pan) and macaques (Macaca). The genus Pan especially has been a focus on social learning research, and its counts are inflated by this. This is a good example of how the nature of measurement influences inference. There are likely a lot of false zeros in these data, species that are not studied often enough to get a good idea of their learning tendencies. Meanwhile every time a chimpanzee sneezes, someone writes a social learning paper.</p>
+<p><strong>3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured associations in the two models above (and any other models you used).</strong></p>
+<p>The implied DAG is:</p>
+<pre class="r"><code>hw6.3dag &lt;- dagitty(&quot;dag{
+                  S &lt;- E
+                  S&lt;- B
+                  E &lt;- B
+                  }&quot;)
+plot(hw6.3dag)</code></pre>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
+<p><img src="rethinkingINLA_HW6_files/figure-html/6.3.3%20dag-1.png" width="672" /> B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning</p>
+</div>
 </div>
 </div>
 

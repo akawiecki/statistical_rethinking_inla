@@ -23,3 +23,15 @@ Solutions to the homework exercises using the rethinking package are provided fo
 https://people.bath.ac.uk/jjf23/brinla/chicago.html
 
 https://haakonbakka.bitbucket.io/btopic112.html
+
+* INLA binomial examples: 
+
+https://rpubs.com/corey_sparks/431920
+
+* INLA poisson examples: 
+
+https://www.flutterbys.com.au/stats/tut/tut12.10.html#h2_16
+
+
+
+

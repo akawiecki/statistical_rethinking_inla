@@ -535,11 +535,13 @@ m3b.i.postmean.plot
 
 
 ```
+
 The previous predictions, for comparison:
 
 ```{r inla 3a}
 m3a.i.postmean.plot
 ```
+
 The most noticeable change is that FFW (French wines, French judges, white) have a lower expected rating in the full interaction model. There are some other minor differences as well. What has happened? The three way interaction would be, in the first model’s indicator terms, when a wine is American, the judge is American, and the flight is red. In the first model, a prediction for such a wine is just a sum of parameters:
 
 μi =α+βW +βJ +βR +βWJ +βWR +βJR
