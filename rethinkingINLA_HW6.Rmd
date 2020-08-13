@@ -372,7 +372,7 @@ summary(m2b.i)
 
 Now we first want a model with social learning as the outcome and brain size as a predictor. For this Poisson GLM, I’m going to use a N(0,1) prior on the intercept, since we know the counts should be small.
 
-### 3.1 rethinking
+### 3.1.a rethinking
 
 ```{r 6.3.1 re}
 
@@ -390,10 +390,13 @@ m3_1 <- ulam( alist(
 soc_learn ~ poisson( lambda ), log(lambda) <- a + bb*log_brain, a ~ normal(0,1),
 bb ~ normal(0,0.5)
 ), data=dat , chains=4 , cores=4 ) 
+
 precis( m3_1 )
+
+postcheck(m3_1,window=50)
 ```
 
-### 3.1 INLA
+### 3.1.a INLA
 
 ```{r 6.3.1 inla}
 
@@ -406,7 +409,7 @@ log_brain = standardize( log(brain) ),
 log_effort = log(research_effort), 
 case= row_number())
 
-m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
+m3.1a.i <- inla( soc_learn~ log_brain, family='poisson',
    data=d3.i,
    control.fixed = list(
         mean= 0,
@@ -417,8 +420,10 @@ m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
    control.predictor=list(link=1, compute=TRUE),
    control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
 
-summary(m3.1.i)
+summary(m3.1a.i)
 ```
+
+inla postcheck
 
 ```{r inla 6.3.1 postcheck}
 
@@ -429,14 +434,124 @@ names(m3.1.i.postcheck) <- c("case", "soc_learn", "mean", "sd", "LCI", "MCI",
 
 m3.1.i.postcheck.plot <- ggplot() +
   geom_point(data= m3.1.i.postcheck, aes(x= case, y= soc_learn), color= "blue", alpha= 0.5)+
-  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= "red", alpha= 0.5, size= 0.15)
+  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= "red", alpha= 0.3, size= 0.15)+
+  theme_bw()
   
 
 m3.1.i.postcheck.plot 
 
 ```
 
-**2. Second, some species are studied much more than others. So the number of reported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
+The blue points are the raw data, recall. These are not great posterior predictions. Clearly other factors are in play.
+
+Let’s try the research effort variable now. 
+
+## 3.2
+**Second, some species are studied much more than others. So the number of reported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predictor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
+
+### 3.2 rethinking
+
+```{r 6.3.2 rethinking}
+
+library(rethinking)
+data(Primates301)
+d <- Primates301
+d3 <- d[ complete.cases( d$social_learning , d$brain , d$research_effort),]
+
+dat <- list(
+soc_learn = d3$social_learning,
+log_brain = standardize( log(d3$brain) ), log_effort = log(d3$research_effort)
+)
+
+m3_2 <- ulam( alist(
+soc_learn ~ poisson( lambda ),
+log(lambda) <- a + be*log_effort + bb*log_brain, 
+a ~ normal(0,1),
+c(bb,be) ~ normal(0,0.5)
+), data=dat , chains=4 , cores=4 ) 
+precis( m3_2 )
+
+precis( m3_2)
+
+postcheck(m3_2,window=50)
+```
+
+
+Brain size bb is still positively associated, but much less. Research effort be is strongly associated. To see how these models disagree, let’s use pointwise WAIC to see which cases each predicts well.
+
+
+```{r re waic}
+waic1 <- WAIC( m3_1 , pointwise=TRUE )
+waic2 <- WAIC( m3_2 , pointwise=TRUE )
+plot( waic1 - waic2 , dat$log_effort , col=rangi2 , pch=16 ) 
+identify( waic1-waic2 , dat$log_effort , d2$genus , cex=0.8 ) abline(v=0,lty=2,lwd=0.5)
+
+```
+
+
+
+### 3.2 INLA
+
+```{r 6.3.2 inla}
+
+library(rethinking)
+data(Primates301)
+d <- Primates301
+d3.i <- d[ complete.cases( d$social_learning , d$brain , d$research_effort),] %>% 
+  mutate(soc_learn = social_learning,
+log_brain = standardize( log(brain) ), 
+log_effort = log(research_effort), 
+case= row_number())
+
+m3.2.i <- inla( soc_learn~ log_brain + log_effort, family='poisson',
+   data=d3.i,
+   control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1/(0.5^2)),
+   control.family=list(link='log'),
+   control.predictor=list(link=1, compute=TRUE),
+   control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
+
+summary(m3.2.i)
+
+```
+
+```{r inla 6.3 waic compare}
+
+waic.i1 <- m3.1.i$waic$local.waic
+waic.i2 <- m3.2.i$waic$local.waic
+
+d3.i <- d3.i %>% 
+  mutate(waic.i1= waic.i1a, 
+         waic.i2= waic.i1b, 
+         waic.diff= waic.i1a-waic.i1b)
+
+waic.i.3plot <- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= genus))+
+  geom_point()+
+  geom_text(aes(label=genus),hjust=0, vjust=0)+
+  geom_vline(xintercept=0, linetype='longdash') +
+    theme_bw()
+  
+  
+waic.i.3plot
+```
+Species on the right of the vertical line fit better for model m3_2, the model with research effort. These are mostly species that are studied a lot, like chimpanzees (Pan) and macaques (Macaca). The genus Pan especially has been a focus on social learning research, and its counts are inflated by this.
+This is a good example of how the nature of measurement influences inference. There are likely a lot of false zeros in these data, species that are not studied often enough to get a good idea of their learning tendencies. Meanwhile every time a chimpanzee sneezes, someone writes a social learning paper.
 
 **3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured associations in the two models above (and any other models you used).**
 
+
+The implied DAG is:
+
+```{r 6.3.3 dag}
+
+hw6.3dag <- dagitty("dag{
+                  S <- E
+                  S<- B
+                  E <- B
+                  }")
+plot(hw6.3dag)
+```
+B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning
