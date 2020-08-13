@@ -266,10 +266,11 @@ plot(hw6.2dag)
 
 S is stage of career (unobserved). This DAG has the same structure as the grandparents-parents-children-neighborhoods example from earlier in the course. When we condition on discipline D it opens a backdoor path through S to A. 
 
-It is not possible here to get an unconfounded estimate of gender on awards.
+**It is not possible here to get an unconfounded estimate of gender on awards.**
 
 Here’s a simulation to demonstrate the potential issue: This code simulates 1000 applicants. There are 2 genders (G 0/1), 2 stages of career (S 0/1), and 2 disciplines (D 0/1). Discipline 1 is chosen more by gender 1 and career stage 1. So that could mean more by males and later stage of career. Then awards A have a consistent bias towards gender 1, and discipline 1 has a higher award rate, and stage 1 also a higher award rate. If we analyze these data:
 
+### 2.a rethinking 
 ```{r 6.2 sim}
 
 set.seed(1913)
@@ -292,8 +293,36 @@ precis(m2_sim)
 
 The parameter g is the advantage of gender 1. It is smaller than the true advantage and the estimate straddles zero quite a lot, even with 1000 applicants. 
 
-It is also possible to have no gender influence and infer it by accident. Try these settings:
+### 2.a INLA
 
+Reference: https://rpubs.com/corey_sparks/431920
+```{r 6.2 inla}
+
+set.seed(1913)
+N <- 1000
+G <- rbern(N)
+S <- rbern(N)
+D <- rbern( N , p=inv_logit( G + S ) )
+A <- rbern( N , p=inv_logit( 0.25*G + D + 2*S - 2 ) ) 
+dat_sim <- list( G=G , D=D , A=A )
+
+m2a.i <- inla(A ~ D+G, data= dat_sim, family = "binomial", 
+              Ntrials = 1, #Ntrials=1 for bernoulli, logistic regression
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m2a.i)
+
+```
+
+**It is also possible to have no gender influence and infer it by accident.**
+Try these settings:
+### 2.b rethinking 
 ```{r 6.2 sim2}
 set.seed(1913)
 N <- 1000
@@ -308,6 +337,31 @@ precis(m2_sim_2,2)
 ```
 
 Now it looks like gender 1 has a consistent advantage, but in fact there is no advan- tage in the simulation.
+
+### 2.b INLA
+```{r 6.2 sim}
+
+set.seed(1913)
+N <- 1000
+G <- rbern(N)
+S <- rbern(N)
+D <- rbern( N , p=inv_logit( 2*G - S ) )
+A <- rbern( N , p=inv_logit( 0*G + D + S - 2 ) ) 
+dat_sim2 <- list( G=G , D=D , A=A )
+
+m2b.i <- inla(A ~ D+G, data= dat_sim2, family = "binomial", 
+              Ntrials = 1, #Ntrials=1 for bernoulli, logistic regression
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean= 0,
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m2b.i)
+
+```
 
 ## 3. 
 
