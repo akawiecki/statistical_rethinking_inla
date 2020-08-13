@@ -196,17 +196,126 @@ diff_a <- post$a[,1] - post$a[,2]
 precis( list( diff_a=diff_a ) )
 
 ```
+
 Still an advantage for the males, but reduced and overlapping zero a bit. To see this difference on the absolute scale, we need to account for the base rates in each discipline as well. If you look at the postcheck(m1_direct) display, you’ll see the predictive difference is very small. There are also several disciplines that reverse the advantage. If there is a direct influence of gender here, it is small, much smaller than before we accounted for discipline. Why? Because again the disciplines have different funding rates and women apply more to the disciplines with lower funding rates. But it would be hasty, I think, to conclude there are no other influences. There are after all lots of unmeasured confounds...
 
+```{r 6.1.b postcheck}
+postcheck(m1_direct)
+```
+
+### 1.b inla
+
+```{r 6.1.b inla }
+data(NWOGrants)
+d <- NWOGrants
+
+d1.i <- d %>% 
+  mutate(g_val= 1, 
+         d= paste("d", as.integer(discipline), sep = "."),
+         d_val= 1) %>% 
+  spread(gender, g_val) %>% 
+  spread(d, d_val)
+
+# number of trials is d1.i$applications
+
+d_names <- paste("d", 1:9, sep = ".")
+
+m1b.i <- inla(awards ~ -1 + m + f + d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9, data= d1.i, family = "binomial", 
+              Ntrials = applications, 
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean= list(m=-1,f=-1, d.1=0, d.2=0, d.3=0, d.4=0,d.5=0,d.6=0,d.7=0,d.8=0,d.9),
+        prec= 1),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m1b.i)
+
+#contrast between male and female
+
+n.samples = 1000
+
+m1b.i.samples = inla.posterior.sample(n.samples, result = m1b.i)
+
+#On the relative scale:
+m1b.i.contrast1 <- inla.posterior.sample.eval(function(...) {
+    m - f
+},
+   m1b.i.samples)
+summary(as.vector(m1b.i.contrast1))
+
+```
+
+
+
 ## 2. 
-** Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, schol- ars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant.
+**Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, scholars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant.
 Add these influences to your DAG from Problem 1. What happens now when you condition on discipline? Does it provide an un-confounded estimate of the direct path from gender to an award? Why or why not? Justify your answer with the back-door criterion. Hint: This is structurally a lot like the grandparents-parents- children-neighborhoods example from a previous week.
-If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you con- clude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?**
+If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you conclude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?**
+
+```{r 6.2 dag}
+
+hw6.2dag <- dagitty("dag{
+                  A <- G
+                  A<- D
+                  D <- G
+                  D <- S
+                  A <- S
+                  }")
+plot(hw6.2dag)
+```
+
+S is stage of career (unobserved). This DAG has the same structure as the grandparents-parents-children-neighborhoods example from earlier in the course. When we condition on discipline D it opens a backdoor path through S to A. 
+
+It is not possible here to get an unconfounded estimate of gender on awards.
+
+Here’s a simulation to demonstrate the potential issue: This code simulates 1000 applicants. There are 2 genders (G 0/1), 2 stages of career (S 0/1), and 2 disciplines (D 0/1). Discipline 1 is chosen more by gender 1 and career stage 1. So that could mean more by males and later stage of career. Then awards A have a consistent bias towards gender 1, and discipline 1 has a higher award rate, and stage 1 also a higher award rate. If we analyze these data:
+
+```{r 6.2 sim}
+
+set.seed(1913)
+N <- 1000
+G <- rbern(N)
+S <- rbern(N)
+D <- rbern( N , p=inv_logit( G + S ) )
+A <- rbern( N , p=inv_logit( 0.25*G + D + 2*S - 2 ) ) 
+dat_sim <- list( G=G , D=D , A=A )
+
+m2_sim <- ulam( alist(
+A ~ bernoulli(p), 
+logit(p) <- a + d*D + g*G, 
+c(a,d,g) ~ normal(0,1)
+), data=dat_sim , chains=4 , cores=4 ) 
+
+precis(m2_sim)
+
+```
+
+The parameter g is the advantage of gender 1. It is smaller than the true advantage and the estimate straddles zero quite a lot, even with 1000 applicants. 
+
+It is also possible to have no gender influence and infer it by accident. Try these settings:
+
+```{r 6.2 sim2}
+set.seed(1913)
+N <- 1000
+G <- rbern(N)
+S <- rbern(N)
+D <- rbern( N , p=inv_logit( 2*G - S ) )
+A <- rbern( N , p=inv_logit( 0*G + D + S - 2 ) ) 
+dat_sim2 <- list( G=G , D=D , A=A )
+m2_sim_2 <- ulam( m2_sim , data=dat_sim2 , chains=4 , cores=4 ) 
+
+precis(m2_sim_2,2)
+```
+
+Now it looks like gender 1 has a consistent advantage, but in fact there is no advan- tage in the simulation.
 
 ## 3. 
 
-**The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.
-First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.
-Second, some species are studied much more than others. So the number of re- ported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?
-Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured asso- ciations in the two models above (and any other models you used).**
+**The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.**
+
+**1. First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.**
+
+**2. Second, some species are studied much more than others. So the number of re- ported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
+
+**3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured asso- ciations in the two models above (and any other models you used).**
 
