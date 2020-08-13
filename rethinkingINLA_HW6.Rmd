@@ -403,7 +403,8 @@ d <- Primates301
 d3.i <- d[ complete.cases( d$social_learning , d$brain , d$research_effort),] %>% 
   mutate(soc_learn = social_learning,
 log_brain = standardize( log(brain) ), 
-log_effort = log(research_effort))
+log_effort = log(research_effort), 
+case= row_number())
 
 m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
    data=d3.i,
@@ -417,6 +418,22 @@ m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
    control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
 
 summary(m3.1.i)
+```
+
+```{r inla 6.3.1 postcheck}
+
+m3.1.i.postcheck <- bind_cols(d3.i[, c("case", "soc_learn")], m3.1.i$summary.fitted.values)
+
+names(m3.1.i.postcheck) <- c("case", "soc_learn", "mean", "sd", "LCI", "MCI", 
+"UCI", "mode")
+
+m3.1.i.postcheck.plot <- ggplot() +
+  geom_point(data= m3.1.i.postcheck, aes(x= case, y= soc_learn), color= "blue", alpha= 0.5)+
+  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= "red", alpha= 0.5, size= 0.15)
+  
+
+m3.1.i.postcheck.plot 
+
 ```
 
 **2. Second, some species are studied much more than others. So the number of reported instances of social_learning could be a product of research effort. Use the research_effort variable, specifically its logarithm, as an additional predic- tor variable. Interpret the coefficient for log research_effort. Does this model disagree with the previous one?**
