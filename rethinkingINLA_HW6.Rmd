@@ -527,9 +527,11 @@ waic.i.3plot <- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= genus
   
 waic.i.3plot
 ```
+
 Species on the right of the vertical line fit better for model m3_2, the model with research effort. These are mostly species that are studied a lot, like chimpanzees (Pan) and macaques (Macaca). The genus Pan especially has been a focus on social learning research, and its counts are inflated by this.
 This is a good example of how the nature of measurement influences inference. There are likely a lot of false zeros in these data, species that are not studied often enough to get a good idea of their learning tendencies. Meanwhile every time a chimpanzee sneezes, someone writes a social learning paper.
 
+### 3.3
 **3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured associations in the two models above (and any other models you used).**
 
 
@@ -544,5 +546,6 @@ hw6.3dag <- dagitty("dag{
                   }")
 plot(hw6.3dag)
 ```
+
 B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, 
 which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning
