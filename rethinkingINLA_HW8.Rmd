@@ -16,9 +16,153 @@ library(stringr)
 ```
 
 
-## 1. 
+# 1. 
 
 **Revisit the Reed frog survival data, data(reedfrogs),and add the predation and size treatment variables to the varying intercepts model. Consider models with either predictor alone, both predictors, as well as a model including their interaction. What do you infer about the causal influence of these predictor variables? Also focus on the inferred variation across tanks (the σ across tanks). Explain why it changes as it does across models with different predictors included.**
+
+```{r 8.1 dt}
+library(rethinking) 
+data(reedfrogs)
+d <- reedfrogs
+```
+
+## 1.1 varying intercepts model
+
+Si ∼ Binomial(Ni, pi)
+logit(pi) = αtank[i]                            
+αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+$\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
+
+### 1.1 rethinking
+
+```{r 8.1 dt re}
+dat <- list(
+S = d$surv,
+n = d$density,
+tank = 1:nrow(d),
+pred = ifelse( d$pred=="no" , 0L , 1L ), 
+size_ = ifelse( d$size=="small" , 1L , 2L )
+)
+```
+
+
+```{r 8.1.1 re}
+m1.1 <- ulam( alist(
+S ~ binomial( n , p ),
+logit(p) <- a[tank],
+a[tank] ~ normal( a_bar , sigma ), 
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+precis(m1.1)
+```
+
+### 1.1 INLA 
+
+following example: https://people.bath.ac.uk/jjf23/brinla/reeds.html
+
+**Here I'm missing custom priors**
+I'll use a half cauchy prior for the $\sigma$ to constrain it to >0 numbers, which is what the exponential does as well. 
+
+```{r 8.1.1 inla}
+
+library(brinla)
+library(INLA)
+
+d1.i <- d %>% 
+  mutate(tank = row_number()) 
+
+# number of trials is d1.i$density
+
+halfcauchy = "expression:
+              lambda = 0.022;
+              precision = exp(log_precision);
+              logdens = -1.5*log_precision-log(pi*lambda)-log(1+1/(precision*lambda^2));
+              log_jacobian = log_precision;
+              return(logdens+log_jacobian);"
+
+hcprior = list(prec = list(prior = halfcauchy))
+  
+m1.1.i <- inla(surv ~ 1 + f(tank, model="iid", hyper = hcprior), data= d1.i, family = "binomial", 
+              Ntrials = density, 
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T))
+summary(m1.1.i)
+
+m1.1.i$summary.fixed
+
+bri.hyperpar.summary(m1.1.i)
+
+bri.hyperpar.plot(m1.1.i)
+
+```
+** it looks like the intercept mean and sd correspond to the $\bar{\alpha}$ mean and sd, and the SD for tank corresponds to the $\sigma$. this makes sense, because the $\bar{\alpha}$ is the average baseline survival for all the tadpoles, which is what the intercept is.** **BUT I WOULD LOVE IF SOMEONE ELSE CONFIRMED THIS INTERPRETATION**. 
+
+
+
+
+## 1.2 varying intercepts + predation
+
+Si ∼ Binomial(Ni, pi)
+logit(pi) = αtank[i]  + predictors                          
+αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+$\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
+
+### 1.2 rethinking
+
+```{r 8.1.1 re}
+# pred
+m1.2 <- ulam(
+alist(
+S ~ binomial( n , p ),
+logit(p) <- a[tank] + bp*pred, 
+a[tank] ~ normal( a_bar , sigma ), 
+bp ~ normal( -0.5 , 1 ),
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+), data=dat , chains=4 , cores=4 , log_lik=TRUE ) 
+
+# size
+m1.3 <- ulam( alist(
+S ~ binomial( n , p ),
+logit(p) <- a[tank] + s[size_], 
+a[tank] ~ normal( a_bar , sigma ), 
+s[size_] ~ normal( 0 , 0.5 ), 
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+
+# pred + size 
+m1.4 <- ulam(
+alist(
+S ~ binomial( n , p ),
+logit(p) <- a[tank] + bp*pred + s[size_], 
+a[tank] ~ normal( a_bar , sigma ),
+bp ~ normal( -0.5 , 1 ),
+s[size_] ~ normal( 0 , 0.5 ),
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+
+# pred + size + interaction 
+m1.5 <- ulam(
+alist(
+S ~ binomial( n , p
+logit(p) <- a_bar + z[tank]*sigma + bp[size_]*pred + s[size_], 1 ),
+z[tank] ~ normal( 0 bp[size_] ~ normal(
+s[size_] ~ normal( 0 , 0.5 ), 
+a_bar ~ normal( 0 , 1.5 ), 
+sigma ~ exponential( 1 )
+),
+
+-0.5 , 1 ),
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+```
+
+
 
 
 ## 2. 
@@ -72,7 +216,6 @@ d <- Trolley
 simplehist( d$response , xlim=c(1,7) , xlab="response" )
 
 ```
-
 
 
 
