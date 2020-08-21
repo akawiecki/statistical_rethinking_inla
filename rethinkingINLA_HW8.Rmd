@@ -70,14 +70,6 @@ I'll use a half cauchy prior for the $\sigma$ to constrain it to >0 numbers, whi
 library(brinla)
 library(INLA)
 
-dat <- list(
-S = d$surv,
-n = d$density,
-tank = 1:nrow(d),
-pred = ifelse( d$pred=="no" , 0L , 1L ), 
-size_ = ifelse( d$size=="small" , 1L , 2L )
-)
-
 d1.i <- d %>% 
   mutate(tank = row_number(), 
          pred.no= na_if(if_else(pred=="no", 1, 0), 0),
@@ -101,7 +93,7 @@ m1.1.i <- inla(surv ~ 1 + f(tank, model="iid", hyper = hcprior), data= d1.i, fam
               Ntrials = density, 
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T))
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
 summary(m1.1.i)
 
 m1.1.i$summary.fixed
@@ -165,7 +157,7 @@ m1.2.i <- inla(surv ~ 1 + pred + f(tank, model="iid", hyper = hcprior), data= d1
         prec.intercept= 1.5),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T))
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
 summary(m1.2.i)
 
 m1.2.i$summary.fixed
@@ -188,6 +180,10 @@ $\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average 
 ### 1.3 rethinking
 
 ```{r 8.1.3 re}
+library(rethinking) 
+data(reedfrogs)
+d <- reedfrogs
+
 # size
 m1.3 <- ulam( alist(
 S ~ binomial( n , p ),
@@ -209,6 +205,14 @@ precis(m1.3,  depth=2)
 library(brinla)
 library(INLA)
 
+d1.i <- d %>% 
+  mutate(tank = row_number(), 
+         pred.no= na_if(if_else(pred=="no", 1, 0), 0),
+         pred.yes= na_if(if_else(pred=="pred", 1, 0), 0),
+         size.small= na_if(if_else(size=="small", 1, 0), 0),
+         size.big= na_if(if_else(size=="big", 1, 0), 0)
+         ) 
+
 # number of trials is d1.i$density
 
 halfcauchy = "expression:
@@ -229,7 +233,7 @@ m1.3.i <- inla(surv ~ 1 + size.small+ size.big + f(tank, model="iid", hyper = hc
         prec.intercept= 1.5),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T))
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
 summary(m1.3.i)
 
 m1.3.i$summary.fixed
@@ -298,7 +302,7 @@ m1.4.i <- inla(surv ~ 1 + pred + size.small+ size.big + f(tank, model="iid", hyp
         prec.intercept= 1.5),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T))
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
 summary(m1.4.i)
 
 m1.4.i$summary.fixed
@@ -360,7 +364,7 @@ halfcauchy = "expression:
 
 hcprior = list(prec = list(prior = halfcauchy))
   
-m1.5.i <- inla(surv ~ 1 + pred + size.small+ size.big + pred*size.small + pred*size.big + f(tank, model="iid", hyper = hcprior), data= d1.i, family = "binomial", 
+m1.5.i <- inla(surv ~ 1 + size.small+ size.big + pred*size.small + pred*size.big + f(tank, model="iid", hyper = hcprior), data= d1.i, family = "binomial", 
               Ntrials = density, 
               control.fixed = list(
         mean= list(pred= -0.5,size.small= 0, size.big= 0 ),
@@ -369,7 +373,7 @@ m1.5.i <- inla(surv ~ 1 + pred + size.small+ size.big + pred*size.small + pred*s
         prec.intercept= 1.5),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T))
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
 summary(m1.5.i )
 
 m1.5.i$summary.fixed
@@ -379,9 +383,26 @@ bri.hyperpar.summary(m1.5.i)
 
 ```
 
+## compare using WAIC
 
+#### compare rethinking 
 
+```{r 8 compare re}
+rethinking::compare( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 )
+```
 
+```{r compare inla}
+
+inla.models.8.1 <- list(m1.1.i, m1.2.i,m1.3.i, m1.4.i, m1.5.i )
+
+extract.waic <- function (x){
+  x[["waic"]][["waic"]]
+}
+
+waic.8.1 <- bind_cols(model = c("m1.1.i"," m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), waic = sapply(inla.models.8.1 ,extract.waic))
+
+waic.8.1
+```
 
 
 
