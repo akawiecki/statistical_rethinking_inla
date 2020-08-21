@@ -98,6 +98,8 @@ summary(m1.1.i)
 
 m1.1.i$summary.fixed
 
+m1.1.i$summary.hyperpar
+
 bri.hyperpar.summary(m1.1.i)
 
 
@@ -391,6 +393,18 @@ bri.hyperpar.summary(m1.5.i)
 rethinking::compare( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 )
 ```
 
+These models are really very similar in expected out-of-sample accuracy. The tank variation is huge. But take a look at the posterior distributions for predation and size. You’ll see that predation does seem to matter, as you’d expect. Size matters a lot less. So while predation doesn’t explain much of the total variation, there is plenty of evidence that it is a real effect. Remember: We don’t select a model using WAIC (or LOO). A predictor can make little difference in total accuracy but still be a real causal effect.
+
+Let’s look at all the sigma posterior distributions:
+
+```{r 8.1 post re}
+
+plot( coeftab( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 ), pars="sigma" )
+```
+The two models that omit predation, m1.1 and m1.3, have larger values of sigma. This is because predation explains some of the variation among tanks. So when you add it to the model, the variation in the tank intercepts gets smaller.
+
+#### compare inla
+
 ```{r compare inla}
 
 inla.models.8.1 <- list(m1.1.i, m1.2.i,m1.3.i, m1.4.i, m1.5.i )
@@ -402,6 +416,24 @@ extract.waic <- function (x){
 waic.8.1 <- bind_cols(model = c("m1.1.i"," m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), waic = sapply(inla.models.8.1 ,extract.waic))
 
 waic.8.1
+```
+
+```{r }
+
+sigma.8.1 <- bind_cols( model= c("m1.1.i","m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), do.call(rbind.data.frame, lapply(inla.models.8.1 ,bri.hyperpar.summary)))
+
+
+sigma.8.1
+
+sigma.8.1.plot <-  ggplot(data= sigma.8.1, aes(y=model, x=mean, label=model)) +
+    geom_point(size=4, shape=19) +
+    geom_errorbarh(aes(xmin=q0.025, xmax=q0.975), height=.3) +
+    coord_fixed(ratio=.3) +
+    theme_bw()
+
+sigma.8.1.plot
+
+
 ```
 
 
