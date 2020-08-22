@@ -530,6 +530,7 @@ precis(m2.1, depth = 2)
 
 library(brinla)
 library(INLA)
+library(tidyverse)
 
 d2.i <- d %>% 
   mutate(did= paste("d", as.integer(d$district_id), sep= "."), 
@@ -609,12 +610,61 @@ points( 1:nd , p2 )
 abline( h=mean(inv_logit(post2$a_bar)) , lty=2 )
  
 ```
+
 ### plot inla
 
 https://people.bath.ac.uk/jjf23/inla/oneway.html
 
 https://people.bath.ac.uk/jjf23/brinla/reeds.html
 
+
+
+```{r summary table inla}
+
+m2.3.i <- inla(use.contraception ~ f(district_id, model="iid"), data= d2.i, family = "binomial", 
+              Ntrials = 1, #Ntrials = 1 for bernoulli
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean.intercept=  0 ,
+        prec.intercept= 1.5),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, waic= TRUE))
+summary(m2.3.i)
+bri.hyperpar.summary(m2.3.i)
+
+# hyperparameter of the precision
+m2.3.i.prec <- m2.3.i$internal.marginals.hyperpar
+
+#transform precision to sd using inla.tmarginal
+#m2.3.i.prec[[1]] is used to access the actual values inside the list
+m2.3.i.sd <- inla.tmarginal(function(x) sqrt(exp(-x)), m2.3.i.prec[[1]])
+#plot the post of the sd per district (sigma)
+plot(m2.3.i.sd)
+#summary stats for the sd 
+m2.3.i.sd.sum <- inla.zmarginal(m2.3.i.sd)
+# this coincides perfectly with the result from bri.hyperpar.summary
+
+# this gives us the summary we want but not in the response scale
+m2.3.i.rand.sum <- m2.3.i$summary.random[[1]]
+
+inverse_logit <- function (x){
+    p <- 1/(1 + exp(-x))
+    p <- ifelse(x == Inf, 1, p)
+    p }
+
+#inla.tmarginal : apply inverse logit to all district marginals 
+#inla.tzrginal : summary of the logit-transformed marginals 
+m2.3.i.rand.test <- lapply(m2.3.i$marginals.random$district_id, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
+
+#check with the first district: we get the same result! :) 
+
+m2.3.i.rand.res <- inla.tmarginal (inverse_logit, m2.3.i$marginals.random$district_id[[1]] )
+
+plot(m2.3.i.rand.res )
+
+inla.zmarginal(m2.3.i.rand.res )
+
+```
 
 
 ```{r 8.2.3 plot inla}
