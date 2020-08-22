@@ -60,7 +60,7 @@ a[tank] ~ normal( a_bar , sigma ),
 a_bar ~ normal( 0 , 1.5 ),
 sigma ~ exponential( 1 )
 ), data=dat , chains=4 , cores=4 , log_lik=TRUE )
-precis(m1.1)
+precis(m1.1, depth= 2)
 ```
 
 ### 1.1 INLA 
@@ -611,12 +611,26 @@ abline( h=mean(inv_logit(post2$a_bar)) , lty=2 )
 ```
 ### plot inla
 
+https://people.bath.ac.uk/jjf23/inla/oneway.html
+
+https://people.bath.ac.uk/jjf23/brinla/reeds.html
+
+
+
 ```{r 8.2.3 plot inla}
 #n.samples= 100
 #m2.1.i.samples = inla.posterior.sample(n.samples, result = m2.1.i)
 #2.1.i.samples
 
+m2.2.i.marg <- m2.2.i$marginals.random
 
+did1 <- m2.2.i.marg$district_id[[1]]
+
+plot(did1)
+
+x <- seq(-1.5,1.5,len=100)
+d1 <- inla.dmarginal(x, m2.2.i.marg$district_id[[1]])
+plot(d1)
 ```
 
 ```{r 8.2.3 plot inla examples}
