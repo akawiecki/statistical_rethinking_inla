@@ -29,10 +29,15 @@ d <- reedfrogs
 ## 1.1 varying intercepts model
 
 Si ∼ Binomial(Ni, pi)
-logit(pi) = αtank[i]                            
+
+logit(pi) = αtank[i]       
+
 αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+
 $\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+
 σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
+
 
 ### 1.1 rethinking
 
@@ -109,11 +114,17 @@ bri.hyperpar.summary(m1.1.i)
 ## 1.2 varying intercepts + predation
 
 Si ∼ Binomial(Ni, pi)
-logit(pi) = αtank[i]  + $\beta$[pred]
+
+logit(pi) = αtank[i]  + $\beta$[pred] 
+
 $\beta$∼ Normal(-0.5,1)
-αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+
+αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]     
+
 $\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+
 σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
+
 
 ### 1.2 rethinking
 
@@ -173,11 +184,16 @@ bri.hyperpar.summary(m1.2.i)
 ## 1.3 varying intercepts + size
 
 Si ∼ Binomial(Ni, pi)
+
 logit(pi) = αtank[i]  + $\beta$size    
+
 $\beta$∼ Normal(0 , 0.5 )
-αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]   
+
 $\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+
 σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
+
 
 ### 1.3 rethinking
 
@@ -250,11 +266,16 @@ bri.hyperpar.summary(m1.3.i)
 ## 1.4 varying intercepts + predation + size
 
 Si ∼ Binomial(Ni, pi)
+
 logit(pi) = αtank[i]  + $\beta$size + $\gamma$size  
+
 $\gamma$ ∼ Normal(0 , 0.5)
+
 $\beta$ ∼ Normal(-0.5,1)
 αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
+
 $\bar{\alpha}$ ∼ Normal(0, 1.5)                            [prior for average tank]
+
 σ ∼ Exponential(1)                              [prior for standard deviation of tanks]
 
 ### 1.4 rethinking
@@ -314,10 +335,15 @@ bri.hyperpar.summary(m1.4.i)
 
 ```
 
-## 1.5 varying intercepts + predation + size + prediction*size
+## 1.5 varying intercepts + predation + size + predation*size
 
 Si ∼ Binomial(Ni, pi)
-logit(pi) = αtank[i]  + $\beta$size + $\gamma$size + 
+
+
+**this formula's wrong**
+
+logit(pi) = αtank[i]  + $\beta$predation + $\gamma$size + $\eta$size*predation
+
 $\gamma$ ∼ Normal(0 , 0.5)
 $\beta$ ∼ Normal(-0.5,1)
 αj ∼ Normal($\bar{\alpha}$, σ)                             [adaptive prior]    
@@ -413,12 +439,12 @@ extract.waic <- function (x){
   x[["waic"]][["waic"]]
 }
 
-waic.8.1 <- bind_cols(model = c("m1.1.i"," m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), waic = sapply(inla.models.8.1 ,extract.waic))
+waic.8.1 <- bind_cols(model = c("m1.1.i","m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), waic = sapply(inla.models.8.1 ,extract.waic))
 
 waic.8.1
 ```
 
-```{r }
+```{r sigma.8.1 plot }
 
 sigma.8.1 <- bind_cols( model= c("m1.1.i","m1.2.i","m1.3.i", "m1.4.i", "m1.5.i" ), do.call(rbind.data.frame, lapply(inla.models.8.1 ,bri.hyperpar.summary)))
 
@@ -438,13 +464,28 @@ sigma.8.1.plot
 
 
 
-## 2. 
+# 2. 
 
 **In 1980, a typical Bengali woman could have 5 or more children in her lifetime. By the year 2000, a typical Bengali woman had only 2 or 3. You’re going to look at a historical set of data, when contraception was widely available but many families chose not to use it. These data reside in data(bangladesh) and come from the 1988 Bangladesh Fertility Survey. Each row is one of 1934 women. There are six variables, but you can focus on two of them for this practice problem:**
 
 **(1) district: ID number of administrative district each woman resided in**
+
 **(2) use.contraception: An indicator (0/1) of whether the woman was using contraception**
 
+**Focus on predicting use.contraception, clustered by district_id. Fit both:** 
+
+**1) a traditional fixed-effects model that uses an index variable for district**
+
+**2) a multilevel model with varying intercepts for district.** 
+
+Plot the predicted proportions of women in each district using contraception, for both the fixed-effects model and the varying-effects model. That is, make a plot in which district ID is on the horizontal axis and expected proportion using contraception is on the vertical. Make one plot for each model, or layer them on the same plot, as you prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can you explain the most extreme cases of disagreement, both why they happen where they do and why the models reach different inferences?**
+
+
+```{r 8.2 data}
+library(rethinking)
+data(bangladesh)
+d <- bangladesh
+```
 
 The first thing to do is ensure that the cluster variable, district, is a contiguous set of integers. Recall that these values will be index values inside the model. If there are gaps, you’ll have parameters for which there is no data to inform them. Worse, the model probably won’t run. Look at the unique values of the district variable:
 
@@ -461,11 +502,174 @@ sort(unique(d$district_id))
 
 Now there are 60 values, contiguous integers 1 to 60.
 
+## 2.1 traditional fixed-effects model that uses an index variable for district
 
-Now, focus on predicting use.contraception, clustered by district_id. Fit both (1) a traditional fixed-effects model that uses an index variable for district and (2) a multilevel model with varying intercepts for district. Plot the predicted pro- portions of women in each district using contraception, for both the fixed-effects model and the varying-effects model. That is, make a plot in which district ID is on the horizontal axis and expected proportion using contraception is on the vertical. Make one plot for each model, or layer them on the same plot, as you prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can you explain the most extreme cases of disagreement, both why they happen where they do and why the models reach different inferences?
+
+### 2.1 rethinking
+
+```{r 8.2.1 re}
+
+dat_list <- list(
+C = d$use.contraception, 
+did = d$district_id
+)
+
+m2.1 <- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did],
+a[did] ~ normal( 0 , 1.5 )
+) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(m2.1, depth = 2)
+
+```
+
+### 2.1 inla
+
+```{r 8.2.1 inla}
+
+library(brinla)
+library(INLA)
+
+d2.i <- d %>% 
+  mutate(did= paste("d", as.integer(d$district_id), sep= "."), 
+         d.value= 1
+         ) %>% 
+  spread(did, d.value)
+
+#use this to quickly make a list of the index vbles to include in the model 
+did_formula <- paste("d", 1:60, sep=".", collapse = "+")
 
 
-## 3. 
+m2.1.i <- inla(use.contraception ~ d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9+d.10+d.11+d.12+d.13+d.14+d.15+d.16+d.17+d.18+d.19+d.20+d.21+d.22+d.23+d.24+d.25+d.26+d.27+d.28+d.29+d.30+d.31+d.32+d.33+d.34+d.35+d.36+d.37+d.38+d.39+d.40+d.41+d.42+d.43+d.44+d.45+d.46+d.47+d.48+d.49+d.50+d.51+d.52+d.53+d.54+d.55+d.56+d.57+d.58+d.59+d.60, data= d2.i, family = "binomial", 
+              Ntrials = 1, #Ntrials = 1 for bernoulli
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean=  0 ,
+        prec= 1.5),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, waic= TRUE))
+summary(m2.1.i)
+
+
+
+```
+
+## 2.2 varying intercepts model
+
+
+### 2.2 rethinking
+
+```{r 8.2.2 re}
+m2.2 <- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did],
+a[did] ~ normal( a_bar , sigma ),
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+) ,data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(m2.2, depth= 2)
+
+```
+
+### 2.2 inla
+
+```{r 8.2.2 inla}
+
+m2.2.i <- inla(use.contraception ~ 1 + f(district_id, model="iid"), data= d2.i, family = "binomial", 
+              Ntrials = 1, #Ntrials = 1 for bernoulli
+              control.family = list(control.link=list(model="logit")),
+              control.fixed = list(
+        mean.intercept=  0 ,
+        prec.intercept= 1.5),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, waic= TRUE))
+summary(m2.2.i)
+bri.hyperpar.summary(m2.2.i)
+
+```
+
+## 2.3 plot of posterior mean probabilities in each district
+
+Now let’s extract the samples, compute posterior mean probabilities in each district, and plot it all:
+
+### plot rethinking 
+
+```{r 8.2.3 plot rethinking }
+
+post1 <- extract.samples( m2.1 ) 
+post2 <- extract.samples( m2.2 )
+p1 <- apply( inv_logit(post1$a) , 2 , mean ) 
+p2 <- apply( inv_logit(post2$a) , 2 , mean )
+nd <- max(dat_list$did)
+plot( NULL , xlim=c(1,nd) , ylim=c(0,1) , ylab="prob use contraception" , xlab="district" )
+points( 1:nd , p1 , pch=16 , col=rangi2 ) 
+points( 1:nd , p2 )
+abline( h=mean(inv_logit(post2$a_bar)) , lty=2 )
+ 
+```
+### plot inla
+
+```{r 8.2.3 plot inla}
+#n.samples= 100
+#m2.1.i.samples = inla.posterior.sample(n.samples, result = m2.1.i)
+#2.1.i.samples
+
+
+```
+
+```{r 8.2.3 plot inla examples}
+
+## rethinking
+post <- extract.samples(m1_total)
+diff <- inv_logit( post$a[,1] ) - inv_logit(post$a[,2]) 
+precis( list( diff=diff ) )
+
+
+## inla 
+#contrast between male and female
+
+n.samples = 1000
+
+#pi = exp(α + βxi) / 1 + exp(α + βxi)
+
+inverse_logit <- function (x){
+    p <- 1/(1 + exp(-x))
+    p <- ifelse(x == Inf, 1, p)
+    p }
+
+m1a.i.samples = inla.posterior.sample(n.samples, result = m1a.i)
+
+m1a.i.contrast1 <- inla.posterior.sample.eval(function(...) {
+    inverse_logit(m) - 
+    inverse_logit(f)
+},
+   m1a.i.samples)
+summary(as.vector(m1a.i.contrast1))
+
+#### postcheck 
+
+
+m3.1.i.postcheck <- bind_cols(d3.i[, c("case", "soc_learn")], m3.1.i$summary.fitted.values)
+
+names(m3.1.i.postcheck) <- c("case", "soc_learn", "mean", "sd", "LCI", "MCI", 
+"UCI", "mode")
+
+m3.1.i.postcheck.plot <- ggplot() +
+  geom_point(data= m3.1.i.postcheck, aes(x= case, y= soc_learn), color= "blue", alpha= 0.5)+
+  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= "red", alpha= 0.3, size= 0.15)+
+  theme_bw()
+  
+
+m3.1.i.postcheck.plot 
+
+plot(m2.2.i$summary.fitted.values)
+
+```
+
+
+# 3. 
 
 **Return to the Trolley data, data(Trolley), from Chapter 12. Define and fit a varying intercepts model for these data. By this I mean to add an intercept parameter for the individual to the linear model. Cluster the varying intercepts on individual participants, as indicated by the unique values in the id variable. Include action, intention, and contact as before. Compare the varying intercepts model and a model that ignores individuals, using both WAIC/LOO and posterior predictions. What is the impact of individual variation in these data?**
 
