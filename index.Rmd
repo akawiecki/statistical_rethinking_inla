@@ -32,6 +32,12 @@ https://rpubs.com/corey_sparks/431920
 
 https://www.flutterbys.com.au/stats/tut/tut12.10.html#h2_16
 
+* INLA single random effect examples: 
+
+https://people.bath.ac.uk/jjf23/inla/oneway.html
+
+https://people.bath.ac.uk/jjf23/brinla/reeds.html
+
 
 
 

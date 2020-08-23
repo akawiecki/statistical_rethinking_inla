@@ -15,9 +15,9 @@ library(knitr)
 library(stringr)
 ```
 
-# HOMEWORK 5
 
-## 1. 
+
+# 1. 
 **Consider the data (Wines2012) data table.These data are expert ratings of 20 different French and American wines by 9 different French and American judges. Your goal is to model score, the subjective rating assigned by each judge to each wine. I recommend standardizing it.**
 
 In this first problem, consider only variation among judges and wines. Construct index variables of judge and wine and then use these index variables to construct a linear regression model. Justify your priors. You should end up with 9 judge parameters and 20 wine parameters. Use ulam instead of quap to build this model, and be sure to check the chains for convergence. If you’d rather build the model directly in Stan or PyMC3, go ahead. I just want you to use Hamiltonian Monte Carlo instead of quadratic approximation.
@@ -43,7 +43,7 @@ The model is straightforward. The only issue is the priors. Since I’ve standar
 diagnostics that precis provides: The n_eff values are all actually higher than the number of samples (2000), and all the Rhat values at exactly 1. Looks good so far. These diagnostics can mislead, however, so let’s look at the trace plots too: These pass the hairy-caterpillar-ocular-inspection-test: all the chains mix in the same region, and they move quickly through it, not getting stuck anyplace. 
 Now let’s plot these parameters so they are easier to interpret:
 
-### 1. rethinking
+## 1. rethinking
 ```{r hw5.1 re}
 
 #How do you interpret the variation among individual judges and individual wines?
@@ -65,7 +65,7 @@ traceplot(m1)
 plot(precis(m1, 2))
 ```
 
-### 1. INLA
+## 1. INLA
 
 In order to code a separate intercept for each judge and wine, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on and NAs for all other values. 
 
@@ -123,7 +123,7 @@ The a/j parameters are the judges. Each represents an average deviation of the s
 
 The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
 
-## 2.
+# 2.
 **Now consider three features of the wines and judges:**
 
 1. flight: Whether the wine is red or white.
@@ -308,7 +308,7 @@ summary(as.vector(m2b.i.contrast))
 
 ```
 
-## 3.
+# 3.
 **Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
 What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?**
 

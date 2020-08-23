@@ -639,7 +639,7 @@ https://people.bath.ac.uk/jjf23/brinla/reeds.html
 
 **posterior mean for each district a for the idex fixed effect model m2.1:** 
 
-```{r summary table inla fix results= hide}
+```{r summary table inla fix}
 
 # m2.2.i$summary.fixed[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -657,7 +657,7 @@ m2.1.i.fix<- lapply(m2.1.i$marginals.fixed, function (x) inla.zmarginal( inla.tm
 
 **posterior mean for each district a for the varying intercept model m2.2:** 
 
-```{r summary table inla ran results= hide}
+```{r summary table inla ran}
 
 # m2.2.i$summary.random[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -670,7 +670,7 @@ m2.2.i.rand<- lapply(m2.2.i$marginals.random$district_id, function (x) inla.zmar
 ```{r 8.2.3 plot inla }
 
 # map(m2.2.i.rand, 1) extracts the first element (the mean) from the summary of the posterior of each district
-m2.i.mean <- bind_cols(district= 1:60,mean.m2.1= unlist(map(m2.1.i.fix, 1)), mean.m2.2= unlist(map(m2.2.i.rand, 1)))
+m2.i.mean <- bind_cols(district= 1:60,mean.m2.1= unlist(sapply(m2.1.i.fix, function(x) x[1])), mean.m2.2=unlist(sapply(m2.2.i.rand, function(x) x[1])))
 
 m2.2.i.abar <- inla.zmarginal( inla.tmarginal (inverse_logit, m2.2.i$marginals.fixed[["(Intercept)"]] ))
 
@@ -719,10 +719,9 @@ There are 12 columns and 9930 rows, comprising data for 331 unique individuals. 
 library(rethinking) 
 data(Trolley)
 d <- Trolley
-simplehist( d$response , xlim=c(1,7) , xlab="response" )
-
 ```
 
+I don't really care about ordered categorical data so i'm going to skip this one.
 
 
 

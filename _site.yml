@@ -13,6 +13,8 @@ navbar:
     href: rethinkingINLA_HW5.html
   - text: "Homework 6"
     href: rethinkingINLA_HW6.html
+  - text: "Homework 8"
+    href: rethinkingINLA_HW8.html
 output:
   html_document:
     theme: yeti

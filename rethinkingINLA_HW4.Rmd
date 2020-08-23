@@ -20,9 +20,8 @@ library(knitr)
 
 ```
 
-# HOMEWORK 4
 
-## 1. 
+# 1. 
 **Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:**
 
 ```{r birb spp table}
@@ -90,7 +89,7 @@ round( Dm , 2 )
 
 The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.
 
-## 2. 
+# 2. 
 
 Recall the marriage,age,and happiness collider bias example from Chapter 6.
 
@@ -129,7 +128,6 @@ Now we should do our duty and think about the priors.
 * We need to construct the marriage status index variable, as well.
 
 
-
 Finally, let’s approximate the posterior.  
 
 ```{r hw4.2 rethinking data}
@@ -140,6 +138,8 @@ d2$mid <- d2$married + 1
 ```
 
 Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path. 
+
+## 2.1 marriage status and age
 
 ### 2.1 rethinking
 ```{r hw4.2.2 m6.9 rethinking}
@@ -158,7 +158,7 @@ precis(m6.9,depth=2)
 ```
 
 
-### 2.1 INLA
+## 2.1 INLA
 
 In order to code a separate intercept for being married/not, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on ( in this case marriage) and NAs for all other values. 
 
@@ -179,6 +179,7 @@ summary(m6.9.inla.prior )
 
 ```
 
+## 2.2 only age
 
 ### 2.2 rethinking
 
@@ -195,6 +196,7 @@ m6.10 <- quap(
     ) , data=d2 )
 precis(m6.10)
 ```
+
 
 ### 2.2 INLA
 
@@ -232,7 +234,7 @@ m6.10.inla.prior$waic$waic
 The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.
 
 
-## 3. 
+# 3. 
 
 **Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:**
 (1) avgfood + groupsize + area 
@@ -272,7 +274,7 @@ d$G <- standardize(d$groupsize)
 ```
 
 
-### 3. rethinking
+## 3. rethinking
 ```{r hw4 3 rethinking}
 
 m1 <- quap(
@@ -322,7 +324,7 @@ m5 <- quap(
 ```
 
 
-### 3. INLA
+## 3. INLA
 
 ```{r hw3 3 INLA  priors}
 
