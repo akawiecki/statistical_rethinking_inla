@@ -639,7 +639,7 @@ https://people.bath.ac.uk/jjf23/brinla/reeds.html
 
 **posterior mean for each district a for the idex fixed effect model m2.1:** 
 
-```{r summary table inla}
+```{r summary table inla fix results= hide}
 
 # m2.2.i$summary.fixed[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -657,7 +657,7 @@ m2.1.i.fix<- lapply(m2.1.i$marginals.fixed, function (x) inla.zmarginal( inla.tm
 
 **posterior mean for each district a for the varying intercept model m2.2:** 
 
-```{r summary table inla}
+```{r summary table inla ran results= hide}
 
 # m2.2.i$summary.random[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -679,6 +679,7 @@ m2.i.district.plot <- ggplot() +
   geom_point(data= m2.i.mean, aes(x= district, y= mean.m2.2), color= "black", alpha= 0.5, shape= 1)+
   geom_hline(yintercept=m2.2.i.abar[[1]], linetype='longdash') +
   ylim(0,1)+
+  labs(y = "prob use contraception")+
   theme_bw()
   
 
@@ -687,30 +688,14 @@ m2.i.district.plot
 
 ```
 
+The blue points are the fixed estimations. The open points are the varying effects. As you’d expect, they are shrunk towards the mean (the dashed line). Some are shrunk more than others. The third district from the left shrunk a lot. Let’s look at the sample size in each district:
 
-
-```{r 8.2.3 plot inla examples}
-
-
-#### postcheck 
-
-
-m3.1.i.postcheck <- bind_cols(d3.i[, c("case", "soc_learn")], m3.1.i$summary.fitted.values)
-
-names(m3.1.i.postcheck) <- c("case", "soc_learn", "mean", "sd", "LCI", "MCI", 
-"UCI", "mode")
-
-m3.1.i.postcheck.plot <- ggplot() +
-  geom_point(data= m3.1.i.postcheck, aes(x= case, y= soc_learn), color= "blue", alpha= 0.5)+
-  geom_pointrange(data= m3.1.i.postcheck, aes(x= case, y= mean, ymin= LCI, ymax= UCI ), color= "red", alpha= 0.3, size= 0.15)+
-  theme_bw()
-  
-
-m3.1.i.postcheck.plot 
-
-plot(m2.2.i$summary.fitted.values)
-
+```{r 8.2.3 table}
+ table(d$district_id)
 ```
+
+District 3 has only 2 women sampled. So it shrinks a lot. There are couple of other districts, like 49 and 54, that also have very few women sampled. But their fixed estimates aren’t as extreme, so they don’t shrink as much as district 3 does.
+All of this is explained by partial pooling, of course.
 
 
 # 3. 
