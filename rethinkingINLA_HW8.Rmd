@@ -578,7 +578,7 @@ precis(m2.2, depth= 2)
 
 ```{r 8.2.2 inla}
 
-m2.2.i <- inla(use.contraception ~ 1 + f(district_id, model="iid"), data= d2.i, family = "binomial", 
+m2.2.i <- inla(use.contraception ~ f(district_id, model="iid"), data= d2.i, family = "binomial", 
               Ntrials = 1, #Ntrials = 1 for bernoulli
               control.family = list(control.link=list(model="logit")),
               control.fixed = list(
@@ -590,6 +590,25 @@ summary(m2.2.i)
 bri.hyperpar.summary(m2.2.i)
 
 ```
+
+Side note: this is how you calculate the sd from the hyperprior ($\sigma$)
+
+```{r 8.2.2 inla hyper sd}
+bri.hyperpar.summary(m2.2.i)
+
+# hyperparameter of the precision
+m2.2.i.prec <- m2.2.i$internal.marginals.hyperpar
+
+#transform precision to sd using inla.tmarginal
+#m2.2.i.prec[[1]] is used to access the actual values inside the list
+m2.2.i.sd <- inla.tmarginal(function(x) sqrt(exp(-x)), m2.2.i.prec[[1]])
+#plot the post of the sd per district (sigma)
+plot(m2.2.i.sd)
+#summary stats for the sd 
+m2.2.i.sd.sum <- inla.zmarginal(m2.2.i.sd)
+# this coincides perfectly with the result from bri.hyperpar.summary
+```
+
 
 ## 2.3 plot of posterior mean probabilities in each district
 
@@ -618,34 +637,11 @@ https://people.bath.ac.uk/jjf23/inla/oneway.html
 https://people.bath.ac.uk/jjf23/brinla/reeds.html
 
 
+**posterior mean for each district a for the idex fixed effect model m2.1:** 
 
 ```{r summary table inla}
 
-m2.3.i <- inla(use.contraception ~ f(district_id, model="iid"), data= d2.i, family = "binomial", 
-              Ntrials = 1, #Ntrials = 1 for bernoulli
-              control.family = list(control.link=list(model="logit")),
-              control.fixed = list(
-        mean.intercept=  0 ,
-        prec.intercept= 1.5),
-              control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T, waic= TRUE))
-summary(m2.3.i)
-bri.hyperpar.summary(m2.3.i)
-
-# hyperparameter of the precision
-m2.3.i.prec <- m2.3.i$internal.marginals.hyperpar
-
-#transform precision to sd using inla.tmarginal
-#m2.3.i.prec[[1]] is used to access the actual values inside the list
-m2.3.i.sd <- inla.tmarginal(function(x) sqrt(exp(-x)), m2.3.i.prec[[1]])
-#plot the post of the sd per district (sigma)
-plot(m2.3.i.sd)
-#summary stats for the sd 
-m2.3.i.sd.sum <- inla.zmarginal(m2.3.i.sd)
-# this coincides perfectly with the result from bri.hyperpar.summary
-
-# this gives us the summary we want but not in the response scale
-m2.3.i.rand.sum <- m2.3.i$summary.random[[1]]
+# m2.2.i$summary.fixed[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
 inverse_logit <- function (x){
     p <- 1/(1 + exp(-x))
@@ -653,64 +649,48 @@ inverse_logit <- function (x){
     p }
 
 #inla.tmarginal : apply inverse logit to all district marginals 
-#inla.tzrginal : summary of the logit-transformed marginals 
-m2.3.i.rand.test <- lapply(m2.3.i$marginals.random$district_id, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
+#inla.zmarginal : summary of the logit-transformed marginals 
+# we eliminate the first element of this list, the intercept.
+m2.1.i.fix<- lapply(m2.1.i$marginals.fixed, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))[-1]
 
-#check with the first district: we get the same result! :) 
+```
 
-m2.3.i.rand.res <- inla.tmarginal (inverse_logit, m2.3.i$marginals.random$district_id[[1]] )
+**posterior mean for each district a for the varying intercept model m2.2:** 
 
-plot(m2.3.i.rand.res )
+```{r summary table inla}
 
-inla.zmarginal(m2.3.i.rand.res )
+# m2.2.i$summary.random[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
+
+#inla.tmarginal : apply inverse logit to all district marginals 
+#inla.zmarginal : summary of the logit-transformed marginals 
+m2.2.i.rand<- lapply(m2.2.i$marginals.random$district_id, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
+```
+
+
+```{r 8.2.3 plot inla }
+
+# map(m2.2.i.rand, 1) extracts the first element (the mean) from the summary of the posterior of each district
+m2.i.mean <- bind_cols(district= 1:60,mean.m2.1= unlist(map(m2.1.i.fix, 1)), mean.m2.2= unlist(map(m2.2.i.rand, 1)))
+
+m2.2.i.abar <- inla.zmarginal( inla.tmarginal (inverse_logit, m2.2.i$marginals.fixed[["(Intercept)"]] ))
+
+m2.i.district.plot <- ggplot() +
+  geom_point(data= m2.i.mean, aes(x= district, y= mean.m2.1), color= "blue", alpha= 0.5)+
+  geom_point(data= m2.i.mean, aes(x= district, y= mean.m2.2), color= "black", alpha= 0.5, shape= 1)+
+  geom_hline(yintercept=m2.2.i.abar[[1]], linetype='longdash') +
+  ylim(0,1)+
+  theme_bw()
+  
+
+m2.i.district.plot
+
 
 ```
 
 
-```{r 8.2.3 plot inla}
-#n.samples= 100
-#m2.1.i.samples = inla.posterior.sample(n.samples, result = m2.1.i)
-#2.1.i.samples
-
-m2.2.i.marg <- m2.2.i$marginals.random
-
-did1 <- m2.2.i.marg$district_id[[1]]
-
-plot(did1)
-
-x <- seq(-1.5,1.5,len=100)
-d1 <- inla.dmarginal(x, m2.2.i.marg$district_id[[1]])
-plot(d1)
-```
 
 ```{r 8.2.3 plot inla examples}
 
-## rethinking
-post <- extract.samples(m1_total)
-diff <- inv_logit( post$a[,1] ) - inv_logit(post$a[,2]) 
-precis( list( diff=diff ) )
-
-
-## inla 
-#contrast between male and female
-
-n.samples = 1000
-
-#pi = exp(α + βxi) / 1 + exp(α + βxi)
-
-inverse_logit <- function (x){
-    p <- 1/(1 + exp(-x))
-    p <- ifelse(x == Inf, 1, p)
-    p }
-
-m1a.i.samples = inla.posterior.sample(n.samples, result = m1a.i)
-
-m1a.i.contrast1 <- inla.posterior.sample.eval(function(...) {
-    inverse_logit(m) - 
-    inverse_logit(f)
-},
-   m1a.i.samples)
-summary(as.vector(m1a.i.contrast1))
 
 #### postcheck 
 
