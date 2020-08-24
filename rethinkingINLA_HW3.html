@@ -439,7 +439,7 @@ summary(m1.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ A, data = f)&quot; 
 ## Time used:
-##     Pre = 1.91, Running = 0.156, Post = 0.159, Total = 2.22 
+##     Pre = 2.21, Running = 0.149, Post = 0.15, Total = 2.51 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.093     -0.183    0.000      0.183 0.000   0
@@ -464,10 +464,10 @@ summary(m1.inla)</code></pre>
 summary(m1.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), 
-##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
+##    prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.14, Running = 0.127, Post = 0.153, Total = 1.42 
+##     Pre = 1.23, Running = 0.138, Post = 0.142, Total = 1.51 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.084     -0.166    0.000      0.166 0.000   0
@@ -517,7 +517,7 @@ summary(m2.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F, data = f)&quot; 
 ## Time used:
-##     Pre = 1.21, Running = 0.131, Post = 0.146, Total = 1.49 
+##     Pre = 1.29, Running = 0.142, Post = 0.147, Total = 1.58 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.093     -0.183    0.000      0.183  0.000   0
@@ -545,10 +545,10 @@ m2.inla.prior &lt;- inla(W~F, data= f, control.fixed = list(
 summary(m2.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), 
-##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
+##    prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.15, Running = 0.13, Post = 0.157, Total = 1.44 
+##     Pre = 1.23, Running = 0.141, Post = 0.146, Total = 1.52 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.084     -0.166    0.000      0.166  0.000   0
@@ -601,7 +601,7 @@ summary(m3.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F + G, family = c(\&quot;gaussian\&quot;), data = f)&quot; 
 ## Time used:
-##     Pre = 1.22, Running = 0.142, Post = 0.15, Total = 1.51 
+##     Pre = 1.28, Running = 0.146, Post = 0.155, Total = 1.58 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.089     -0.174    0.000      0.174  0.000   0
@@ -628,10 +628,10 @@ m3.inla.prior &lt;- inla(W~F+G, data= f, control.fixed = list(
 summary(m3.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = 
-##    list(F = 1/(0.5^2), G = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
+##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = list(F = 
+##    1/(0.5^2), G = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
 ## Time used:
-##     Pre = 1.19, Running = 0.136, Post = 0.163, Total = 1.49 
+##     Pre = 1.28, Running = 0.144, Post = 0.15, Total = 1.57 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.081     -0.159    0.000      0.159  0.000   0
