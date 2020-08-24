@@ -6,7 +6,12 @@ output:
     toc_float: true
 ---
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE)
+```
+
 ```{r libraries, message= FALSE}
+
 library(tidyverse)
 library(rethinking)
 library(dagitty)
@@ -109,7 +114,8 @@ bri.hyperpar.summary(m1.1.i)
 
 
 ```
-** it looks like the intercept mean and sd correspond to the $\bar{\alpha}$ mean and sd, and the SD for tank corresponds to the $\sigma$. this makes sense, because the $\bar{\alpha}$ is the average baseline survival for all the tadpoles, which is what the intercept is.** **BUT I WOULD LOVE IF SOMEONE ELSE CONFIRMED THIS INTERPRETATION**. 
+it looks like the intercept mean and sd correspond to the $\bar{\alpha}$ mean and sd, and the SD for tank corresponds to the $\sigma$. this makes sense, because the $\bar{\alpha}$ is the average baseline survival for all the tadpoles, which is what the intercept is. 
+**BUT I WOULD LOVE IF SOMEONE ELSE CONFIRMED THIS INTERPRETATION**. 
 
 ## 1.2 varying intercepts + predation
 
@@ -425,7 +431,7 @@ Let’s look at all the sigma posterior distributions:
 
 ```{r 8.1 post re}
 
-plot( coeftab( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 ), pars="sigma" )
+plot( rethinking::coeftab( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 ), pars="sigma" )
 ```
 The two models that omit predation, m1.1 and m1.3, have larger values of sigma. This is because predation explains some of the variation among tanks. So when you add it to the model, the variation in the tank intercepts gets smaller.
 
@@ -639,7 +645,7 @@ https://people.bath.ac.uk/jjf23/brinla/reeds.html
 
 **posterior mean for each district a for the idex fixed effect model m2.1:** 
 
-```{r summary table inla fix}
+```{r summary table inla fix, results = FALSE}
 
 # m2.2.i$summary.fixed[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -657,7 +663,7 @@ m2.1.i.fix<- lapply(m2.1.i$marginals.fixed, function (x) inla.zmarginal( inla.tm
 
 **posterior mean for each district a for the varying intercept model m2.2:** 
 
-```{r summary table inla ran}
+```{r summary table inla ran, results = FALSE}
 
 # m2.2.i$summary.random[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
 
@@ -669,7 +675,7 @@ m2.2.i.rand<- lapply(m2.2.i$marginals.random$district_id, function (x) inla.zmar
 
 ```{r 8.2.3 plot inla }
 
-# map(m2.2.i.rand, 1) extracts the first element (the mean) from the summary of the posterior of each district
+# sapply(m2.2.i.rand, function(x) x[1]) extracts the first element (the mean) from the summary of the posterior of each district
 m2.i.mean <- bind_cols(district= 1:60,mean.m2.1= unlist(sapply(m2.1.i.fix, function(x) x[1])), mean.m2.2=unlist(sapply(m2.2.i.rand, function(x) x[1])))
 
 m2.2.i.abar <- inla.zmarginal( inla.tmarginal (inverse_logit, m2.2.i$marginals.fixed[["(Intercept)"]] ))
@@ -700,28 +706,8 @@ All of this is explained by partial pooling, of course.
 
 # 3. 
 
-**Return to the Trolley data, data(Trolley), from Chapter 12. Define and fit a varying intercepts model for these data. By this I mean to add an intercept parameter for the individual to the linear model. Cluster the varying intercepts on individual participants, as indicated by the unique values in the id variable. Include action, intention, and contact as before. Compare the varying intercepts model and a model that ignores individuals, using both WAIC/LOO and posterior predictions. What is the impact of individual variation in these data?**
 
-### Trolley data context from Chapter 12
-
-**Dennis**
-Standing by the railroad tracks, Dennis sees an empty, out-of-control boxcar about to hit five people. Next to Dennis is a lever that can be pulled, sending the boxcar down a side track and away from the five people. But pulling the lever will also lower the railing on a footbridge spanning the side track, causing one person to fall off the footbridge and onto the side track, where he will be hit by the boxcar. If Dennis pulls the lever the boxcar will switch tracks and not hit the five people, and the one person to fall and be hit by the boxcar. If Dennis does not pull the lever the boxcar will continue down the tracks and hit five people, and the one person will remain safe above the side track.
-
-**Evan** 
-Standing by the railroad tracks, Evan sees an empty, out-of-control boxcar about to hit five people. Next to Evan is a lever that can be pulled, lowering the railing on a footbridge that spans the main track, and causing one person to fall off the footbridge and onto the main track, where he will be hit by the boxcar. The boxcar will slow down because of the one person, therefore preventing the five from being hit. If Evan pulls the lever the one person will fall and be hit by the boxcar, and therefore the boxcar will slow down and not hit the five people. If Evan does not pull the lever the boxcar will continue down the tracks and hit the five people, and the one person will remain safe above the main track.
-
-Most people judge that, if Even pulls the lever, it is morally worse (less permissible) than when Dennis pulls the lever. 
-
-There are 12 columns and 9930 rows, comprising data for 331 unique individuals. The outcome we’ll be interested in is response, which is an integer from 1 to 7 indicating how morally permissible the participant found the action to be taken (or not) in the story. Since this type of rating is categorical and ordered, it’s exactly the right type of problem for our ordered model.
-
-
-```{r 8.3 data}
-library(rethinking) 
-data(Trolley)
-d <- Trolley
-```
-
-I don't really care about ordered categorical data so i'm going to skip this one.
+I don't really care about ordered categorical data so i'm going to skip exercise 3.
 
 
 

@@ -362,6 +362,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW6.html">Homework 6</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW8.html">Homework 8</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -412,10 +415,8 @@ library(stringr)</code></pre>
 <p>Using a log link for a linear model (left) implies an exponential scaling of the outcome with the predictor variable (right). Another way to think of this relationship is to remember that logarithms are magnitudes. An increase of one unit on the log scale means an increase of an order of magnitude on the un- transformed scale. And this fact is reflected in the widening intervals between the horizontal lines in the right-hand plot of Figure 10.8. While using a log link does solve the problem of constraining the parameter to be posi- tive, it may also create a problem when the model is asked to predict well outside the range of data used to fit it. Exponential relationships grow, well, exponentially. Just like a lin- ear model cannot be linear forever, an exponential model cannot be exponential forever. Human height cannot be linearly related to weight forever, because very heavy people stop getting taller and start getting wider. Likewise, the property damage caused by a hurricane may be approximately exponentially related to wind speed for smaller storms. But for very big storms, damage may be capped by the fact that everything gets destroyed.</p>
 </div>
 </div>
-<div id="homework-6" class="section level1">
-<h1>HOMEWORK 6</h1>
-<div id="section" class="section level2">
-<h2>1.</h2>
+<div id="section" class="section level1">
+<h1>1.</h1>
 <p><strong>The data in data(NWOGrants) are outcomes for scientific funding applications for the Netherlands Organization for Scientific Research (NWO) from 2010–2012 (see van der Lee and Ellemers <a href="doi:10.1073/pnas.1510159112" class="uri">doi:10.1073/pnas.1510159112</a>). These data have a very similar structure to the UCBAdmit data discussed in Chapter 11. I want you to consider a similar question: What are the total and indirect causal effects of gender on grant awards? Consider a mediation path (a pipe) through discipline. Draw the corresponding DAG and then use one or more binomial GLMs to answer the question. What is your causal interpretation? If NWO’s goal is to equalize rates of funding between the genders, what type of intervention would be most effective?</strong></p>
 <p>The implied DAG is:</p>
 <pre class="r"><code>hw6.1dag &lt;- dagitty(&quot;dag{
@@ -427,7 +428,6 @@ plot(hw6.1dag)</code></pre>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW6_files/figure-html/6.1%20dag-1.png" width="672" /></p>
 <p>G is gender, D is discipline, and A is award. The direct causal effect of gender is the path G → A. The total effect includes that path and the indirect path G → D → A.</p>
-</div>
 <div id="a-total-causal-effect-of-gender" class="section level2">
 <h2>1.a total causal effect of gender</h2>
 <p>We can estimate the total causal influence (assuming this DAG is correct) with a model that conditions only on gender. I’ll use a N(-1,1) prior for the intercepts, because we know from domain knowledge that less than half of applicants get awards.</p>
@@ -447,6 +447,7 @@ awards ~ binomial( apps , p ),
 logit(p) &lt;- a[gid],
 a[gid] ~ normal(-1,1)
 ), data=dat_list , chains=4 ) </code></pre>
+<pre><code>## recompiling to avoid crashing R session</code></pre>
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 1).
 ## Chain 1: 
@@ -468,15 +469,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.010754 seconds (Warm-up)
-## Chain 1:                0.009185 seconds (Sampling)
-## Chain 1:                0.019939 seconds (Total)
+## Chain 1:  Elapsed Time: 0.010455 seconds (Warm-up)
+## Chain 1:                0.009327 seconds (Sampling)
+## Chain 1:                0.019782 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 1.5e-05 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
+## Chain 2: Gradient evaluation took 8e-06 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -493,15 +494,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.01079 seconds (Warm-up)
-## Chain 2:                0.009998 seconds (Sampling)
-## Chain 2:                0.020788 seconds (Total)
+## Chain 2:  Elapsed Time: 0.010802 seconds (Warm-up)
+## Chain 2:                0.00993 seconds (Sampling)
+## Chain 2:                0.020732 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 9e-06 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
+## Chain 3: Gradient evaluation took 7e-06 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -518,15 +519,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.009834 seconds (Warm-up)
-## Chain 3:                0.010039 seconds (Sampling)
-## Chain 3:                0.019873 seconds (Total)
+## Chain 3:  Elapsed Time: 0.00984 seconds (Warm-up)
+## Chain 3:                0.010318 seconds (Sampling)
+## Chain 3:                0.020158 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 8e-06 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.
+## Chain 4: Gradient evaluation took 7e-06 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -543,9 +544,9 @@ a[gid] ~ normal(-1,1)
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.011784 seconds (Warm-up)
-## Chain 4:                0.009242 seconds (Sampling)
-## Chain 4:                0.021026 seconds (Total)
+## Chain 4:  Elapsed Time: 0.012124 seconds (Warm-up)
+## Chain 4:                0.009443 seconds (Sampling)
+## Chain 4:                0.021567 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis(m1_total,2)</code></pre>
 <pre><code>##           mean         sd      5.5%     94.5%    n_eff    Rhat4
@@ -584,13 +585,12 @@ m1a.i &lt;- inla(awards ~ -1 + m + f , data= d1.i, family = &quot;binomial&quot;
 summary(m1a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = awards ~ -1 + m + f, family = \&quot;binomial\&quot;, data = 
-##    d1.i, &quot;, &quot; Ntrials = applications, control.compute = list(config = T), 
-##    &quot;, &quot; control.predictor = list(link = 1, compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    c(&quot;inla(formula = awards ~ -1 + m + f, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; Ntrials = 
+##    applications, control.compute = list(config = T), &quot;, &quot; control.predictor = list(link = 1, compute 
+##    = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = -1, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.12, Running = 0.113, Post = 0.117, Total = 1.35 
+##     Pre = 1.16, Running = 0.119, Post = 0.118, Total = 1.4 
 ## Fixed effects:
 ##     mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m -1.532 0.065     -1.660   -1.531     -1.407 -1.530   0
@@ -604,44 +604,25 @@ summary(m1a.i)</code></pre>
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>#computed in the outcome scale 
 m1a.i$summary.fitted.values</code></pre>
-<pre><code>##                          mean          sd 0.025quant  0.5quant 0.975quant
-## fitted.Predictor.01 0.1499131 0.010317651  0.1301956 0.1497340  0.1706421
-## fitted.Predictor.02 0.1779058 0.009440579  0.1597389 0.1777855  0.1967474
-## fitted.Predictor.03 0.1499091 0.010316723  0.1301934 0.1497302  0.1706361
-## fitted.Predictor.04 0.1779085 0.009440072  0.1597425 0.1777883  0.1967490
-## fitted.Predictor.05 0.1499154 0.010316754  0.1301995 0.1497365  0.1706424
-## fitted.Predictor.06 0.1778922 0.009438767  0.1597286 0.1777720  0.1967300
-## fitted.Predictor.07 0.1499140 0.010317386  0.1301970 0.1497350  0.1706424
-## fitted.Predictor.08 0.1778933 0.009439873  0.1597277 0.1777730  0.1967335
-## fitted.Predictor.09 0.1779015 0.009439025  0.1597374 0.1777813  0.1967398
-## fitted.Predictor.10 0.1499020 0.010315236  0.1301889 0.1497232  0.1706259
-## fitted.Predictor.11 0.1499123 0.010317606  0.1301949 0.1497333  0.1706412
-## fitted.Predictor.12 0.1779011 0.009439942  0.1597354 0.1777808  0.1967414
-## fitted.Predictor.13 0.1499103 0.010317738  0.1301928 0.1497313  0.1706396
-## fitted.Predictor.14 0.1779047 0.009440672  0.1597377 0.1777845  0.1967466
-## fitted.Predictor.15 0.1498987 0.010313838  0.1301880 0.1497199  0.1706195
-## fitted.Predictor.16 0.1778898 0.009437012  0.1597294 0.1777697  0.1967239
-## fitted.Predictor.17 0.1499127 0.010317445  0.1301957 0.1497337  0.1706413
-## fitted.Predictor.18 0.1778960 0.009439275  0.1597316 0.1777758  0.1967349
-##                          mode
-## fitted.Predictor.01 0.1493748
-## fitted.Predictor.02 0.1775440
-## fitted.Predictor.03 0.1493710
-## fitted.Predictor.04 0.1775469
-## fitted.Predictor.05 0.1493774
-## fitted.Predictor.06 0.1775307
-## fitted.Predictor.07 0.1493758
-## fitted.Predictor.08 0.1775316
-## fitted.Predictor.09 0.1775400
-## fitted.Predictor.10 0.1493642
-## fitted.Predictor.11 0.1493740
-## fitted.Predictor.12 0.1775394
-## fitted.Predictor.13 0.1493720
-## fitted.Predictor.14 0.1775430
-## fitted.Predictor.15 0.1493611
-## fitted.Predictor.16 0.1775286
-## fitted.Predictor.17 0.1493745
-## fitted.Predictor.18 0.1775345</code></pre>
+<pre><code>##                          mean          sd 0.025quant  0.5quant 0.975quant      mode
+## fitted.Predictor.01 0.1499131 0.010317651  0.1301956 0.1497340  0.1706421 0.1493748
+## fitted.Predictor.02 0.1779058 0.009440579  0.1597389 0.1777855  0.1967474 0.1775440
+## fitted.Predictor.03 0.1499091 0.010316723  0.1301934 0.1497302  0.1706361 0.1493710
+## fitted.Predictor.04 0.1779085 0.009440072  0.1597425 0.1777883  0.1967490 0.1775469
+## fitted.Predictor.05 0.1499154 0.010316754  0.1301995 0.1497365  0.1706424 0.1493774
+## fitted.Predictor.06 0.1778922 0.009438767  0.1597286 0.1777720  0.1967300 0.1775307
+## fitted.Predictor.07 0.1499140 0.010317386  0.1301970 0.1497350  0.1706424 0.1493758
+## fitted.Predictor.08 0.1778933 0.009439873  0.1597277 0.1777730  0.1967335 0.1775316
+## fitted.Predictor.09 0.1779015 0.009439025  0.1597374 0.1777813  0.1967398 0.1775400
+## fitted.Predictor.10 0.1499020 0.010315236  0.1301889 0.1497232  0.1706259 0.1493642
+## fitted.Predictor.11 0.1499123 0.010317606  0.1301949 0.1497333  0.1706412 0.1493740
+## fitted.Predictor.12 0.1779011 0.009439942  0.1597354 0.1777808  0.1967414 0.1775394
+## fitted.Predictor.13 0.1499103 0.010317738  0.1301928 0.1497313  0.1706396 0.1493720
+## fitted.Predictor.14 0.1779047 0.009440672  0.1597377 0.1777845  0.1967466 0.1775430
+## fitted.Predictor.15 0.1498987 0.010313838  0.1301880 0.1497199  0.1706195 0.1493611
+## fitted.Predictor.16 0.1778898 0.009437012  0.1597294 0.1777697  0.1967239 0.1775286
+## fitted.Predictor.17 0.1499127 0.010317445  0.1301957 0.1497337  0.1706413 0.1493745
+## fitted.Predictor.18 0.1778960 0.009439275  0.1597316 0.1777758  0.1967349 0.1775345</code></pre>
 <pre class="r"><code>#contrast between male and female
 
 n.samples = 1000
@@ -662,7 +643,7 @@ m1a.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
    m1a.i.samples)
 summary(as.vector(m1a.i.contrast1))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.01781  0.01824  0.02734  0.02780  0.03794  0.07189</code></pre>
+## -0.01736  0.01937  0.02876  0.02844  0.03821  0.07326</code></pre>
 </div>
 </div>
 <div id="b-direct-effect-of-gender" class="section level2">
@@ -731,15 +712,13 @@ m1b.i &lt;- inla(awards ~ -1 + m + f + d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9, data
 summary(m1b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; d.5 
-##    + d.6 + d.7 + d.8 + d.9, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; 
-##    Ntrials = applications, control.compute = list(config = T), &quot;, &quot; 
-##    control.predictor = list(link = 1, compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
-##    list(mean = list(m = -1, f = -1, d.1 = 0, &quot;, &quot; d.2 = 0, d.3 = 0, d.4 = 
-##    0, d.5 = 0, d.6 = 0, d.7 = 0, &quot;, &quot; d.8 = 0, d.9), prec = 1))&quot;) 
+##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; d.5 + d.6 + d.7 + d.8 + d.9, 
+##    family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; Ntrials = applications, control.compute = list(config = 
+##    T), &quot;, &quot; control.predictor = list(link = 1, compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = list(m = -1, f = -1, d.1 = 0, &quot;, &quot; d.2 
+##    = 0, d.3 = 0, d.4 = 0, d.5 = 0, d.6 = 0, d.7 = 0, &quot;, &quot; d.8 = 0, d.9), prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.79, Running = 0.141, Post = 0.225, Total = 2.16 
+##     Pre = 1.8, Running = 0.136, Post = 0.218, Total = 2.16 
 ## Fixed effects:
 ##       mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m   -1.348 0.308     -1.953   -1.348     -0.745 -1.348   0
@@ -772,12 +751,13 @@ m1b.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
 },
    m1b.i.samples)
 summary(as.vector(m1b.i.contrast1))</code></pre>
-<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.18425  0.07761  0.14523  0.14810  0.21830  0.50381</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.1586  0.0704  0.1411  0.1407  0.2081  0.4645</code></pre>
 </div>
 </div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
+</div>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
 <p><strong>Suppose that the NWO Grants sample has an unobserved confound that influences both choice of discipline and the probability of an award. One example of such a confound could be the career stage of each applicant. Suppose that in some disciplines, junior scholars apply for most of the grants. In other disciplines, scholars from all career stages compete. As a result, career stage influences discipline as well as the probability of being awarded a grant. Add these influences to your DAG from Problem 1. What happens now when you condition on discipline? Does it provide an un-confounded estimate of the direct path from gender to an award? Why or why not? Justify your answer with the back-door criterion. Hint: This is structurally a lot like the grandparents-parents- children-neighborhoods example from a previous week. If you have trouble thinking this though, try simulating fake data, assuming your DAG is true. Then analyze it using the model from Problem 1. What do you conclude? Is it possible for gender to have a real direct causal influence but for a regression conditioning on both gender and discipline to suggest zero influence?</strong></p>
 <pre class="r"><code>hw6.2dag &lt;- dagitty(&quot;dag{
                   A &lt;- G
@@ -839,13 +819,12 @@ m2a.i &lt;- inla(A ~ D+G, data= dat_sim, family = &quot;binomial&quot;,
 summary(m2a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim, &quot;, &quot; 
-##    Ntrials = 1, control.compute = list(config = T), control.predictor = 
-##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
-##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim, &quot;, &quot; Ntrials = 1, 
+##    control.compute = list(config = T), control.predictor = list(link = 1, &quot;, &quot; compute = T), 
+##    control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, 
+##    prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.21, Running = 0.245, Post = 0.186, Total = 1.64 
+##     Pre = 1.24, Running = 0.259, Post = 0.181, Total = 1.68 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.073 0.143     -1.358   -1.072     -0.798 -1.069   0
@@ -898,13 +877,12 @@ m2b.i &lt;- inla(A ~ D+G, data= dat_sim2, family = &quot;binomial&quot;,
 summary(m2b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim2, &quot;, 
-##    &quot; Ntrials = 1, control.compute = list(config = T), control.predictor = 
-##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
-##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim2, &quot;, &quot; Ntrials = 1, 
+##    control.compute = list(config = T), control.predictor = list(link = 1, &quot;, &quot; compute = T), 
+##    control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, 
+##    prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.2, Running = 0.251, Post = 0.19, Total = 1.64 
+##     Pre = 1.25, Running = 0.252, Post = 0.174, Total = 1.68 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.120 0.119     -1.358   -1.119     -0.889 -1.116   0
@@ -919,10 +897,9 @@ summary(m2b.i)</code></pre>
 ##  the fitted values are computed</code></pre>
 </div>
 </div>
-<div id="section-2" class="section level2">
-<h2>3.</h2>
+<div id="section-2" class="section level1">
+<h1>3.</h1>
 <p><strong>The data in data(Primates301) were first introduced at the end of Chapter7. In this problem, you will consider how brain size is associated with social learning. There are three parts.</strong></p>
-</div>
 <div id="section-3" class="section level2">
 <h2>3.1</h2>
 <p><strong>First, model the number of observations of social_learning for each species as a function of the log brain size. Use a Poisson distribution for the social_learning outcome variable. Interpret the resulting posterior.</strong></p>
@@ -964,7 +941,7 @@ log_brain = standardize( log(brain) ),
 log_effort = log(research_effort), 
 case= row_number())
 
-m3.1a.i &lt;- inla( soc_learn~ log_brain, family=&#39;poisson&#39;,
+m3.1.i &lt;- inla( soc_learn~ log_brain, family=&#39;poisson&#39;,
    data=d3.i,
    control.fixed = list(
         mean= 0,
@@ -975,16 +952,15 @@ m3.1a.i &lt;- inla( soc_learn~ log_brain, family=&#39;poisson&#39;,
    control.predictor=list(link=1, compute=TRUE),
    control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
 
-summary(m3.1a.i)</code></pre>
+summary(m3.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = soc_learn ~ log_brain, family = \&quot;poisson\&quot;, data = 
-##    d3.i, &quot;, &quot; control.compute = list(dic = TRUE, cpo = TRUE, waic = TRUE), 
-##    &quot;, &quot; control.predictor = list(link = 1, compute = TRUE), control.family 
-##    = list(link = \&quot;log\&quot;), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
+##    c(&quot;inla(formula = soc_learn ~ log_brain, family = \&quot;poisson\&quot;, data = d3.i, &quot;, &quot; control.compute = 
+##    list(dic = TRUE, cpo = TRUE, waic = TRUE), &quot;, &quot; control.predictor = list(link = 1, compute = 
+##    TRUE), control.family = list(link = \&quot;log\&quot;), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, 
 ##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 1.25, Running = 0.153, Post = 0.14, Total = 1.54 
+##     Pre = 2.32, Running = 0.19, Post = 0.202, Total = 2.71 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.190 0.116     -1.421   -1.188     -0.966 -1.185   0
@@ -1049,14 +1025,14 @@ c(bb,be) ~ normal(0,0.5)
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
 <pre class="r"><code>precis( m3_2 )</code></pre>
 <pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
-## a  -5.9171107 0.31274462 -6.4346177 -5.4068060 408.0794 1.015240
-## be  1.5192787 0.06683390  1.4129849  1.6267579 371.0824 1.016968
-## bb  0.4766562 0.08401341  0.3443683  0.6125972 477.1532 1.009209</code></pre>
+## a  -5.9460474 0.30694564 -6.4378049 -5.4522747 429.0580 1.006912
+## be  1.5272485 0.06503829  1.4247745  1.6333382 378.6569 1.008220
+## bb  0.4674856 0.07983886  0.3396498  0.5951279 458.3580 1.003883</code></pre>
 <pre class="r"><code>precis( m3_2)</code></pre>
 <pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
-## a  -5.9171107 0.31274462 -6.4346177 -5.4068060 408.0794 1.015240
-## be  1.5192787 0.06683390  1.4129849  1.6267579 371.0824 1.016968
-## bb  0.4766562 0.08401341  0.3443683  0.6125972 477.1532 1.009209</code></pre>
+## a  -5.9460474 0.30694564 -6.4378049 -5.4522747 429.0580 1.006912
+## be  1.5272485 0.06503829  1.4247745  1.6333382 378.6569 1.008220
+## bb  0.4674856 0.07983886  0.3396498  0.5951279 458.3580 1.003883</code></pre>
 <pre class="r"><code>postcheck(m3_2,window=50)</code></pre>
 <p><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-1.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-2.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-3.png" width="672" /></p>
 <p>Brain size bb is still positively associated, but much less. Research effort be is strongly associated. To see how these models disagree, let’s use pointwise WAIC to see which cases each predicts well.</p>
@@ -1086,14 +1062,12 @@ m3.2.i &lt;- inla( soc_learn~ log_brain + log_effort, family=&#39;poisson&#39;,
 summary(m3.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = soc_learn ~ log_brain + log_effort, family = 
-##    \&quot;poisson\&quot;, &quot;, &quot; data = d3.i, control.compute = list(dic = TRUE, cpo = 
-##    TRUE, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, compute = 
-##    TRUE), &quot;, &quot; control.family = list(link = \&quot;log\&quot;), control.fixed = 
-##    list(mean = 0, &quot;, &quot; prec = 1, mean.intercept = 0, prec.intercept = 
-##    1/(0.5^2)))&quot; ) 
+##    c(&quot;inla(formula = soc_learn ~ log_brain + log_effort, family = \&quot;poisson\&quot;, &quot;, &quot; data = d3.i, 
+##    control.compute = list(dic = TRUE, cpo = TRUE, &quot;, &quot; waic = TRUE), control.predictor = list(link = 
+##    1, compute = TRUE), &quot;, &quot; control.family = list(link = \&quot;log\&quot;), control.fixed = list(mean = 0, &quot;, 
+##    &quot; prec = 1, mean.intercept = 0, prec.intercept = 1/(0.5^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.3, Running = 0.161, Post = 0.181, Total = 1.65 
+##     Pre = 1.37, Running = 0.186, Post = 0.154, Total = 1.71 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -4.833 0.239     -5.310   -4.831     -4.372 -4.825   0
@@ -1119,9 +1093,9 @@ summary(m3.2.i)</code></pre>
 waic.i2 &lt;- m3.2.i$waic$local.waic
 
 d3.i &lt;- d3.i %&gt;% 
-  mutate(waic.i1= waic.i1a, 
-         waic.i2= waic.i1b, 
-         waic.diff= waic.i1a-waic.i1b)
+  mutate(waic.i1= waic.i1, 
+         waic.i2= waic.i2, 
+         waic.diff= waic.i1-waic.i2)
 
 waic.i.3plot &lt;- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= genus))+
   geom_point()+
@@ -1131,7 +1105,11 @@ waic.i.3plot &lt;- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= ge
   
   
 waic.i.3plot</code></pre>
-<p><img src="rethinkingINLA_HW6_files/figure-html/inla%206.3%20waic%20compare-1.png" width="672" /> Species on the right of the vertical line fit better for model m3_2, the model with research effort. These are mostly species that are studied a lot, like chimpanzees (Pan) and macaques (Macaca). The genus Pan especially has been a focus on social learning research, and its counts are inflated by this. This is a good example of how the nature of measurement influences inference. There are likely a lot of false zeros in these data, species that are not studied often enough to get a good idea of their learning tendencies. Meanwhile every time a chimpanzee sneezes, someone writes a social learning paper.</p>
+<p><img src="rethinkingINLA_HW6_files/figure-html/inla%206.3%20waic%20compare-1.png" width="672" /></p>
+<p>Species on the right of the vertical line fit better for model m3_2, the model with research effort. These are mostly species that are studied a lot, like chimpanzees (Pan) and macaques (Macaca). The genus Pan especially has been a focus on social learning research, and its counts are inflated by this. This is a good example of how the nature of measurement influences inference. There are likely a lot of false zeros in these data, species that are not studied often enough to get a good idea of their learning tendencies. Meanwhile every time a chimpanzee sneezes, someone writes a social learning paper.</p>
+</div>
+<div id="section-5" class="section level3">
+<h3>3.3</h3>
 <p><strong>3. Third, draw a DAG to represent how you think the variables social_learning, brain, and research_effort interact. Justify the DAG with the measured associations in the two models above (and any other models you used).</strong></p>
 <p>The implied DAG is:</p>
 <pre class="r"><code>hw6.3dag &lt;- dagitty(&quot;dag{
@@ -1141,7 +1119,8 @@ waic.i.3plot</code></pre>
                   }&quot;)
 plot(hw6.3dag)</code></pre>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
-<p><img src="rethinkingINLA_HW6_files/figure-html/6.3.3%20dag-1.png" width="672" /> B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning</p>
+<p><img src="rethinkingINLA_HW6_files/figure-html/6.3.3%20dag-1.png" width="672" /></p>
+<p>B is brain size, E is research effort, and S is social learning. Research effort doesn’t actually influence social learning, but it does influence the value of the variable. The model results above are consistent with this DAG in the sense that including E reduced the association with B, which we would expect when we close the indirect path through E. If researchers choose to look for social learning in species with large brains, this leads to an exaggerated estimate of the association between brains and social learning</p>
 </div>
 </div>
 </div>

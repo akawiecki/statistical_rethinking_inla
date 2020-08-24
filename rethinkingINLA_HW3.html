@@ -362,6 +362,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW6.html">Homework 6</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW8.html">Homework 8</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -383,8 +386,6 @@ div.tocify {
 library(rethinking)
 library(dagitty)
 library(INLA)</code></pre>
-<div id="homework-3" class="section level1">
-<h1>HOMEWORK 3</h1>
 <p>All three problems below are based on the same data. The data in data(foxes) are 116 foxes from 30 different urban groups in England. These foxes are like street gangs. Group size varies from 2 to 8 individuals. Each group maintains its own (almost exclusive) urban territory. Some territories are larger than others. The area variable encodes this information. Some territories also have more avgfood than others. We want to model the weight of each fox. For the problems below, assume this DAG:</p>
 <pre class="r"><code>hw3dag &lt;- dagitty(&quot;dag{
                   avgfood &lt;- area
@@ -396,11 +397,11 @@ library(INLA)</code></pre>
 plot(hw3dag)</code></pre>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW3_files/figure-html/hw3%20dag-1.png" width="672" /></p>
-<div id="section" class="section level2">
-<h2>1.</h2>
+<div id="section" class="section level1">
+<h1>1.</h1>
 <p><strong>Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.</strong></p>
-<div id="rethinking" class="section level3">
-<h3>1. rethinking</h3>
+<div id="rethinking" class="section level2">
+<h2>1. rethinking</h2>
 <p>Because there are no back-door paths from area to weight,we only need to include area. No other variables are needed. Territory size seems to have no total causal influence on weight, at least not in this sample.</p>
 <pre class="r"><code>data(foxes)
 f &lt;- foxes
@@ -425,8 +426,8 @@ precis(m1)</code></pre>
 ## bA     1.886254e-02 0.09089420 -0.1264040 0.1641290
 ## sigma  9.912479e-01 0.06466352  0.8879031 1.0945927</code></pre>
 </div>
-<div id="inla" class="section level3">
-<h3>1. INLA</h3>
+<div id="inla" class="section level2">
+<h2>1. INLA</h2>
 <p><strong>default priors</strong></p>
 <p>By default, the intercept has a Gaussian prior with mean and precision equal to zero. Coefficients of the fixed effects also have a Gaussian prior by default with zero mean and precision equal to<br />
 0.001. The prior on the precision of the error term is, by default, a Gamma distribution with parameters 1 and 0.00005 (shape and rate, respectively) ( so this is different from the statistical rethinking book’s prior on the variance which is exp(1))</p>
@@ -438,17 +439,15 @@ summary(m1.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ A, data = f)&quot; 
 ## Time used:
-##     Pre = 1.97, Running = 0.152, Post = 0.157, Total = 2.27 
+##     Pre = 1.91, Running = 0.156, Post = 0.159, Total = 2.22 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.093     -0.183    0.000      0.183 0.000   0
 ## A           0.019 0.094     -0.165    0.019      0.203 0.019   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28
-##                                          mode
-## Precision for the Gaussian observations 0.992
+##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28 0.992
 ## 
 ## Expected number of effective parameters(stdev): 2.00(0.00)
 ## Number of equivalent replicates : 57.98 
@@ -465,20 +464,18 @@ summary(m1.inla)</code></pre>
 summary(m1.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
-##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), 
+##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.16, Running = 0.129, Post = 0.148, Total = 1.43 
+##     Pre = 1.14, Running = 0.127, Post = 0.153, Total = 1.42 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.084     -0.166    0.000      0.166 0.000   0
 ## A           0.019 0.092     -0.162    0.019      0.199 0.019   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29
-##                                          mode
-## Precision for the Gaussian observations 0.993
+##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29 0.993
 ## 
 ## Expected number of effective parameters(stdev): 1.79(0.025)
 ## Number of equivalent replicates : 64.84 
@@ -486,11 +483,11 @@ summary(m1.inla.prior)</code></pre>
 ## Marginal log-Likelihood:  -177.65</code></pre>
 </div>
 </div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
 <p><strong>Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?</strong></p>
-<div id="rethinking-1" class="section level3">
-<h3>2.rethinking</h3>
+<div id="rethinking-1" class="section level2">
+<h2>2.rethinking</h2>
 <p>To infer the causal influence of avg food on weight,we need to close any back-door paths. There are no back-door paths in the DAG. So again, just use a model with a single predictor. If you include groupsize, to block the indirect path, then you won’t get the total causal influence of food. You’ll just get the direct influence. But I asked for the effect of adding food, and that would mean through all forward paths.</p>
 <p>Again nothing. Adding food does not change weight. This shouldn’t surprise you, if the DAG is correct, because area is upstream of avgfood.</p>
 <pre class="r"><code># food on weight
@@ -509,8 +506,8 @@ precis(m2)</code></pre>
 ## bF    -2.421092e-02 0.09088496 -0.1694626 0.1210408
 ## sigma  9.911433e-01 0.06465848  0.8878066 1.0944801</code></pre>
 </div>
-<div id="inla-1" class="section level3">
-<h3>2.INLA</h3>
+<div id="inla-1" class="section level2">
+<h2>2.INLA</h2>
 <p><strong>INLA default priors</strong></p>
 <pre class="r"><code>#using default priors
 
@@ -520,17 +517,15 @@ summary(m2.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F, data = f)&quot; 
 ## Time used:
-##     Pre = 1.17, Running = 0.129, Post = 0.146, Total = 1.44 
+##     Pre = 1.21, Running = 0.131, Post = 0.146, Total = 1.49 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.093     -0.183    0.000      0.183  0.000   0
 ## F           -0.025 0.094     -0.209   -0.025      0.159 -0.025   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28
-##                                          mode
-## Precision for the Gaussian observations 0.992
+##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28 0.992
 ## 
 ## Expected number of effective parameters(stdev): 2.00(0.00)
 ## Number of equivalent replicates : 57.98 
@@ -550,20 +545,18 @@ m2.inla.prior &lt;- inla(W~F, data= f, control.fixed = list(
 summary(m2.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
-##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), 
+##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.18, Running = 0.132, Post = 0.148, Total = 1.46 
+##     Pre = 1.15, Running = 0.13, Post = 0.157, Total = 1.44 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.084     -0.166    0.000      0.166  0.000   0
 ## F           -0.024 0.092     -0.205   -0.024      0.156 -0.024   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29
-##                                          mode
-## Precision for the Gaussian observations 0.994
+##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29 0.994
 ## 
 ## Expected number of effective parameters(stdev): 1.79(0.025)
 ## Number of equivalent replicates : 64.84 
@@ -571,11 +564,11 @@ summary(m2.inla.prior)</code></pre>
 ## Marginal log-Likelihood:  -177.64</code></pre>
 </div>
 </div>
-<div id="section-2" class="section level2">
-<h2>3.</h2>
+<div id="section-2" class="section level1">
+<h1>3.</h1>
 <p><strong>Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?</strong></p>
-<div id="rethinking-2" class="section level3">
-<h3>3. rethinking</h3>
+<div id="rethinking-2" class="section level2">
+<h2>3. rethinking</h2>
 <p>The variable groupsize does have a back-door path, passing through avgfood. So to infer the causal influence of groupsize, we need to close that path. This implies a model with both groupsize and avgfood as predictors.</p>
 <p>It looks like group size is negatively associated with weight, controlling for food. Similarly, food is positively associated with weight, controlling for group size. So the causal influence of group size is to reduce weight—less food for each fox. And the direct causal influence of food is positive, of course. But the total causal influence of food is still nothing, since it causes larger groups. This is a masking effect, like in the milk energy example. But the causal explanation here is that more foxes move into a territory until the food available to each is no better than the food in a neighboring territory. Every territory ends up equally good/bad on average. This is known in be- havioral ecology as an ideal free distribution.</p>
 <pre class="r"><code># groupsize on weight
@@ -597,8 +590,8 @@ precis(m3)</code></pre>
 ## bG    -5.735298e-01 0.17913821 -0.8598273 -0.2872324
 ## sigma  9.420204e-01 0.06174870  0.8433340  1.0407067</code></pre>
 </div>
-<div id="inla-2" class="section level3">
-<h3>3. INLA</h3>
+<div id="inla-2" class="section level2">
+<h2>3. INLA</h2>
 <p><strong>INLA default priors</strong></p>
 <pre class="r"><code>#using default priors
 
@@ -608,7 +601,7 @@ summary(m3.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F + G, family = c(\&quot;gaussian\&quot;), data = f)&quot; 
 ## Time used:
-##     Pre = 1.24, Running = 0.133, Post = 0.148, Total = 1.52 
+##     Pre = 1.22, Running = 0.142, Post = 0.15, Total = 1.51 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.089     -0.174    0.000      0.174  0.000   0
@@ -616,10 +609,8 @@ summary(m3.inla)</code></pre>
 ## G           -0.739 0.206     -1.144   -0.739     -0.335 -0.739   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.11 0.147      0.845     1.11       1.42
-##                                         mode
-## Precision for the Gaussian observations 1.09
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.11 0.147      0.845     1.11       1.42 1.09
 ## 
 ## Expected number of effective parameters(stdev): 3.00(0.00)
 ## Number of equivalent replicates : 38.66 
@@ -637,11 +628,10 @@ m3.inla.prior &lt;- inla(W~F+G, data= f, control.fixed = list(
 summary(m3.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = 
-##    list(F = 0, &quot;, &quot; G = 0), prec = list(F = 1/(0.5^2), G = 1/(0.5^2)), 
-##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
+##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = 
+##    list(F = 1/(0.5^2), G = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
 ## Time used:
-##     Pre = 1.23, Running = 0.134, Post = 0.162, Total = 1.53 
+##     Pre = 1.19, Running = 0.136, Post = 0.163, Total = 1.49 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.081     -0.159    0.000      0.159  0.000   0
@@ -649,16 +639,13 @@ summary(m3.inla.prior)</code></pre>
 ## G           -0.570 0.181     -0.923   -0.571     -0.213 -0.573   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.11 0.147      0.843     1.11       1.42
-##                                         mode
-## Precision for the Gaussian observations 1.09
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.11 0.147      0.843     1.11       1.42 1.09
 ## 
 ## Expected number of effective parameters(stdev): 2.58(0.047)
 ## Number of equivalent replicates : 45.03 
 ## 
 ## Marginal log-Likelihood:  -173.84</code></pre>
-</div>
 </div>
 </div>
 

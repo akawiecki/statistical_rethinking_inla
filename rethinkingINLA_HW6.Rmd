@@ -407,7 +407,7 @@ log_brain = standardize( log(brain) ),
 log_effort = log(research_effort), 
 case= row_number())
 
-m3.1a.i <- inla( soc_learn~ log_brain, family='poisson',
+m3.1.i <- inla( soc_learn~ log_brain, family='poisson',
    data=d3.i,
    control.fixed = list(
         mean= 0,
@@ -418,7 +418,7 @@ m3.1a.i <- inla( soc_learn~ log_brain, family='poisson',
    control.predictor=list(link=1, compute=TRUE),
    control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE))
 
-summary(m3.1a.i)
+summary(m3.1.i)
 ```
 
 inla postcheck
@@ -512,9 +512,9 @@ waic.i1 <- m3.1.i$waic$local.waic
 waic.i2 <- m3.2.i$waic$local.waic
 
 d3.i <- d3.i %>% 
-  mutate(waic.i1= waic.i1a, 
-         waic.i2= waic.i1b, 
-         waic.diff= waic.i1a-waic.i1b)
+  mutate(waic.i1= waic.i1, 
+         waic.i2= waic.i2, 
+         waic.diff= waic.i1-waic.i2)
 
 waic.i.3plot <- ggplot(data= d3.i, aes(x= waic.diff, y= log_effort, label= genus))+
   geom_point()+

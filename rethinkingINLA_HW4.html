@@ -362,6 +362,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW6.html">Homework 6</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW8.html">Homework 8</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -384,10 +387,8 @@ library(rethinking)
 library(dagitty)
 library(INLA)
 library(knitr)</code></pre>
-<div id="homework-4" class="section level1">
-<h1>HOMEWORK 4</h1>
-<div id="section" class="section level2">
-<h2>1.</h2>
+<div id="section" class="section level1">
+<h1>1.</h1>
 <p><strong>Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:</strong></p>
 <pre class="r"><code>IB1 &lt;- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
 IB2&lt;- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
@@ -472,8 +473,8 @@ round( Dm , 2 )</code></pre>
 ## [3,] 0.64 2.01 0.00</code></pre>
 <p>The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.</p>
 </div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
 <p>Recall the marriage,age,and happiness collider bias example from Chapter 6.</p>
 <p>Consider the question of how aging influences happiness.If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?</p>
 <p>Suppose, just to be provocative, that an individual’s average happiness is a trait that is determined at birth and does not change with age. However, happiness does influence events in one’s life. One of those events is marriage. Happier people are more likely to get married. Another variable that causally influences marriage is age: The more years you are alive, the more likely you are to eventually get married. Putting these three variables together, this is the causal model:</p>
@@ -496,6 +497,8 @@ d2 &lt;- d[ d$age&gt;17 , ] # only adults
 d2$A &lt;- ( d2$age - 18 ) / ( 65 - 18 )
 d2$mid &lt;- d2$married + 1</code></pre>
 <p>Model m6.9 contains both marriage status and age. Model m6.10 contains only age. Model m6.9 produces a confounded inference about the relationship between age and happiness, due to opening a collider path.</p>
+<div id="marriage-status-and-age" class="section level2">
+<h2>2.1 marriage status and age</h2>
 <div id="rethinking" class="section level3">
 <h3>2.1 rethinking</h3>
 <pre class="r"><code>#contains both marriage status and age
@@ -515,8 +518,9 @@ precis(m6.9,depth=2)</code></pre>
 ## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
 ## sigma  0.9897080 0.02255800  0.9536559  1.0257600</code></pre>
 </div>
-<div id="inla" class="section level3">
-<h3>2.1 INLA</h3>
+</div>
+<div id="inla" class="section level2">
+<h2>2.1 INLA</h2>
 <p>In order to code a separate intercept for being married/not, we need to reformat the data so that there are separate variables for each intercept, with 1s for a given value of the variable we are basing the intercept on ( in this case marriage) and NAs for all other values.</p>
 <pre class="r"><code>d3 &lt;- d2 %&gt;% 
   mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
@@ -532,12 +536,11 @@ m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3,
 summary(m6.9.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; 
-##    data = d3, control.compute = list(dic = TRUE, waic = TRUE), &quot;, &quot; 
-##    control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; 
-##    i_married = 1, A = 2)))&quot;) 
+##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, control.compute = 
+##    list(dic = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(i_notmarried = 2, 
+##    &quot;, &quot; i_married = 1, A = 2)))&quot;) 
 ## Time used:
-##     Pre = 1.13, Running = 0.441, Post = 0.227, Total = 1.8 
+##     Pre = 1.18, Running = 0.531, Post = 0.216, Total = 1.93 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -545,10 +548,8 @@ summary(m6.9.inla.prior )</code></pre>
 ## A            -0.736 0.112     -0.956   -0.736     -0.516 -0.736   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for the Gaussian observations 1.02 0.046       0.93     1.02       1.11
-##                                         mode
-## Precision for the Gaussian observations 1.02
+##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
+## Precision for the Gaussian observations 1.02 0.046       0.93     1.02       1.11 1.02
 ## 
 ## Expected number of effective parameters(stdev): 2.97(0.002)
 ## Number of equivalent replicates : 323.69 
@@ -564,6 +565,8 @@ summary(m6.9.inla.prior )</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 </div>
+<div id="only-age" class="section level2">
+<h2>2.2 only age</h2>
 <div id="rethinking-1" class="section level3">
 <h3>2.2 rethinking</h3>
 <pre class="r"><code>#this model to a model that omits marriage status.
@@ -595,21 +598,18 @@ precis(m6.10)</code></pre>
 summary(m6.10.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = 
-##    TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 1/(2^2), 
-##    &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), 
+##    control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.11, Running = 0.454, Post = 0.207, Total = 1.78 
+##     Pre = 1.09, Running = 0.461, Post = 0.204, Total = 1.76 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
 ## A              0 0.132     -0.260        0      0.260    0   0
 ## 
 ## Model hyperparameters:
-##                                          mean    sd 0.025quant 0.5quant
-## Precision for the Gaussian observations 0.679 0.031       0.62    0.678
-##                                         0.975quant  mode
-## Precision for the Gaussian observations       0.74 0.677
+##                                          mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for the Gaussian observations 0.679 0.031       0.62    0.678       0.74 0.677
 ## 
 ## Expected number of effective parameters(stdev): 1.99(0.001)
 ## Number of equivalent replicates : 481.52 
@@ -645,8 +645,9 @@ summary(m6.10.inla.prior )</code></pre>
 <p>The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.</p>
 </div>
 </div>
-<div id="section-2" class="section level2">
-<h2>3.</h2>
+</div>
+<div id="section-2" class="section level1">
+<h1>3.</h1>
 <p><strong>Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:</strong> (1) avgfood + groupsize + area (2) avgfood + groupsize (3) groupsize + area (4) avgfood (5) area</p>
 <p><strong>Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).</strong></p>
 <pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
@@ -658,8 +659,8 @@ d$W &lt;- standardize(d$weight)
 d$A &lt;- standardize(d$area)
 d$F &lt;- standardize(d$avgfood)
 d$G &lt;- standardize(d$groupsize)</code></pre>
-<div id="rethinking-2" class="section level3">
-<h3>3. rethinking</h3>
+<div id="rethinking-2" class="section level2">
+<h2>3. rethinking</h2>
 <pre class="r"><code>m1 &lt;- quap(
     alist(
         W ~ dnorm( mu , sigma ),
@@ -710,8 +711,8 @@ m5 &lt;- quap(
 ## m4 333.4369 13.78791 10.579891 7.194478 2.423844 0.002343859
 ## m5 333.7415 13.79359 10.884499 7.243278 2.659040 0.002012735</code></pre>
 </div>
-<div id="inla-2" class="section level3">
-<h3>3. INLA</h3>
+<div id="inla-2" class="section level2">
+<h2>3. INLA</h2>
 <pre class="r"><code>m1.i &lt;- inla(W~F+G+A, data= d, control.fixed = list(
         mean= list(0), 
         prec= list(F=1/(0.5^2), G=1/(0.5^2), A= 1/(0.5^2)), 
@@ -775,7 +776,6 @@ m1.i$waic$waic</code></pre>
 ## sigma    0.99    0.99
 ## bA         NA    0.02
 ## nobs      116     116</code></pre>
-</div>
 </div>
 </div>
 

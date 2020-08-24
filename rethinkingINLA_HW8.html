@@ -362,6 +362,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW6.html">Homework 6</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW8.html">Homework 8</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -393,9 +396,11 @@ data(reedfrogs)
 d &lt;- reedfrogs</code></pre>
 <div id="varying-intercepts-model" class="section level2">
 <h2>1.1 varying intercepts model</h2>
-<p>Si ∼ Binomial(Ni, pi) logit(pi) = αtank[i]<br />
-αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
-<span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank] σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
+<p>Si ∼ Binomial(Ni, pi)</p>
+<p>logit(pi) = αtank[i]</p>
+<p>αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]</p>
+<p><span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank]</p>
+<p>σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
 <div id="rethinking" class="section level3">
 <h3>1.1 rethinking</h3>
 <pre class="r"><code>dat &lt;- list(
@@ -411,34 +416,59 @@ logit(p) &lt;- a[tank],
 a[tank] ~ normal( a_bar , sigma ), 
 a_bar ~ normal( 0 , 1.5 ),
 sigma ~ exponential( 1 )
-), data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
-<pre class="r"><code>precis(m1.1)</code></pre>
-<pre><code>## 48 vector or matrix parameters hidden. Use depth=2 to show them.</code></pre>
-<pre><code>##           mean        sd      5.5%    94.5%    n_eff     Rhat4
-## a_bar 1.339821 0.2624777 0.9228659 1.764548 2674.515 0.9994702
-## sigma 1.620245 0.2113086 1.3151959 1.976367 1679.252 0.9995473</code></pre>
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+precis(m1.1, depth= 2)</code></pre>
+<pre><code>##               mean        sd        5.5%       94.5%    n_eff     Rhat4
+## a[1]   2.158359537 0.8874197  0.89734366  3.62027001 2695.750 0.9985693
+## a[2]   3.105150864 1.1412498  1.44125501  5.03879506 2463.482 1.0000958
+## a[3]   0.987038940 0.7014589 -0.06587561  2.18027163 3138.656 0.9993144
+## a[4]   3.084679654 1.0960477  1.50524658  4.96940450 2158.070 1.0000372
+## a[5]   2.134687837 0.8501626  0.91180398  3.55576490 3256.890 0.9983734
+## a[6]   2.155826333 0.9236084  0.80782567  3.72318258 2886.100 1.0005688
+## a[7]   3.064186534 1.0500020  1.54359813  4.90790390 2183.956 1.0002043
+## a[8]   2.118535358 0.8359354  0.91086366  3.52750882 3533.377 0.9988510
+## a[9]  -0.175713297 0.6263781 -1.19342007  0.81581842 4611.978 0.9991859
+## a[10]  2.131628066 0.8806889  0.82328397  3.57008872 2829.934 0.9995023
+## a[11]  1.015364260 0.6827056 -0.01899856  2.14074816 2988.801 0.9996545
+## a[12]  0.584664144 0.6391935 -0.40937840  1.60318753 2914.988 0.9984727
+## a[13]  1.012177445 0.6732911  0.01635132  2.09237580 2615.416 1.0022500
+## a[14]  0.215836359 0.6472999 -0.79531423  1.24402533 4071.852 0.9988666
+## a[15]  2.125781388 0.8658419  0.84883662  3.59559158 2730.597 0.9995731
+## a[16]  2.164060027 0.9048711  0.85017446  3.68230858 2850.707 0.9998002
+## a[17]  2.919176726 0.7933390  1.76533200  4.25810117 2824.038 0.9988613
+## a[18]  2.404544998 0.6657331  1.43687798  3.56289600 2622.544 0.9990522
+## a[19]  2.022649089 0.5951191  1.12765545  3.00784613 2902.653 0.9988125
+## a[20]  3.692379066 1.0220634  2.21464324  5.46791210 2178.368 1.0011639
+## a[21]  2.388176816 0.6582286  1.43655717  3.46970719 3439.318 0.9987218
+## a[22]  2.386719850 0.6380751  1.41883586  3.43474839 2713.241 1.0006380
+## a[23]  2.394974865 0.6689064  1.43516736  3.52281763 2294.763 1.0001091
+## a[24]  1.686401836 0.5285959  0.87935115  2.55703349 2849.247 0.9985609
+## a[25] -1.014799906 0.4507448 -1.73822198 -0.32041693 2972.407 0.9991215
+## a[26]  0.162687649 0.3966788 -0.46928360  0.78356359 3759.160 0.9987496
+## a[27] -1.431356023 0.4886455 -2.21332624 -0.70436106 3639.892 0.9988752
+## a[28] -0.472306005 0.4040234 -1.15518318  0.18244557 3108.278 1.0000990
+## a[29]  0.172904983 0.3931286 -0.44659900  0.82333051 4156.760 0.9988930
+## a[30]  1.454394664 0.4977348  0.68053510  2.26148512 3473.367 0.9996917
+## a[31] -0.637297658 0.4287534 -1.35122838  0.02446444 3204.874 0.9996553
+## a[32] -0.314017947 0.4039442 -0.94611999  0.32237863 4775.325 0.9996830
+## a[33]  3.173684478 0.7520628  2.08435631  4.44767590 3207.376 0.9997210
+## a[34]  2.717194587 0.6270306  1.81220340  3.76420248 2188.765 0.9995372
+## a[35]  2.729330204 0.6226609  1.80544015  3.73246359 3014.503 1.0000476
+## a[36]  2.067594459 0.4784542  1.35639645  2.84330118 2475.879 1.0002300
+## a[37]  2.064632786 0.5344701  1.29777574  2.93143085 2057.399 1.0006151
+## a[38]  3.921144279 0.9953312  2.50349181  5.62674990 1854.048 1.0023425
+## a[39]  2.719230388 0.6701205  1.73835441  3.85497674 2396.542 0.9997868
+## a[40]  2.338050017 0.5830450  1.48868738  3.32483635 2594.744 1.0001552
+## a[41] -1.825497399 0.4950936 -2.64234446 -1.07605323 2608.148 0.9994778
+## a[42] -0.571094455 0.3388427 -1.12449073 -0.04645339 3146.861 0.9983940
+## a[43] -0.451608811 0.3440970 -1.00135203  0.11173451 3941.152 0.9991098
+## a[44] -0.332754481 0.3394557 -0.87767458  0.20404664 3358.212 0.9991156
+## a[45]  0.586508990 0.3530904  0.04155698  1.14686829 3777.857 0.9982636
+## a[46] -0.566446152 0.3453573 -1.12118593 -0.02341767 3488.434 0.9993804
+## a[47]  2.052213124 0.4933704  1.29733874  2.86674025 2588.845 0.9988264
+## a[48]  0.003058118 0.3369829 -0.53003130  0.52481502 2939.608 0.9990774
+## a_bar  1.350183135 0.2495603  0.96889577  1.74825721 2399.926 1.0007100
+## sigma  1.620826553 0.2116488  1.32012893  1.98129288 1245.943 1.0001732</code></pre>
 </div>
 <div id="inla" class="section level3">
 <h3>1.1 INLA</h3>
@@ -480,7 +510,7 @@ summary(m1.1.i)</code></pre>
 ##    control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
 ##    list(control.link = list(model = \&quot;logit\&quot;)))&quot; ) 
 ## Time used:
-##     Pre = 2.45, Running = 0.295, Post = 0.251, Total = 2.99 
+##     Pre = 1.6, Running = 0.184, Post = 0.215, Total = 2 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 1.38 0.256       0.89    1.375      1.901 1.364   0
@@ -519,13 +549,17 @@ summary(m1.1.i)</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m1.1.i)</code></pre>
 <pre><code>##                mean        sd   q0.025     q0.5   q0.975     mode
 ## SD for tank 1.59197 0.2096781 1.231084 1.573964 2.053666 1.539229</code></pre>
-<p>** it looks like the intercept mean and sd correspond to the <span class="math inline">\(\bar{\alpha}\)</span> mean and sd, and the SD for tank corresponds to the <span class="math inline">\(\sigma\)</span>. this makes sense, because the <span class="math inline">\(\bar{\alpha}\)</span> is the average baseline survival for all the tadpoles, which is what the intercept is.** <strong>BUT I WOULD LOVE IF SOMEONE ELSE CONFIRMED THIS INTERPRETATION</strong>.</p>
+<p>it looks like the intercept mean and sd correspond to the <span class="math inline">\(\bar{\alpha}\)</span> mean and sd, and the SD for tank corresponds to the <span class="math inline">\(\sigma\)</span>. this makes sense, because the <span class="math inline">\(\bar{\alpha}\)</span> is the average baseline survival for all the tadpoles, which is what the intercept is. <strong>BUT I WOULD LOVE IF SOMEONE ELSE CONFIRMED THIS INTERPRETATION</strong>.</p>
 </div>
 </div>
 <div id="varying-intercepts-predation" class="section level2">
 <h2>1.2 varying intercepts + predation</h2>
-<p>Si ∼ Binomial(Ni, pi) logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>[pred] <span class="math inline">\(\beta\)</span>∼ Normal(-0.5,1) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
-<span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank] σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
+<p>Si ∼ Binomial(Ni, pi)</p>
+<p>logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>[pred]</p>
+<p><span class="math inline">\(\beta\)</span>∼ Normal(-0.5,1)</p>
+<p>αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]</p>
+<p><span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank]</p>
+<p>σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
 <div id="rethinking-1" class="section level3">
 <h3>1.2 rethinking</h3>
 <pre class="r"><code># pred
@@ -538,37 +572,14 @@ bp ~ normal( -0.5 , 1 ),
 a_bar ~ normal( 0 , 1.5 ),
 sigma ~ exponential( 1 )
 ), data=dat , chains=4 , cores=4 , log_lik=TRUE ) </code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
 <pre class="r"><code>precis(m1.2)</code></pre>
-<pre><code>## 48 vector or matrix parameters hidden. Use depth=2 to show them.</code></pre>
-<pre><code>##            mean        sd       5.5%     94.5%    n_eff    Rhat4
-## bp    -2.415650 0.2957791 -2.8783489 -1.927886 275.3986 1.014291
-## a_bar  2.529840 0.2339189  2.1532596  2.904468 320.3161 1.013672
-## sigma  0.825883 0.1483157  0.6169738  1.086523 633.8174 1.005859</code></pre>
+<pre><code>##             mean        sd       5.5%     94.5%    n_eff    Rhat4
+## bp    -2.4409217 0.2988675 -2.9157752 -1.968824 214.2608 1.005029
+## a_bar  2.5365148 0.2374244  2.1715091  2.921248 242.4457 1.000488
+## sigma  0.8224067 0.1486069  0.6048086  1.081103 675.7545 1.001489</code></pre>
 </div>
 <div id="inla-1" class="section level3">
 <h3>1.2 inla</h3>
@@ -607,7 +618,7 @@ summary(m1.2.i)</code></pre>
 ##    list(mean = -0.5, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 
 ##    1.5))&quot;) 
 ## Time used:
-##     Pre = 1.77, Running = 0.222, Post = 0.235, Total = 2.23 
+##     Pre = 1.72, Running = 0.231, Post = 0.215, Total = 2.16 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  2.393 0.217      1.967    2.393      2.822  2.391   0
@@ -648,9 +659,11 @@ summary(m1.2.i)</code></pre>
 </div>
 <div id="varying-intercepts-size" class="section level2">
 <h2>1.3 varying intercepts + size</h2>
-<p>Si ∼ Binomial(Ni, pi) logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>size<br />
-<span class="math inline">\(\beta\)</span>∼ Normal(0 , 0.5 ) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
-<span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank] σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
+<p>Si ∼ Binomial(Ni, pi)</p>
+<p>logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>size</p>
+<p><span class="math inline">\(\beta\)</span>∼ Normal(0 , 0.5 ) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]</p>
+<p><span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank]</p>
+<p>σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
 <div id="rethinking-2" class="section level3">
 <h3>1.3 rethinking</h3>
 <pre class="r"><code>library(rethinking) 
@@ -666,88 +679,63 @@ s[size_] ~ normal( 0 , 0.5 ),
 a_bar ~ normal( 0 , 1.5 ),
 sigma ~ exponential( 1 )
 ), data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
-<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m1.3,  depth=2)</code></pre>
-<pre><code>##              mean        sd       5.5%       94.5%     n_eff    Rhat4
-## a[1]   2.22343851 0.9519066  0.7223157  3.78094588  618.0134 1.005884
-## a[2]   3.08797101 1.1610151  1.3654475  5.08960029  781.4559 1.003229
-## a[3]   1.08969386 0.7987400 -0.1663706  2.40326928  475.1458 1.012227
-## a[4]   3.14543012 1.1753253  1.4407639  5.15983556  610.8369 1.007998
-## a[5]   2.03053579 0.9718180  0.5749515  3.67845787  999.3923 1.009440
-## a[6]   1.99439820 0.9828957  0.5079910  3.56971023  587.5529 1.008487
-## a[7]   2.99617196 1.1796230  1.2301036  4.90621662  772.3435 1.006494
-## a[8]   2.00587162 0.9666342  0.5414549  3.62406745  578.4031 1.010880
-## a[9]  -0.07551041 0.7586752 -1.2473960  1.12546507  382.2422 1.012395
-## a[10]  2.20629384 0.9406227  0.8074115  3.72199818  523.6085 1.007553
-## a[11]  1.12318533 0.7995132 -0.1285008  2.44668099  526.1693 1.008987
-## a[12]  0.65901886 0.7546303 -0.5446060  1.88751416  482.0437 1.008754
-## a[13]  0.83748367 0.8121702 -0.4210804  2.16910789  487.4995 1.010369
-## a[14]  0.02823495 0.7320354 -1.1488622  1.21975496  627.3150 1.006588
-## a[15]  2.01629706 0.9716833  0.6008750  3.67116230  707.4683 1.005257
-## a[16]  1.97952499 0.9604799  0.5101816  3.53087292  543.7024 1.012656
-## a[17]  2.96666586 0.8990142  1.6349256  4.49283235  500.6124 1.009378
-## a[18]  2.49505671 0.7737855  1.3097043  3.77548923  467.1930 1.007358
-## a[19]  2.09804475 0.7012920  1.0557548  3.25773599  410.4788 1.014039
-## a[20]  3.72383840 1.0743213  2.2052232  5.60558431  540.5152 1.007682
-## a[21]  2.24461471 0.7765348  1.0145212  3.48066824  546.0956 1.008703
-## a[22]  2.23292639 0.7669899  1.0639856  3.47161774  669.5568 1.008107
-## a[23]  2.23955603 0.7609151  1.0793716  3.50306250  529.5814 1.011861
-## a[24]  1.52122188 0.6652501  0.4840194  2.60597653  544.2418 1.010560
-## a[25] -0.90177041 0.6211930 -1.9074023  0.05377448  335.5660 1.014277
-## a[26]  0.27709884 0.5848442 -0.6713409  1.23225951  278.7368 1.018086
-## a[27] -1.33124750 0.6632427 -2.4278623 -0.27625041  352.6100 1.015378
-## a[28] -0.36783863 0.5888630 -1.2884846  0.59228038  296.0068 1.017559
-## a[29] -0.01370863 0.5730235 -0.9294443  0.87605289  297.3245 1.021302
-## a[30]  1.25069327 0.6249450  0.2697667  2.27333040  421.3602 1.014914
-## a[31] -0.82458210 0.5837108 -1.7493937  0.10483188  352.5786 1.014034
-## a[32] -0.49178530 0.5644863 -1.3633984  0.39823224  296.9071 1.017957
-## a[33]  3.25124656 0.8601143  2.0011299  4.67831984  488.0123 1.006118
-## a[34]  2.77720716 0.7514521  1.5665954  4.03612967  416.6320 1.009932
-## a[35]  2.78885776 0.7596716  1.6105272  4.00000653  369.8268 1.011700
-## a[36]  2.13572862 0.6445491  1.1410579  3.22127240  285.7075 1.019339
-## a[37]  1.88044500 0.6458245  0.8560492  2.93212246  499.9791 1.008316
-## a[38]  3.77956091 1.0656804  2.2826121  5.62656943 1055.2965 1.006472
-## a[39]  2.53283917 0.7573585  1.3966733  3.82190240  505.5097 1.008377
-## a[40]  2.17773396 0.6942535  1.1200775  3.32179114  438.3469 1.009552
-## a[41] -1.71551236 0.6410224 -2.7478814 -0.70925387  341.0797 1.017931
-## a[42] -0.46733260 0.5620233 -1.3684342  0.39313467  254.7138 1.015790
-## a[43] -0.34932621 0.5504265 -1.1938006  0.56568285  242.5089 1.021517
-## a[44] -0.23457283 0.5555558 -1.1130732  0.63191020  267.0406 1.018455
-## a[45]  0.38940326 0.5254082 -0.4162347  1.26528895  290.3720 1.017121
-## a[46] -0.74992521 0.5432451 -1.5983160  0.11894380  282.3488 1.017900
-## a[47]  1.88221582 0.6509088  0.9000770  2.98179901  355.5051 1.016745
-## a[48] -0.18498869 0.5283697 -1.0503768  0.66617350  255.3575 1.023259
-## s[1]   0.19135908 0.4083053 -0.4459116  0.82468163  180.7464 1.030520
-## s[2]  -0.11301659 0.4362638 -0.8398772  0.56968077  172.0979 1.029278
-## a_bar  1.30641281 0.4378012  0.6199342  2.01531426  161.0929 1.034938
-## sigma  1.61947671 0.2216313  1.3034285  1.99885229  985.0821 1.002508</code></pre>
+<pre><code>##              mean        sd       5.5%       94.5%     n_eff     Rhat4
+## a[1]   2.13405563 0.9250786  0.7218878  3.69961668  997.4045 1.0004434
+## a[2]   3.04843469 1.1628958  1.3431175  5.00827688 1146.3459 0.9999793
+## a[3]   1.02321877 0.7556121 -0.1710018  2.28849490  800.8957 1.0020494
+## a[4]   2.99046378 1.1030419  1.3888347  4.86163737 1078.7075 1.0022203
+## a[5]   1.91203345 0.9798679  0.4488073  3.55441584  618.6612 1.0010124
+## a[6]   1.94351603 0.9457892  0.5335351  3.58091742  927.7204 1.0003777
+## a[7]   2.90672556 1.1706112  1.1881018  4.91687130 1184.3169 1.0005296
+## a[8]   1.92381852 0.9702451  0.4693599  3.55345508  926.6190 1.0042992
+## a[9]  -0.13057966 0.7262411 -1.2487679  1.07752966  833.3909 1.0029962
+## a[10]  2.12121727 0.9043694  0.7681195  3.60850657  718.1688 1.0046133
+## a[11]  1.02660301 0.7881022 -0.2267398  2.33427981  751.4852 1.0059598
+## a[12]  0.63933844 0.7592443 -0.5411346  1.85570624  718.3775 1.0026842
+## a[13]  0.80705230 0.7799008 -0.3708526  2.15814845  800.0045 1.0015512
+## a[14] -0.01702510 0.7456755 -1.1666154  1.15693917  760.2620 1.0040714
+## a[15]  1.92756378 0.9294639  0.5237552  3.43908536  991.0643 1.0003000
+## a[16]  1.96023731 0.9714796  0.4718141  3.62380701 1067.8315 1.0020696
+## a[17]  2.90900842 0.8708310  1.5544795  4.34966454  719.2725 1.0011940
+## a[18]  2.42445769 0.7768711  1.2538410  3.70446936  565.9112 1.0074749
+## a[19]  2.05072110 0.6931829  1.0083633  3.22344864  624.5636 1.0033605
+## a[20]  3.65518987 1.0304105  2.1299373  5.45784219  950.4539 1.0026980
+## a[21]  2.16851156 0.7523744  1.0291121  3.41556139  720.8104 1.0023149
+## a[22]  2.15126263 0.7363804  1.0050763  3.34814090  688.8669 1.0017186
+## a[23]  2.16403072 0.7566606  1.0211404  3.42881231  699.2764 1.0025408
+## a[24]  1.46177869 0.6348607  0.4837428  2.48140129  656.9825 1.0005990
+## a[25] -0.96228761 0.5890102 -1.8946331 -0.02701477  543.9389 1.0050832
+## a[26]  0.20445985 0.5714781 -0.7006340  1.12853467  433.1030 1.0034142
+## a[27] -1.39453837 0.6337239 -2.4297716 -0.39504973  488.5223 1.0023123
+## a[28] -0.42847410 0.5806296 -1.3783402  0.49327386  473.3418 1.0060638
+## a[29] -0.07685145 0.5560846 -0.9785642  0.82129484  464.5923 1.0045776
+## a[30]  1.20515348 0.6130918  0.2283132  2.19026632  584.1890 1.0020862
+## a[31] -0.86756882 0.5697800 -1.7890823  0.03040314  528.0111 1.0023376
+## a[32] -0.52550032 0.5331043 -1.3578739  0.32698580  478.0045 1.0024840
+## a[33]  3.17365865 0.8320880  1.9650755  4.58757620  764.8166 1.0052389
+## a[34]  2.74013385 0.7406695  1.6354168  3.96841094  618.8717 1.0027595
+## a[35]  2.73014921 0.7530512  1.5562615  3.97696049  598.8174 1.0018926
+## a[36]  2.09589840 0.6564727  1.0948040  3.15434188  469.7642 1.0041229
+## a[37]  1.82193755 0.6119568  0.8820336  2.81295325  555.0387 1.0022429
+## a[38]  3.67559658 0.9881614  2.2643855  5.42226637  886.8020 0.9994815
+## a[39]  2.47160560 0.7355230  1.3492179  3.66535050  798.4281 1.0008681
+## a[40]  2.11764445 0.6784531  1.0443308  3.21687718  689.7921 1.0014329
+## a[41] -1.77096938 0.6273323 -2.7901957 -0.78163452  582.4530 1.0015374
+## a[42] -0.52589640 0.5218789 -1.3892340  0.30455561  421.1637 1.0086621
+## a[43] -0.40327798 0.5304559 -1.2542382  0.44518983  391.4723 1.0061094
+## a[44] -0.28586903 0.5220195 -1.1493638  0.58393735  404.2466 1.0079310
+## a[45]  0.33198721 0.5089358 -0.4551073  1.15377929  432.6754 1.0028682
+## a[46] -0.80883628 0.5241490 -1.6320737  0.03530783  438.4265 1.0010842
+## a[47]  1.82761063 0.6227875  0.8819220  2.83962531  606.6698 1.0027794
+## a[48] -0.23657282 0.5025455 -1.0139609  0.56392302  404.7139 1.0064113
+## s[1]   0.24676283 0.3845314 -0.3489773  0.85631909  275.7116 1.0062998
+## s[2]  -0.05565654 0.4111601 -0.6988482  0.59246969  266.1568 1.0106128
+## a_bar  1.25638118 0.4235586  0.5974669  1.93874705  309.5881 1.0078344
+## sigma  1.60409993 0.2092286  1.2992390  1.95914955 1252.9836 1.0002786</code></pre>
 </div>
 <div id="inla-2" class="section level3">
 <h3>1.3 inla</h3>
@@ -794,7 +782,7 @@ summary(m1.3.i)</code></pre>
 ##    control.fixed = list(mean = 0, prec = 0.5, mean.intercept = 0, &quot;, &quot; 
 ##    prec.intercept = 1.5))&quot;) 
 ## Time used:
-##     Pre = 1.69, Running = 0.185, Post = 0.22, Total = 2.1 
+##     Pre = 1.61, Running = 0.187, Post = 0.217, Total = 2.01 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.531 0.640     -0.726    0.531      1.787 0.531   0
@@ -839,9 +827,12 @@ summary(m1.3.i)</code></pre>
 </div>
 <div id="varying-intercepts-predation-size" class="section level2">
 <h2>1.4 varying intercepts + predation + size</h2>
-<p>Si ∼ Binomial(Ni, pi) logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>size + <span class="math inline">\(\gamma\)</span>size<br />
-<span class="math inline">\(\gamma\)</span> ∼ Normal(0 , 0.5) <span class="math inline">\(\beta\)</span> ∼ Normal(-0.5,1) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
-<span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank] σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
+<p>Si ∼ Binomial(Ni, pi)</p>
+<p>logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>size + <span class="math inline">\(\gamma\)</span>size</p>
+<p><span class="math inline">\(\gamma\)</span> ∼ Normal(0 , 0.5)</p>
+<p><span class="math inline">\(\beta\)</span> ∼ Normal(-0.5,1) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]</p>
+<p><span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank]</p>
+<p>σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
 <div id="rethinking-3" class="section level3">
 <h3>1.4 rethinking</h3>
 <pre class="r"><code># pred + size 
@@ -855,31 +846,6 @@ s[size_] ~ normal( 0 , 0.5 ),
 a_bar ~ normal( 0 , 1.5 ),
 sigma ~ exponential( 1 )
 ), data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
-<pre><code>## Warning: The largest R-hat is 1.06, indicating chains have not mixed.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#r-hat</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
@@ -887,60 +853,60 @@ sigma ~ exponential( 1 )
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m1.4, depth=2)</code></pre>
-<pre><code>##             mean        sd        5.5%      94.5%     n_eff    Rhat4
-## a[1]   2.4726823 0.7415470  1.30967559  3.6977754 340.68629 1.016029
-## a[2]   2.8852311 0.7836905  1.67235776  4.1494639 311.92075 1.016230
-## a[3]   1.7428274 0.6791232  0.67584706  2.8365033 271.71744 1.024716
-## a[4]   2.9078229 0.7993537  1.69758481  4.2040359 313.42450 1.014991
-## a[5]   2.3441987 0.7482345  1.19844594  3.5614519 370.26952 1.016438
-## a[6]   2.3413341 0.7660937  1.13481166  3.5446729 333.74382 1.016731
-## a[7]   2.7899592 0.7899190  1.55141663  4.0743741 341.58744 1.014494
-## a[8]   2.3483556 0.7576686  1.17757712  3.5862797 332.91575 1.014560
-## a[9]   2.2897726 0.6699400  1.22956274  3.3666746 189.62539 1.029196
-## a[10]  3.5544290 0.7193964  2.41896939  4.7353091 246.91476 1.018803
-## a[11]  3.0294690 0.6661272  1.96151499  4.1217667 176.57924 1.026401
-## a[12]  2.7772302 0.6842402  1.68854214  3.8952397 190.25456 1.025651
-## a[13]  2.7920822 0.6562417  1.77891196  3.8514488 199.86134 1.017750
-## a[14]  2.2850360 0.6825064  1.24947978  3.3775172 231.65577 1.019297
-## a[15]  3.3082556 0.7053248  2.16300722  4.4326429 205.41423 1.018560
-## a[16]  3.3362573 0.7081299  2.24591754  4.4566976 210.71328 1.021867
-## a[17]  2.8685225 0.6909726  1.81616583  3.9826331 317.26143 1.016643
-## a[18]  2.5853529 0.6522999  1.60786290  3.6520133 228.86942 1.022392
-## a[19]  2.3215087 0.6245754  1.33448477  3.3374904 260.93656 1.023835
-## a[20]  3.2125733 0.7392898  2.09377462  4.4247143 305.32541 1.014200
-## a[21]  2.3728123 0.6212367  1.40097442  3.3814312 258.26047 1.014907
-## a[22]  2.3678741 0.6426246  1.35167473  3.3751311 267.15698 1.015007
-## a[23]  2.3892380 0.6595538  1.35464639  3.4572443 301.69214 1.016166
-## a[24]  1.8441722 0.6301127  0.84382707  2.8713538 286.76616 1.020995
-## a[25]  1.6863093 0.5886129  0.71313946  2.6183011 144.11731 1.041559
-## a[26]  2.6312293 0.5839171  1.71232412  3.5476234 147.22128 1.037723
-## a[27]  1.3918877 0.6214884  0.36667871  2.3651299 171.66108 1.030127
-## a[28]  2.1132970 0.5792655  1.19855358  3.0208318 144.52876 1.036918
-## a[29]  2.2953579 0.5683899  1.36407002  3.1837942 138.85622 1.031853
-## a[30]  3.2651905 0.6151711  2.28569049  4.2566089 155.43790 1.029440
-## a[31]  1.6560872 0.5723376  0.73050635  2.5466207 157.28141 1.030277
-## a[32]  1.9100729 0.5655400  1.01090418  2.8064877 145.22555 1.032006
-## a[33]  3.0814854 0.6779204  2.04082445  4.2420232 244.49129 1.017498
-## a[34]  2.7536111 0.6307300  1.77763862  3.8026280 249.37709 1.018050
-## a[35]  2.7615715 0.6406820  1.75269915  3.8655442 223.66704 1.018787
-## a[36]  2.3279925 0.5891475  1.40280913  3.2716926 216.14661 1.026322
-## a[37]  2.0438480 0.5781922  1.16391348  2.9803785 274.33309 1.017620
-## a[38]  3.1919081 0.7531695  2.04186744  4.4527439 333.70109 1.009682
-## a[39]  2.5230860 0.6482948  1.51112294  3.5637085 290.02391 1.013370
-## a[40]  2.2919761 0.6261385  1.32169152  3.3213426 272.00951 1.019889
-## a[41]  1.0657063 0.6195869  0.03858024  2.0246959 147.51361 1.037495
-## a[42]  2.0260225 0.5596565  1.12678569  2.9501687 140.61145 1.041749
-## a[43]  2.1184379 0.5702231  1.19388911  3.0195969 132.10254 1.042931
-## a[44]  2.2328664 0.5534754  1.35032851  3.1122722 126.25410 1.043592
-## a[45]  2.6636393 0.5605288  1.77459613  3.5679128 144.31024 1.027906
-## a[46]  1.6748326 0.5539005  0.76632292  2.5705549 135.12754 1.034963
-## a[47]  3.7395394 0.6160225  2.76231567  4.7670111 170.19507 1.022239
-## a[48]  2.1632932 0.5433231  1.30251777  3.0703068 125.31493 1.034813
-## bp    -2.4669561 0.2932931 -2.92648865 -1.9992379 280.57875 1.014611
-## s[1]   0.3046473 0.3785173 -0.33153109  0.8890477 144.95917 1.029663
-## s[2]  -0.1271521 0.3789571 -0.74686361  0.4669763 132.47640 1.042734
-## a_bar  2.4613978 0.4204460  1.77590469  3.1372492  92.58102 1.058109
-## sigma  0.7717070 0.1405595  0.56734392  1.0082998 537.85176 1.005303</code></pre>
+<pre><code>##              mean        sd        5.5%      94.5%    n_eff    Rhat4
+## a[1]   2.42337064 0.7506029  1.26019553  3.6077088 505.9673 1.002188
+## a[2]   2.85701446 0.7940736  1.65216033  4.1983217 553.4300 1.004692
+## a[3]   1.71368963 0.6833380  0.60077741  2.8098185 480.7874 1.005235
+## a[4]   2.86789189 0.8174688  1.61343171  4.1727075 615.9681 1.005130
+## a[5]   2.31193001 0.7524415  1.17142674  3.5686542 476.1683 1.004815
+## a[6]   2.28855999 0.7573302  1.09548070  3.5081167 573.9875 1.003739
+## a[7]   2.76047312 0.8214371  1.50744700  4.1172745 457.4144 1.004354
+## a[8]   2.29001473 0.7576806  1.09992042  3.5256794 497.0288 1.005568
+## a[9]   2.25592097 0.6695219  1.18918931  3.3172172 382.1894 1.003759
+## a[10]  3.53448648 0.7259941  2.42324434  4.7578009 395.7235 1.005392
+## a[11]  2.98905890 0.6838246  1.92996418  4.1020286 321.8853 1.007261
+## a[12]  2.73554721 0.6496335  1.67626461  3.7606437 332.7166 1.005413
+## a[13]  2.75027508 0.6908042  1.63504588  3.8564383 357.4985 1.003508
+## a[14]  2.23887753 0.6498893  1.20987442  3.3098196 337.0569 1.004067
+## a[15]  3.28163811 0.6953102  2.14750195  4.4165687 369.6073 1.005902
+## a[16]  3.31708381 0.7182947  2.20050218  4.5199399 369.5658 1.005603
+## a[17]  2.84098308 0.7059407  1.72717933  3.9804136 439.2139 1.006858
+## a[18]  2.55613337 0.6622435  1.52261923  3.6252118 403.0657 1.005737
+## a[19]  2.27971430 0.6387167  1.27106910  3.3493062 480.7760 1.005761
+## a[20]  3.18702087 0.7254302  2.04663756  4.3402451 505.0109 1.008189
+## a[21]  2.33476070 0.6795728  1.31839575  3.4681316 413.8848 1.005543
+## a[22]  2.33727870 0.6760030  1.27311080  3.4188627 351.1497 1.008936
+## a[23]  2.32788420 0.6648056  1.29620843  3.3801116 420.8736 1.006064
+## a[24]  1.78159367 0.5896818  0.86936523  2.7524879 427.1966 1.002304
+## a[25]  1.65217321 0.5881109  0.70688024  2.5511427 303.1978 1.005392
+## a[26]  2.58901976 0.5716801  1.67726767  3.4765880 260.7800 1.009310
+## a[27]  1.33423702 0.6083114  0.34852211  2.2885384 313.5736 1.005058
+## a[28]  2.06804771 0.5837368  1.12403749  2.9617823 265.6528 1.006278
+## a[29]  2.24678974 0.5635749  1.33318616  3.1111422 250.0224 1.007566
+## a[30]  3.22513432 0.5999208  2.25132905  4.1772282 299.7732 1.007160
+## a[31]  1.60912239 0.5576297  0.71630498  2.4945528 224.0575 1.010510
+## a[32]  1.86704268 0.5499580  0.97186004  2.7229933 253.6875 1.007709
+## a[33]  3.01111686 0.6753507  1.95300134  4.1179467 411.1021 1.008018
+## a[34]  2.75500897 0.6400027  1.73459703  3.7670542 436.6402 1.002559
+## a[35]  2.74981699 0.6236171  1.77999203  3.7655027 405.7765 1.007919
+## a[36]  2.28974172 0.5836841  1.35381650  3.1698751 367.2441 1.006783
+## a[37]  2.01103456 0.5981595  1.08375793  2.9773642 458.5634 1.007123
+## a[38]  3.16271382 0.7388481  2.00150665  4.3700611 473.3142 1.005599
+## a[39]  2.51126045 0.6674928  1.48556527  3.5478650 395.8238 1.004668
+## a[40]  2.24022454 0.6298594  1.27715101  3.2693133 359.1218 1.010789
+## a[41]  1.02134218 0.6002860  0.06071778  1.9816407 321.3984 1.004960
+## a[42]  1.99164602 0.5470274  1.10820242  2.8214252 242.4932 1.008041
+## a[43]  2.08950520 0.5554370  1.21235921  2.9698888 268.3153 1.006834
+## a[44]  2.19800134 0.5461088  1.31140313  3.0748876 244.7000 1.009073
+## a[45]  2.61220434 0.5488435  1.72888802  3.4486000 209.1837 1.013342
+## a[46]  1.63144266 0.5390943  0.75870252  2.4605342 223.4084 1.009114
+## a[47]  3.70277832 0.6077062  2.73234942  4.6585181 257.6297 1.010644
+## a[48]  2.12468404 0.5475192  1.24278676  3.0107872 226.2711 1.009404
+## bp    -2.46003028 0.2946501 -2.91470948 -1.9728935 704.7142 1.002096
+## s[1]   0.34267105 0.3750705 -0.24635199  0.9467150 207.4531 1.014980
+## s[2]  -0.09615715 0.3772098 -0.65795120  0.5144536 210.7308 1.013510
+## a_bar  2.42031655 0.4073566  1.75397053  3.0481435 150.8858 1.016605
+## sigma  0.77932456 0.1499859  0.56486253  1.0395527 516.4699 1.006455</code></pre>
 </div>
 <div id="inla-3" class="section level3">
 <h3>1.4 inla</h3>
@@ -980,7 +946,7 @@ summary(m1.4.i)</code></pre>
 ##    size.big = 0), prec = list(pred = 1, size.small = 1, &quot;, &quot; size.big = 
 ##    1), mean.intercept = 0, prec.intercept = 1.5))&quot; ) 
 ## Time used:
-##     Pre = 1.76, Running = 0.187, Post = 0.236, Total = 2.18 
+##     Pre = 1.99, Running = 0.219, Post = 0.269, Total = 2.48 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  1.471 0.549      0.393    1.471      2.549  1.471   0
@@ -1025,9 +991,12 @@ summary(m1.4.i)</code></pre>
 ## SD for tank 0.7223338 0.1395241 0.4747482 0.7126375 1.023499 0.6951084</code></pre>
 </div>
 </div>
-<div id="varying-intercepts-predation-size-predictionsize" class="section level2">
-<h2>1.5 varying intercepts + predation + size + prediction*size</h2>
-<p>Si ∼ Binomial(Ni, pi) logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>size + <span class="math inline">\(\gamma\)</span>size + <span class="math inline">\(\gamma\)</span> ∼ Normal(0 , 0.5) <span class="math inline">\(\beta\)</span> ∼ Normal(-0.5,1) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
+<div id="varying-intercepts-predation-size-predationsize" class="section level2">
+<h2>1.5 varying intercepts + predation + size + predation*size</h2>
+<p>Si ∼ Binomial(Ni, pi)</p>
+<p><strong>this formula’s wrong</strong></p>
+<p>logit(pi) = αtank[i] + <span class="math inline">\(\beta\)</span>predation + <span class="math inline">\(\gamma\)</span>size + <span class="math inline">\(\eta\)</span>size*predation</p>
+<p><span class="math inline">\(\gamma\)</span> ∼ Normal(0 , 0.5) <span class="math inline">\(\beta\)</span> ∼ Normal(-0.5,1) αj ∼ Normal(<span class="math inline">\(\bar{\alpha}\)</span>, σ) [adaptive prior]<br />
 <span class="math inline">\(\bar{\alpha}\)</span> ∼ Normal(0, 1.5) [prior for average tank] σ ∼ Exponential(1) [prior for standard deviation of tanks]</p>
 <div id="rethinking-4" class="section level3">
 <h3>1.5 rethinking</h3>
@@ -1041,85 +1010,66 @@ bp[size_] ~ normal(-0.5,1),
 s[size_] ~ normal( 0 , 0.5 ), 
 a_bar ~ normal( 0 , 1.5 ), 
 sigma ~ exponential( 1 )
-), data=dat , chains=4 , cores=4 , log_lik=TRUE )</code></pre>
-<pre><code>## Trying to compile a simple C file</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
-<pre class="r"><code>precis(m1.5, depth=2)</code></pre>
+), data=dat , chains=4 , cores=4 , log_lik=TRUE )
+
+
+
+precis(m1.5, depth=2)</code></pre>
 <pre><code>##              mean        sd       5.5%        94.5%     n_eff     Rhat4
-## z[1]  -0.04964569 0.8533816 -1.3847943  1.366146597 2274.0908 1.0001658
-## z[2]   0.50279278 0.8765256 -0.8352193  1.977258962 2157.6956 0.9990283
-## z[3]  -0.98814725 0.7907024 -2.2617472  0.265181574 2745.2133 0.9987812
-## z[4]   0.47118373 0.8547139 -0.8748678  1.881752574 2671.8365 1.0006125
-## z[5]  -0.02927301 0.8771585 -1.4390234  1.388586570 2724.0376 0.9993392
-## z[6]  -0.02198941 0.8547539 -1.3500089  1.351565191 2303.8261 1.0000684
-## z[7]   0.53158126 0.8509254 -0.8208680  1.950527003 2520.7452 0.9991444
-## z[8]  -0.03630247 0.8262352 -1.3277333  1.326290545 1857.7894 0.9998063
-## z[9]  -0.10668345 0.6887915 -1.1777652  1.028298166 2006.7153 0.9998394
-## z[10]  1.55901414 0.7425463  0.3955790  2.768002703 2180.2603 0.9992554
-## z[11]  0.89329160 0.7177497 -0.2351960  2.066259831 1878.0968 0.9998685
-## z[12]  0.56220558 0.6837952 -0.4938113  1.677463418 2037.1075 0.9993450
-## z[13]  0.23001837 0.7305293 -0.9101356  1.444951160 2548.6533 1.0000143
-## z[14] -0.42060526 0.6867116 -1.5053260  0.679791223 2627.8453 0.9990503
-## z[15]  0.96341125 0.7540584 -0.2117258  2.202618074 3333.2245 0.9988886
-## z[16]  0.95171273 0.7407593 -0.2412786  2.125117133 2719.7250 0.9997978
-## z[17]  0.45110536 0.7468588 -0.6968755  1.687902740 2065.5204 0.9995792
-## z[18]  0.08406657 0.7313273 -1.0529662  1.257658355 2188.1266 0.9987774
-## z[19] -0.27084448 0.7104079 -1.3731851  0.854582636 1983.6466 0.9997933
-## z[20]  0.87749549 0.7872469 -0.3745296  2.137035987 2351.6887 0.9993711
-## z[21]  0.07988814 0.7393902 -1.0534014  1.256616265 2152.7211 1.0000066
-## z[22]  0.08772784 0.7174482 -1.0160314  1.297736767 2822.8795 0.9988199
-## z[23]  0.08199499 0.7487308 -1.1026695  1.309881261 2435.7932 0.9994595
-## z[24] -0.56435816 0.6936417 -1.6510690  0.518318390 2038.1256 1.0001134
-## z[25] -0.86378659 0.5469364 -1.7453654 -0.004684383 1966.6957 0.9995264
-## z[26]  0.40958707 0.5510294 -0.4462404  1.341329507 1719.6905 0.9992263
-## z[27] -1.24713281 0.6026793 -2.2396798 -0.325487269 1801.4727 0.9992763
-## z[28] -0.27341755 0.5505732 -1.1610287  0.616315543 1817.7921 1.0013900
-## z[29] -0.50061850 0.5462617 -1.3266213  0.365297185 1708.2304 1.0010301
-## z[30]  0.79510127 0.6099758 -0.1596771  1.793743598 1445.0380 1.0025435
-## z[31] -1.34684045 0.5689636 -2.2774598 -0.463767425 1522.6103 1.0012731
-## z[32] -1.01357713 0.5628091 -1.8849533 -0.101789206 1540.2253 1.0021901
-## z[33]  0.69062440 0.7632080 -0.4872461  1.924126233 2052.0976 0.9991539
-## z[34]  0.32459411 0.7091869 -0.7860680  1.494203002 2472.2865 0.9988552
-## z[35]  0.32905413 0.7463999 -0.8012780  1.560232114 2156.3756 0.9998779
-## z[36] -0.30589899 0.6506711 -1.2972277  0.762031084 1906.0292 0.9999118
-## z[37] -0.24794001 0.6489136 -1.2664084  0.775806405 1932.0976 0.9993942
-## z[38]  1.08995815 0.7716420 -0.1187252  2.356674592 2450.7188 1.0015998
-## z[39]  0.32936092 0.6967112 -0.7457010  1.446077069 2415.0847 0.9985440
-## z[40]  0.02805459 0.6750157 -1.0355137  1.144139243 1853.3703 1.0005361
-## z[41] -1.69056426 0.5703617 -2.6153819 -0.825725257 1762.7211 1.0006435
-## z[42] -0.37252387 0.4992244 -1.1479955  0.408471882 1580.3851 0.9990917
-## z[43] -0.23752801 0.5180725 -1.0794461  0.551574278 1870.8667 0.9988043
-## z[44] -0.10711243 0.5112118 -0.8907957  0.699204919 1613.5896 1.0005337
-## z[45] -0.02856817 0.5130134 -0.8166451  0.824853404 1390.7001 1.0046523
-## z[46] -1.34547718 0.5356107 -2.2262909 -0.513972488 1369.4892 1.0060255
-## z[47]  1.44325814 0.6258124  0.4752127  2.462456136 1592.4709 1.0010522
-## z[48] -0.69177402 0.5025078 -1.5109248  0.107349462 1523.3497 1.0036016
-## bp[1] -1.85437214 0.3783628 -2.4490643 -1.265000309  955.5221 1.0034532
-## bp[2] -2.76992661 0.3685063 -3.3729035 -2.169557315 1124.5187 1.0007355
-## s[1]   0.10390662 0.3917064 -0.5275588  0.722650439 1110.3615 1.0040878
-## s[2]   0.14005669 0.3916214 -0.5062469  0.756197266 1052.8512 1.0003629
-## a_bar  2.32406572 0.3979145  1.6887199  2.963538701  995.9830 1.0026144
-## sigma  0.75523845 0.1480457  0.5331006  1.009515439  781.2719 1.0002355</code></pre>
+## z[1]  -0.03421318 0.8996083 -1.4115314  1.490211581 3132.8166 1.0000871
+## z[2]   0.47469645 0.8321707 -0.8147391  1.829468390 3454.4286 0.9982931
+## z[3]  -0.95651480 0.7886410 -2.1692836  0.294061474 2469.5749 1.0003573
+## z[4]   0.48014683 0.8657812 -0.8543185  1.871321869 3918.1013 0.9997840
+## z[5]  -0.01337540 0.8267889 -1.2817280  1.355234732 2650.9808 0.9987584
+## z[6]  -0.02410852 0.8127694 -1.3338556  1.338402896 3645.9561 0.9992517
+## z[7]   0.50171687 0.8973633 -0.8806391  1.926605562 4449.8231 0.9988724
+## z[8]  -0.03025628 0.8465058 -1.2984340  1.295607381 2799.0693 0.9992599
+## z[9]  -0.11335685 0.6941347 -1.2360000  0.990447849 2431.4288 0.9999547
+## z[10]  1.50985087 0.7167366  0.4001868  2.654652845 2679.3911 0.9987657
+## z[11]  0.83772960 0.6918286 -0.2622978  1.927904005 2534.7167 1.0001991
+## z[12]  0.52492280 0.6631098 -0.5535979  1.571213078 2372.9415 0.9984046
+## z[13]  0.20827792 0.7061110 -0.9068835  1.325776491 2949.3071 1.0004791
+## z[14] -0.41633282 0.7239296 -1.5432560  0.773360173 2663.5719 1.0005977
+## z[15]  0.95163562 0.7318594 -0.2057956  2.128966684 2049.6048 0.9997122
+## z[16]  0.93899095 0.7502906 -0.2274599  2.124708945 2828.8310 1.0021993
+## z[17]  0.47127646 0.7524398 -0.6844758  1.706237658 3100.3065 0.9998041
+## z[18]  0.05942233 0.7581084 -1.1015090  1.305025742 2729.3284 0.9993147
+## z[19] -0.27412674 0.7208746 -1.3573461  0.940992727 2726.8432 0.9994460
+## z[20]  0.89694534 0.8206988 -0.3878647  2.246357092 2915.8473 1.0003326
+## z[21]  0.08124507 0.7114332 -1.0450903  1.276099611 2361.4544 0.9991339
+## z[22]  0.08622362 0.7233832 -1.0583968  1.270223058 2517.9425 0.9992186
+## z[23]  0.12128975 0.7394146 -1.0319146  1.310371820 2510.1233 0.9992017
+## z[24] -0.56781535 0.7021259 -1.6723762  0.571750715 2469.9985 1.0000457
+## z[25] -0.87668405 0.5613225 -1.7520317  0.008289722 1433.0434 0.9989359
+## z[26]  0.37549852 0.5540093 -0.4838560  1.265206613 1453.9294 1.0010641
+## z[27] -1.28615130 0.6008829 -2.3059392 -0.360058089 2732.7916 0.9989773
+## z[28] -0.30067612 0.5515213 -1.1985518  0.574302305 1820.5884 0.9999350
+## z[29] -0.49931955 0.5560231 -1.3844563  0.382533226 1653.4779 1.0003104
+## z[30]  0.81675009 0.5832392 -0.1125669  1.774003751 1771.7281 0.9993685
+## z[31] -1.34969774 0.5621069 -2.2178824 -0.456200003 1767.1207 0.9996158
+## z[32] -1.00732178 0.5713481 -1.9300900 -0.103136491 1649.2411 0.9998793
+## z[33]  0.68990206 0.7490142 -0.4496953  1.909052424 2671.9748 0.9992580
+## z[34]  0.33487065 0.7164916 -0.7623021  1.531448814 2949.1105 1.0023973
+## z[35]  0.32222921 0.7320613 -0.7925437  1.546083811 2489.2132 0.9989326
+## z[36] -0.29624801 0.6533463 -1.3288289  0.783262784 2430.5414 0.9994028
+## z[37] -0.25032034 0.6387895 -1.2213144  0.758266207 2437.5968 0.9994771
+## z[38]  1.09955823 0.7698006 -0.1282790  2.347476991 2758.8661 1.0002059
+## z[39]  0.35393044 0.7120210 -0.7605668  1.540361224 2699.2629 1.0001229
+## z[40]  0.01981868 0.6980307 -1.0286880  1.163090141 2628.7287 0.9987170
+## z[41] -1.71317429 0.5722986 -2.6446839 -0.853317754 1857.8821 0.9985932
+## z[42] -0.42340733 0.5140848 -1.2587767  0.389254301 1550.8204 0.9998764
+## z[43] -0.27191954 0.5279716 -1.1214326  0.585493952 1823.7875 1.0004255
+## z[44] -0.16114778 0.5233883 -0.9791240  0.688002311 1270.8986 1.0028552
+## z[45] -0.02948504 0.5291520 -0.8702253  0.812395525 1812.8145 1.0013103
+## z[46] -1.34400329 0.5351465 -2.2331380 -0.503209290 1603.2262 1.0003545
+## z[47]  1.42120973 0.5968100  0.5087973  2.397001630 1957.4459 0.9990903
+## z[48] -0.69412057 0.5179325 -1.5458220  0.123096038 1432.4627 0.9997981
+## bp[1] -1.84931675 0.3756119 -2.4403286 -1.245277804 1118.5014 1.0034643
+## bp[2] -2.74856096 0.3750546 -3.3391708 -2.134553335 1071.8524 1.0027645
+## s[1]   0.11058447 0.3948791 -0.5034840  0.752081315 1434.2496 1.0008944
+## s[2]   0.15379951 0.3828263 -0.4598745  0.750220267 1352.7275 1.0031521
+## a_bar  2.31010615 0.4056704  1.6515473  2.966987340 1090.0332 1.0032619
+## sigma  0.75197365 0.1478836  0.5314197  0.993547102  763.2993 1.0020184</code></pre>
 <p>I coded the interaction model using a non-centered parameterization. The interaction itself is done by creating a bp parameter for each size value. In this way, the effect of pred depends upon size.</p>
 </div>
 <div id="inla-4" class="section level3">
@@ -1162,7 +1112,7 @@ summary(m1.5.i )</code></pre>
 ##    = list(pred = 1, size.small = 1, &quot;, &quot; size.big = 1), mean.intercept = 
 ##    0, prec.intercept = 1.5))&quot; ) 
 ## Time used:
-##     Pre = 1.84, Running = 0.193, Post = 0.261, Total = 2.29 
+##     Pre = 1.95, Running = 0.183, Post = 0.277, Total = 2.41 
 ## Fixed effects:
 ##                       mean     sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)          1.469  0.549      0.392    1.469      2.546  1.469   0
@@ -1218,15 +1168,15 @@ summary(m1.5.i )</code></pre>
 <div id="compare-rethinking" class="section level4">
 <h4>compare rethinking</h4>
 <pre class="r"><code>rethinking::compare( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 )</code></pre>
-<pre><code>##          WAIC       SE    dWAIC      dSE    pWAIC     weight
-## m1.2 198.0169 8.901298 0.000000       NA 18.71790 0.37879812
-## m1.4 199.0244 8.614468 1.007554 2.097281 18.67042 0.22888656
-## m1.5 199.5623 9.036203 1.545378 3.407250 19.10581 0.17491754
-## m1.1 200.1448 7.165720 2.127889 5.399634 20.88826 0.13072014
-## m1.3 200.9665 7.259631 2.949615 5.678142 21.29047 0.08667765</code></pre>
+<pre><code>##          WAIC       SE    dWAIC      dSE    pWAIC    weight
+## m1.2 198.2017 8.866161 0.000000       NA 18.77425 0.4289789
+## m1.5 199.8866 9.109896 1.684914 3.258432 19.12931 0.1847402
+## m1.4 200.5348 8.681513 2.333054 1.809021 19.39197 0.1336041
+## m1.1 200.6332 7.420528 2.431523 5.519822 21.21813 0.1271854
+## m1.3 200.6600 7.237354 2.458341 5.777157 21.20150 0.1254914</code></pre>
 <p>These models are really very similar in expected out-of-sample accuracy. The tank variation is huge. But take a look at the posterior distributions for predation and size. You’ll see that predation does seem to matter, as you’d expect. Size matters a lot less. So while predation doesn’t explain much of the total variation, there is plenty of evidence that it is a real effect. Remember: We don’t select a model using WAIC (or LOO). A predictor can make little difference in total accuracy but still be a real causal effect.</p>
 <p>Let’s look at all the sigma posterior distributions:</p>
-<pre class="r"><code>plot( coeftab( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 ), pars=&quot;sigma&quot; )</code></pre>
+<pre class="r"><code>plot( rethinking::coeftab( m1.1 , m1.2 , m1.3 , m1.4 , m1.5 ), pars=&quot;sigma&quot; )</code></pre>
 <p><img src="rethinkingINLA_HW8_files/figure-html/8.1%20post%20re-1.png" width="672" /> The two models that omit predation, m1.1 and m1.3, have larger values of sigma. This is because predation explains some of the variation among tanks. So when you add it to the model, the variation in the tank intercepts gets smaller.</p>
 </div>
 <div id="compare-inla" class="section level4">
@@ -1237,17 +1187,17 @@ extract.waic &lt;- function (x){
   x[[&quot;waic&quot;]][[&quot;waic&quot;]]
 }
 
-waic.8.1 &lt;- bind_cols(model = c(&quot;m1.1.i&quot;,&quot; m1.2.i&quot;,&quot;m1.3.i&quot;, &quot;m1.4.i&quot;, &quot;m1.5.i&quot; ), waic = sapply(inla.models.8.1 ,extract.waic))
+waic.8.1 &lt;- bind_cols(model = c(&quot;m1.1.i&quot;,&quot;m1.2.i&quot;,&quot;m1.3.i&quot;, &quot;m1.4.i&quot;, &quot;m1.5.i&quot; ), waic = sapply(inla.models.8.1 ,extract.waic))
 
 waic.8.1</code></pre>
 <pre><code>## # A tibble: 5 x 2
-##   model      waic
-##   &lt;chr&gt;     &lt;dbl&gt;
-## 1 &quot;m1.1.i&quot;   206.
-## 2 &quot; m1.2.i&quot;  203.
-## 3 &quot;m1.3.i&quot;   206.
-## 4 &quot;m1.4.i&quot;   203.
-## 5 &quot;m1.5.i&quot;   203.</code></pre>
+##   model   waic
+##   &lt;chr&gt;  &lt;dbl&gt;
+## 1 m1.1.i  206.
+## 2 m1.2.i  203.
+## 3 m1.3.i  206.
+## 4 m1.4.i  203.
+## 5 m1.5.i  203.</code></pre>
 <pre class="r"><code>sigma.8.1 &lt;- bind_cols( model= c(&quot;m1.1.i&quot;,&quot;m1.2.i&quot;,&quot;m1.3.i&quot;, &quot;m1.4.i&quot;, &quot;m1.5.i&quot; ), do.call(rbind.data.frame, lapply(inla.models.8.1 ,bri.hyperpar.summary)))
 
 
@@ -1265,20 +1215,19 @@ sigma.8.1</code></pre>
     theme_bw()
 
 sigma.8.1.plot</code></pre>
-<p><img src="rethinkingINLA_HW8_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="rethinkingINLA_HW8_files/figure-html/sigma.8.1%20plot-1.png" width="672" /></p>
 </div>
 </div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
+</div>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
 <p><strong>In 1980, a typical Bengali woman could have 5 or more children in her lifetime. By the year 2000, a typical Bengali woman had only 2 or 3. You’re going to look at a historical set of data, when contraception was widely available but many families chose not to use it. These data reside in data(bangladesh) and come from the 1988 Bangladesh Fertility Survey. Each row is one of 1934 women. There are six variables, but you can focus on two of them for this practice problem:</strong></p>
 <p><strong>(1) district: ID number of administrative district each woman resided in</strong></p>
 <p><strong>(2) use.contraception: An indicator (0/1) of whether the woman was using contraception</strong></p>
-<p>**Focus on predicting use.contraception, clustered by district_id. Fit both</p>
-<ol style="list-style-type: decimal">
-<li><p>a traditional fixed-effects model that uses an index variable for district and</p></li>
-<li><p>a multilevel model with varying intercepts for district.</p></li>
-</ol>
-<p>Plot the predicted pro- portions of women in each district using contraception, for both the fixed-effects model and the varying-effects model. That is, make a plot in which district ID is on the horizontal axis and expected proportion using contraception is on the vertical. Make one plot for each model, or layer them on the same plot, as you prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can you explain the most extreme cases of disagreement, both why they happen where they do and why the models reach different inferences?**</p>
+<p><strong>Focus on predicting use.contraception, clustered by district_id. Fit both:</strong></p>
+<p><strong>1) a traditional fixed-effects model that uses an index variable for district</strong></p>
+<p><strong>2) a multilevel model with varying intercepts for district.</strong></p>
+<p>Plot the predicted proportions of women in each district using contraception, for both the fixed-effects model and the varying-effects model. That is, make a plot in which district ID is on the horizontal axis and expected proportion using contraception is on the vertical. Make one plot for each model, or layer them on the same plot, as you prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can you explain the most extreme cases of disagreement, both why they happen where they do and why the models reach different inferences?**</p>
 <pre class="r"><code>library(rethinking)
 data(bangladesh)
 d &lt;- bangladesh</code></pre>
@@ -1294,26 +1243,422 @@ sort(unique(d$district_id))</code></pre>
 ## [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
 ## [51] 51 52 53 54 55 56 57 58 59 60</code></pre>
 <p>Now there are 60 values, contiguous integers 1 to 60.</p>
+<div id="traditional-fixed-effects-model-that-uses-an-index-variable-for-district" class="section level2">
+<h2>2.1 traditional fixed-effects model that uses an index variable for district</h2>
+<div id="rethinking-5" class="section level3">
+<h3>2.1 rethinking</h3>
 <pre class="r"><code>dat_list &lt;- list(
-C = d$use.contraception, did = d$district_id
-)</code></pre>
+C = d$use.contraception, 
+did = d$district_id
+)
+
+m2.1 &lt;- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did],
+a[did] ~ normal( 0 , 1.5 )
+) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(m2.1, depth = 2)</code></pre>
+<pre><code>##                mean        sd       5.5%       94.5%    n_eff     Rhat4
+## a[1]  -1.0529007704 0.2102731 -1.4007760 -0.72074184 4639.541 0.9992790
+## a[2]  -0.5933592345 0.4478078 -1.3288104  0.10490121 3978.923 0.9994058
+## a[3]   1.2600176991 1.1701122 -0.5697085  3.15172728 4846.933 0.9990102
+## a[4]   0.0061037005 0.3539453 -0.5553391  0.57944559 5269.454 0.9986158
+## a[5]  -0.5732113359 0.3421292 -1.1427764 -0.03258801 4759.606 0.9984252
+## a[6]  -0.8759476096 0.2791001 -1.3227349 -0.43948703 3242.142 1.0002071
+## a[7]  -0.8889760873 0.5130252 -1.7401955 -0.06843693 4580.205 0.9984383
+## a[8]  -0.4827388106 0.3312984 -1.0202605  0.04620165 4443.785 0.9986090
+## a[9]  -0.7896949527 0.4694742 -1.5541280 -0.04531757 4963.451 0.9984835
+## a[10] -1.9719642800 0.7237048 -3.1855314 -0.86240221 3818.680 0.9993449
+## a[11] -2.9732396263 0.8187226 -4.3928285 -1.80140930 3461.005 1.0001330
+## a[12] -0.6166954937 0.3752770 -1.2394637 -0.01533211 6066.386 0.9985023
+## a[13] -0.3338242648 0.4078200 -1.0147665  0.30864944 4784.961 1.0008482
+## a[14]  0.5188354701 0.1894853  0.2240015  0.82605281 5390.345 0.9989131
+## a[15] -0.5384270791 0.4324349 -1.2411718  0.12883476 4024.955 0.9987491
+## a[16]  0.1935798394 0.4635711 -0.5430981  0.91377774 6146.928 0.9985582
+## a[17] -0.8555233336 0.4521492 -1.6132476 -0.16074240 3724.330 1.0002261
+## a[18] -0.6527230493 0.3032420 -1.1513116 -0.17484394 5012.833 0.9998864
+## a[19] -0.4444612386 0.3905111 -1.0613659  0.17667662 4506.434 0.9987971
+## a[20] -0.3859500748 0.5012537 -1.1729323  0.34965541 3889.199 0.9995282
+## a[21] -0.4286272790 0.4865003 -1.2130191  0.33020528 4099.060 0.9987349
+## a[22] -1.2830471635 0.5061455 -2.1245857 -0.51459145 3389.512 0.9987519
+## a[23] -0.9376921906 0.5535360 -1.8537897 -0.11155180 4877.342 0.9987560
+## a[24] -2.0424813670 0.7220314 -3.2371286 -0.97102546 4640.736 0.9993785
+## a[25] -0.2110389896 0.2459367 -0.6076481  0.19266891 4770.481 0.9990162
+## a[26] -0.4432447019 0.5446056 -1.3349615  0.42673367 4072.063 0.9986810
+## a[27] -1.4516432800 0.3930792 -2.1395675 -0.84754210 5963.441 0.9990044
+## a[28] -1.0912591587 0.3212351 -1.6388847 -0.58030965 4522.770 0.9983588
+## a[29] -0.9127686337 0.3822470 -1.5256297 -0.32350318 4940.129 0.9983194
+## a[30] -0.0298643892 0.2545600 -0.4250323  0.38221991 4923.996 0.9986396
+## a[31] -0.1809180406 0.3473104 -0.7235243  0.36974464 6314.916 0.9988486
+## a[32] -1.2574881286 0.4714223 -2.0352798 -0.55630759 2724.706 0.9988420
+## a[33] -0.2499719200 0.5280661 -1.0969046  0.57588976 4070.914 0.9988196
+## a[34]  0.6280500752 0.3435081  0.0783284  1.16127455 4229.820 0.9987746
+## a[35] -0.0003165550 0.2859566 -0.4505713  0.45928187 4668.285 0.9990374
+## a[36] -0.5828144959 0.4622345 -1.3476177  0.13713746 4067.681 0.9992475
+## a[37]  0.1508235740 0.5534129 -0.7131185  1.03957889 6562.600 0.9986178
+## a[38] -0.8331961422 0.5530748 -1.7615312  0.02611399 5266.383 0.9993122
+## a[39]  0.0005416236 0.3847808 -0.6072136  0.61779041 4172.106 0.9984468
+## a[40] -0.1482510740 0.3147418 -0.6563412  0.34613245 4314.420 0.9996597
+## a[41] -0.0006898660 0.3723265 -0.5988843  0.62472997 4291.667 0.9992017
+## a[42]  0.1594935768 0.5878430 -0.8044918  1.11565903 4696.913 0.9985623
+## a[43]  0.1299729575 0.2852836 -0.3192971  0.58821447 5061.544 0.9992255
+## a[44] -1.1886849952 0.4590830 -1.9249341 -0.46451004 4606.953 0.9997348
+## a[45] -0.6716733771 0.3172254 -1.1980040 -0.17951904 5265.352 0.9988442
+## a[46]  0.0979187500 0.2104221 -0.2436951  0.43625298 4870.402 0.9986733
+## a[47] -0.1208251270 0.4873332 -0.9029910  0.66376435 5161.128 0.9991027
+## a[48]  0.0813246384 0.3160888 -0.4417052  0.57362707 4923.180 0.9999332
+## a[49] -1.7352791725 0.9890978 -3.3922581 -0.23163956 3790.413 0.9990394
+## a[50] -0.1152885843 0.4377530 -0.8076115  0.59103920 5563.786 0.9987783
+## a[51] -0.1510878242 0.3123344 -0.6478251  0.34359180 4679.461 0.9989185
+## a[52] -0.2277460972 0.2561428 -0.6362313  0.16768214 3554.608 0.9985597
+## a[53] -0.3022731407 0.4559958 -1.0410653  0.42033691 5200.058 0.9992351
+## a[54] -1.2332723195 0.8842811 -2.6749028  0.11237728 3752.419 0.9987658
+## a[55]  0.3100420756 0.3032530 -0.1712012  0.80054594 5125.264 0.9984441
+## a[56] -1.3848505908 0.4610338 -2.1423865 -0.66965296 5683.472 0.9987349
+## a[57] -0.1751862016 0.3343221 -0.7100036  0.36163456 4271.648 0.9987002
+## a[58] -1.6998064078 0.7672003 -2.9316320 -0.55307986 4670.018 0.9989472
+## a[59] -1.2145850733 0.4003166 -1.8910257 -0.58900804 3339.988 0.9990238
+## a[60] -1.2470970524 0.3634203 -1.8167768 -0.66848938 4289.843 0.9991032</code></pre>
 </div>
-<div id="section-2" class="section level2">
-<h2>3.</h2>
-<p><strong>Return to the Trolley data, data(Trolley), from Chapter 12. Define and fit a varying intercepts model for these data. By this I mean to add an intercept parameter for the individual to the linear model. Cluster the varying intercepts on individual participants, as indicated by the unique values in the id variable. Include action, intention, and contact as before. Compare the varying intercepts model and a model that ignores individuals, using both WAIC/LOO and posterior predictions. What is the impact of individual variation in these data?</strong></p>
-<div id="trolley-data-context-from-chapter-12" class="section level3">
-<h3>Trolley data context from Chapter 12</h3>
-<p><strong>Dennis</strong> Standing by the railroad tracks, Dennis sees an empty, out-of-control boxcar about to hit five people. Next to Dennis is a lever that can be pulled, sending the boxcar down a side track and away from the five people. But pulling the lever will also lower the railing on a footbridge spanning the side track, causing one person to fall off the footbridge and onto the side track, where he will be hit by the boxcar. If Dennis pulls the lever the boxcar will switch tracks and not hit the five people, and the one person to fall and be hit by the boxcar. If Dennis does not pull the lever the boxcar will continue down the tracks and hit five people, and the one person will remain safe above the side track.</p>
-<p><strong>Evan</strong> Standing by the railroad tracks, Evan sees an empty, out-of-control boxcar about to hit five people. Next to Evan is a lever that can be pulled, lowering the railing on a footbridge that spans the main track, and causing one person to fall off the footbridge and onto the main track, where he will be hit by the boxcar. The boxcar will slow down because of the one person, therefore preventing the five from being hit. If Evan pulls the lever the one person will fall and be hit by the boxcar, and therefore the boxcar will slow down and not hit the five people. If Evan does not pull the lever the boxcar will continue down the tracks and hit the five people, and the one person will remain safe above the main track.</p>
-<p>Most people judge that, if Even pulls the lever, it is morally worse (less permissible) than when Dennis pulls the lever.</p>
-<p>There are 12 columns and 9930 rows, comprising data for 331 unique individuals. The outcome we’ll be interested in is response, which is an integer from 1 to 7 indicating how morally permissible the participant found the action to be taken (or not) in the story. Since this type of rating is categorical and ordered, it’s exactly the right type of problem for our ordered model.</p>
-<pre class="r"><code>library(rethinking) 
-data(Trolley)
-d &lt;- Trolley
-simplehist( d$response , xlim=c(1,7) , xlab=&quot;response&quot; )</code></pre>
-<p><img src="rethinkingINLA_HW8_files/figure-html/8.3%20data-1.png" width="672" /></p>
+<div id="inla-5" class="section level3">
+<h3>2.1 inla</h3>
+<pre class="r"><code>library(brinla)
+library(INLA)
+library(tidyverse)
+
+d2.i &lt;- d %&gt;% 
+  mutate(did= paste(&quot;d&quot;, as.integer(d$district_id), sep= &quot;.&quot;), 
+         d.value= 1
+         ) %&gt;% 
+  spread(did, d.value)
+
+#use this to quickly make a list of the index vbles to include in the model 
+did_formula &lt;- paste(&quot;d&quot;, 1:60, sep=&quot;.&quot;, collapse = &quot;+&quot;)
+
+
+m2.1.i &lt;- inla(use.contraception ~ d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9+d.10+d.11+d.12+d.13+d.14+d.15+d.16+d.17+d.18+d.19+d.20+d.21+d.22+d.23+d.24+d.25+d.26+d.27+d.28+d.29+d.30+d.31+d.32+d.33+d.34+d.35+d.36+d.37+d.38+d.39+d.40+d.41+d.42+d.43+d.44+d.45+d.46+d.47+d.48+d.49+d.50+d.51+d.52+d.53+d.54+d.55+d.56+d.57+d.58+d.59+d.60, data= d2.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, #Ntrials = 1 for bernoulli
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.fixed = list(
+        mean=  0 ,
+        prec= 1.5),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, waic= TRUE))
+summary(m2.1.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = use.contraception ~ d.1 + d.2 + d.3 + d.4 + d.5 + &quot;, 
+##    &quot; d.6 + d.7 + d.8 + d.9 + d.10 + d.11 + d.12 + d.13 + d.14 + &quot;, &quot; d.15 
+##    + d.16 + d.17 + d.18 + d.19 + d.20 + d.21 + d.22 + d.23 + &quot;, &quot; d.24 + 
+##    d.25 + d.26 + d.27 + d.28 + d.29 + d.30 + d.31 + d.32 + &quot;, &quot; d.33 + 
+##    d.34 + d.35 + d.36 + d.37 + d.38 + d.39 + d.40 + d.41 + &quot;, &quot; d.42 + 
+##    d.43 + d.44 + d.45 + d.46 + d.47 + d.48 + d.49 + d.50 + &quot;, &quot; d.51 + 
+##    d.52 + d.53 + d.54 + d.55 + d.56 + d.57 + d.58 + d.59 + &quot;, &quot; d.60, 
+##    family = \&quot;binomial\&quot;, data = d2.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, 
+##    compute = T), &quot;, &quot; control.family = list(control.link = list(model = 
+##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1.5))&quot;) 
+## Time used:
+##     Pre = 5.45, Running = 0.527, Post = 0.779, Total = 6.75 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.582 0.121     -0.818   -0.582     -0.345 -0.581   0
+## d.1         -0.455 0.233     -0.920   -0.453     -0.005 -0.447   0
+## d.2         -0.030 0.416     -0.865   -0.023      0.769 -0.011   0
+## d.3          0.645 0.708     -0.743    0.644      2.036  0.642   0
+## d.4          0.485 0.349     -0.201    0.486      1.167  0.487   0
+## d.5          0.000 0.326     -0.650    0.004      0.629  0.011   0
+## d.6         -0.275 0.279     -0.833   -0.271      0.263 -0.263   0
+## d.7         -0.268 0.443     -1.166   -0.259      0.575 -0.240   0
+## d.8          0.071 0.330     -0.586    0.075      0.709  0.082   0
+## d.9         -0.190 0.403     -1.004   -0.182      0.581 -0.167   0
+## d.10        -0.920 0.542     -2.037   -0.902      0.091 -0.865   0
+## d.11        -1.527 0.535     -2.639   -1.505     -0.539 -1.461   0
+## d.12        -0.051 0.365     -0.783   -0.045      0.652 -0.035   0
+## d.13         0.194 0.383     -0.568    0.198      0.935  0.205   0
+## d.14         1.046 0.217      0.623    1.045      1.474  1.043   0
+## d.15         0.015 0.400     -0.787    0.021      0.786  0.032   0
+## d.16         0.601 0.403     -0.190    0.601      1.393  0.600   0
+## d.17        -0.238 0.400     -1.045   -0.230      0.525 -0.214   0
+## d.18        -0.072 0.306     -0.684   -0.068      0.520 -0.061   0
+## d.19         0.088 0.375     -0.660    0.093      0.812  0.101   0
+## d.20         0.123 0.452     -0.781    0.129      0.996  0.140   0
+## d.21         0.095 0.426     -0.758    0.100      0.917  0.111   0
+## d.22        -0.563 0.447     -1.476   -0.551      0.280 -0.526   0
+## d.23        -0.290 0.472     -1.246   -0.279      0.606 -0.258   0
+## d.24        -0.972 0.536     -2.077   -0.953      0.027 -0.916   0
+## d.25         0.341 0.260     -0.173    0.342      0.849  0.344   0
+## d.26         0.074 0.475     -0.879    0.080      0.989  0.093   0
+## d.27        -0.761 0.352     -1.479   -0.752     -0.096 -0.734   0
+## d.28        -0.471 0.320     -1.117   -0.465      0.139 -0.453   0
+## d.29        -0.293 0.363     -1.026   -0.286      0.401 -0.272   0
+## d.30         0.500 0.268     -0.027    0.500      1.025  0.501   0
+## d.31         0.337 0.338     -0.332    0.339      0.996  0.342   0
+## d.32        -0.558 0.420     -1.414   -0.547      0.235 -0.524   0
+## d.33         0.203 0.460     -0.714    0.208      1.094  0.217   0
+## d.34         1.041 0.335      0.393    1.038      1.709  1.032   0
+## d.35         0.517 0.293     -0.058    0.518      1.091  0.518   0
+## d.36        -0.019 0.439     -0.901   -0.012      0.824  0.001   0
+## d.37         0.504 0.467     -0.415    0.505      1.417  0.507   0
+## d.38        -0.223 0.478     -1.191   -0.213      0.687 -0.193   0
+## d.39         0.473 0.367     -0.251    0.474      1.191  0.476   0
+## d.40         0.379 0.311     -0.236    0.380      0.987  0.383   0
+## d.41         0.473 0.367     -0.251    0.474      1.191  0.476   0
+## d.42         0.495 0.492     -0.474    0.496      1.456  0.498   0
+## d.43         0.631 0.300      0.043    0.631      1.220  0.630   0
+## d.44        -0.516 0.400     -1.331   -0.506      0.242 -0.486   0
+## d.45        -0.097 0.329     -0.756   -0.092      0.537 -0.083   0
+## d.46         0.631 0.237      0.166    0.631      1.096  0.630   0
+## d.47         0.319 0.447     -0.569    0.322      1.188  0.328   0
+## d.48         0.592 0.307     -0.011    0.592      1.195  0.592   0
+## d.49        -0.619 0.672     -1.981   -0.605      0.660 -0.576   0
+## d.50         0.361 0.412     -0.455    0.364      1.164  0.368   0
+## d.51         0.360 0.324     -0.280    0.361      0.991  0.364   0
+## d.52         0.319 0.270     -0.213    0.320      0.845  0.322   0
+## d.53         0.198 0.416     -0.630    0.202      1.002  0.210   0
+## d.54        -0.415 0.612     -1.656   -0.401      0.747 -0.374   0
+## d.55         0.789 0.301      0.202    0.788      1.382  0.785   0
+## d.56        -0.674 0.412     -1.516   -0.662      0.102 -0.639   0
+## d.57         0.337 0.338     -0.332    0.339      0.996  0.342   0
+## d.58        -0.742 0.564     -1.899   -0.724      0.318 -0.690   0
+## d.59        -0.550 0.379     -1.321   -0.541      0.168 -0.522   0
+## d.60        -0.599 0.347     -1.302   -0.591      0.059 -0.575   0
+## 
+## Expected number of effective parameters(stdev): 46.14(0.00)
+## Number of equivalent replicates : 41.92 
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2515.50
+## Effective number of parameters .................: 44.53
+## 
+## Marginal log-Likelihood:  -1273.53 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
 </div>
 </div>
+<div id="varying-intercepts-model-1" class="section level2">
+<h2>2.2 varying intercepts model</h2>
+<div id="rethinking-6" class="section level3">
+<h3>2.2 rethinking</h3>
+<pre class="r"><code>m2.2 &lt;- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did],
+a[did] ~ normal( a_bar , sigma ),
+a_bar ~ normal( 0 , 1.5 ),
+sigma ~ exponential( 1 )
+) ,data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(m2.2, depth= 2)</code></pre>
+<pre><code>##                mean         sd        5.5%       94.5%     n_eff     Rhat4
+## a[1]  -0.9995108111 0.19105125 -1.31781987 -0.69650294 4618.0633 0.9989432
+## a[2]  -0.5928925559 0.34755385 -1.15086476 -0.05197480 4669.0707 0.9984462
+## a[3]  -0.2245419127 0.52197322 -1.03319352  0.64907278 3331.6891 0.9991787
+## a[4]  -0.1825602899 0.31448056 -0.69892796  0.29490434 4276.7266 0.9983039
+## a[5]  -0.5688235435 0.29265713 -1.04840382 -0.10400990 4988.6889 0.9990032
+## a[6]  -0.8138537392 0.23178315 -1.19315464 -0.44853309 6602.0600 0.9983549
+## a[7]  -0.7605012073 0.36393377 -1.34398022 -0.19275330 5036.9097 0.9989973
+## a[8]  -0.5172723053 0.27785988 -0.97465465 -0.06741817 4990.0809 0.9980946
+## a[9]  -0.7155394404 0.34503673 -1.28935795 -0.18606958 3377.4531 0.9989906
+## a[10] -1.1459415614 0.43098158 -1.86411550 -0.50391945 2450.5231 1.0008775
+## a[11] -1.5515790260 0.43101779 -2.28349210 -0.92818302 1450.6452 0.9992214
+## a[12] -0.6068382307 0.30931431 -1.09628676 -0.11931234 3726.5899 0.9991118
+## a[13] -0.4199827874 0.34716214 -0.97712997  0.12975989 3004.2640 0.9985076
+## a[14]  0.3905033410 0.18382578  0.09732486  0.69173893 2662.7278 0.9994280
+## a[15] -0.5627170759 0.33595961 -1.09482904 -0.04290379 4138.4049 0.9986341
+## a[16] -0.1200396848 0.35394893 -0.66544758  0.45440503 4162.8466 0.9985703
+## a[17] -0.7379627874 0.33289880 -1.29158625 -0.21287461 4834.2345 0.9987748
+## a[18] -0.6323739025 0.26825159 -1.08137537 -0.19600664 3179.5399 1.0007468
+## a[19] -0.5012916370 0.31949153 -1.00334886 -0.01002310 3956.3070 0.9990488
+## a[20] -0.4888656832 0.37601345 -1.10566370  0.09600143 5407.3680 0.9984173
+## a[21] -0.5000555100 0.36641291 -1.07384030  0.08072543 4400.4002 0.9987719
+## a[22] -0.9675725379 0.37684714 -1.58974125 -0.38960521 3158.2763 0.9984251
+## a[23] -0.7648659732 0.38284861 -1.37746753 -0.13984528 3494.4904 0.9985361
+## a[24] -1.1841335890 0.43819500 -1.90660704 -0.49717267 2759.0660 0.9992396
+## a[25] -0.2831003839 0.22340715 -0.64529400  0.06628298 4919.9204 0.9987289
+## a[26] -0.5188618981 0.39649493 -1.14742170  0.09637038 5012.8035 0.9993954
+## a[27] -1.1828047058 0.29607505 -1.68097958 -0.72233593 3452.6361 0.9988014
+## a[28] -0.9540014207 0.28975362 -1.43130457 -0.50864763 4484.1754 0.9985030
+## a[29] -0.8055969329 0.30485357 -1.29858005 -0.32539862 4386.6466 0.9987328
+## a[30] -0.1365798325 0.22795504 -0.49588966  0.23256864 4043.4536 0.9984798
+## a[31] -0.2968709889 0.29484667 -0.74597428  0.15583866 5358.4036 0.9985524
+## a[32] -0.9746865659 0.34605691 -1.52947220 -0.44073276 3405.8385 0.9994014
+## a[33] -0.4337451062 0.37498572 -1.04826035  0.17840183 4301.5754 0.9988960
+## a[34]  0.2763306268 0.31411136 -0.21614938  0.78886520 4414.8813 0.9988135
+## a[35] -0.1322902980 0.25565974 -0.53350942  0.28457696 4259.1730 0.9995359
+## a[36] -0.5802286375 0.37304264 -1.18953611  0.03797931 5309.4759 0.9983052
+## a[37] -0.2090076381 0.39169693 -0.83207177  0.41040680 2844.6419 0.9994856
+## a[38] -0.7178025641 0.40796285 -1.38660255 -0.07360822 3770.8597 0.9984727
+## a[39] -0.1989632876 0.32962674 -0.70952387  0.34236701 4316.9528 0.9989932
+## a[40] -0.2510734739 0.27305513 -0.68000594  0.19584723 4562.8210 0.9992828
+## a[41] -0.1984738800 0.31862490 -0.70646264  0.32340198 4732.1594 0.9995560
+## a[42] -0.2409589730 0.39684919 -0.87970033  0.40014829 3619.4650 1.0001911
+## a[43] -0.0432087866 0.26152906 -0.46642235  0.37396625 3880.1388 0.9997181
+## a[44] -0.9619364988 0.33238182 -1.51513301 -0.46208892 2959.8382 0.9990402
+## a[45] -0.6535371007 0.28994849 -1.10707525 -0.18854718 3767.4462 0.9985096
+## a[46]  0.0008872511 0.19749099 -0.30423118  0.32455113 4112.8378 0.9984483
+## a[47] -0.3434885035 0.37796544 -0.97503517  0.27029590 4748.0284 0.9992130
+## a[48] -0.0734449535 0.26219941 -0.49056734  0.33783109 4050.0898 0.9994682
+## a[49] -0.8760793216 0.47475074 -1.61193411 -0.13067829 2951.6638 1.0000160
+## a[50] -0.3005857121 0.34636615 -0.84942050  0.24243922 3797.7368 0.9994791
+## a[51] -0.2865293762 0.28913118 -0.74950393  0.17474870 4367.9043 0.9982276
+## a[52] -0.2972469209 0.23266132 -0.66636216  0.06678951 4940.8743 0.9987149
+## a[53] -0.4214345659 0.35119376 -0.96857989  0.13417439 5401.2929 0.9987616
+## a[54] -0.7850447544 0.47364448 -1.55321449 -0.07400188 3351.4297 0.9989328
+## a[55]  0.0941662734 0.25777747 -0.31633875  0.50697840 3660.4941 0.9989915
+## a[56] -1.0719586865 0.34349180 -1.62614484 -0.52529143 2675.5585 1.0012766
+## a[57] -0.3054168928 0.28971630 -0.76189477  0.17393371 5210.6518 0.9994358
+## a[58] -1.0103855213 0.45566465 -1.73686820 -0.29695828 2687.5620 0.9984027
+## a[59] -0.9998020001 0.32932806 -1.54759418 -0.48322734 4065.8400 0.9989988
+## a[60] -1.0532267620 0.30098763 -1.54103660 -0.59104454 4287.3831 0.9987154
+## a_bar -0.5392228416 0.08659052 -0.67825781 -0.40505513 1821.3305 1.0002787
+## sigma  0.5196750132 0.08345211  0.39401731  0.65699698  837.8317 1.0006577</code></pre>
+</div>
+<div id="inla-6" class="section level3">
+<h3>2.2 inla</h3>
+<pre class="r"><code>m2.2.i &lt;- inla(use.contraception ~ f(district_id, model=&quot;iid&quot;), data= d2.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, #Ntrials = 1 for bernoulli
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.fixed = list(
+        mean.intercept=  0 ,
+        prec.intercept= 1.5),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, waic= TRUE))
+summary(m2.2.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = use.contraception ~ f(district_id, model = \&quot;iid\&quot;), 
+##    &quot;, &quot; family = \&quot;binomial\&quot;, data = d2.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, 
+##    compute = T), &quot;, &quot; control.family = list(control.link = list(model = 
+##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean.intercept = 0, 
+##    prec.intercept = 1.5))&quot; ) 
+## Time used:
+##     Pre = 1.43, Running = 1.03, Post = 0.289, Total = 2.75 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.529 0.083     -0.696   -0.527     -0.368 -0.525   0
+## 
+## Random effects:
+##   Name     Model
+##     district_id IID model
+## 
+## Model hyperparameters:
+##                           mean   sd 0.025quant 0.5quant 0.975quant mode
+## Precision for district_id 4.73 1.64       2.38     4.45       8.75 3.96
+## 
+## Expected number of effective parameters(stdev): 33.96(4.23)
+## Number of equivalent replicates : 56.94 
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2514.77
+## Effective number of parameters .................: 33.28
+## 
+## Marginal log-Likelihood:  -1278.40 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>bri.hyperpar.summary(m2.2.i)</code></pre>
+<pre><code>##                         mean         sd    q0.025      q0.5    q0.975      mode
+## SD for district_id 0.4792719 0.07887635 0.3381658 0.4742339 0.6481757 0.4651176</code></pre>
+<p>Side note: this is how you calculate the sd from the hyperprior (<span class="math inline">\(\sigma\)</span>)</p>
+<pre class="r"><code>bri.hyperpar.summary(m2.2.i)</code></pre>
+<pre><code>##                         mean         sd    q0.025      q0.5    q0.975      mode
+## SD for district_id 0.4792719 0.07887635 0.3381658 0.4742339 0.6481757 0.4651176</code></pre>
+<pre class="r"><code># hyperparameter of the precision
+m2.2.i.prec &lt;- m2.2.i$internal.marginals.hyperpar
+
+#transform precision to sd using inla.tmarginal
+#m2.2.i.prec[[1]] is used to access the actual values inside the list
+m2.2.i.sd &lt;- inla.tmarginal(function(x) sqrt(exp(-x)), m2.2.i.prec[[1]])
+#plot the post of the sd per district (sigma)
+plot(m2.2.i.sd)</code></pre>
+<p><img src="rethinkingINLA_HW8_files/figure-html/8.2.2%20inla%20hyper%20sd-1.png" width="672" /></p>
+<pre class="r"><code>#summary stats for the sd 
+m2.2.i.sd.sum &lt;- inla.zmarginal(m2.2.i.sd)</code></pre>
+<pre><code>## Mean            0.479272 
+## Stdev           0.0788763 
+## Quantile  0.025 0.338166 
+## Quantile  0.25  0.423871 
+## Quantile  0.5   0.474234 
+## Quantile  0.75  0.529072 
+## Quantile  0.975 0.648176</code></pre>
+<pre class="r"><code># this coincides perfectly with the result from bri.hyperpar.summary</code></pre>
+</div>
+</div>
+<div id="plot-of-posterior-mean-probabilities-in-each-district" class="section level2">
+<h2>2.3 plot of posterior mean probabilities in each district</h2>
+<p>Now let’s extract the samples, compute posterior mean probabilities in each district, and plot it all:</p>
+<div id="plot-rethinking" class="section level3">
+<h3>plot rethinking</h3>
+<pre class="r"><code>post1 &lt;- extract.samples( m2.1 ) 
+post2 &lt;- extract.samples( m2.2 )
+p1 &lt;- apply( inv_logit(post1$a) , 2 , mean ) 
+p2 &lt;- apply( inv_logit(post2$a) , 2 , mean )
+nd &lt;- max(dat_list$did)
+plot( NULL , xlim=c(1,nd) , ylim=c(0,1) , ylab=&quot;prob use contraception&quot; , xlab=&quot;district&quot; )
+points( 1:nd , p1 , pch=16 , col=rangi2 ) 
+points( 1:nd , p2 )
+abline( h=mean(inv_logit(post2$a_bar)) , lty=2 )</code></pre>
+<p><img src="rethinkingINLA_HW8_files/figure-html/8.2.3%20plot%20rethinking-1.png" width="672" /></p>
+</div>
+<div id="plot-inla" class="section level3">
+<h3>plot inla</h3>
+<p><a href="https://people.bath.ac.uk/jjf23/inla/oneway.html" class="uri">https://people.bath.ac.uk/jjf23/inla/oneway.html</a></p>
+<p><a href="https://people.bath.ac.uk/jjf23/brinla/reeds.html" class="uri">https://people.bath.ac.uk/jjf23/brinla/reeds.html</a></p>
+<p><strong>posterior mean for each district a for the idex fixed effect model m2.1:</strong></p>
+<pre class="r"><code># m2.2.i$summary.fixed[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
+
+inverse_logit &lt;- function (x){
+    p &lt;- 1/(1 + exp(-x))
+    p &lt;- ifelse(x == Inf, 1, p)
+    p }
+
+#inla.tmarginal : apply inverse logit to all district marginals 
+#inla.zmarginal : summary of the logit-transformed marginals 
+# we eliminate the first element of this list, the intercept.
+m2.1.i.fix&lt;- lapply(m2.1.i$marginals.fixed, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))[-1]</code></pre>
+<p><strong>posterior mean for each district a for the varying intercept model m2.2:</strong></p>
+<pre class="r"><code># m2.2.i$summary.random[[1]] would gives us the summary we want but not in the response scale, we need to  transform it using the inverse logit 
+
+#inla.tmarginal : apply inverse logit to all district marginals 
+#inla.zmarginal : summary of the logit-transformed marginals 
+m2.2.i.rand&lt;- lapply(m2.2.i$marginals.random$district_id, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))</code></pre>
+<pre class="r"><code># sapply(m2.2.i.rand, function(x) x[1]) extracts the first element (the mean) from the summary of the posterior of each district
+m2.i.mean &lt;- bind_cols(district= 1:60,mean.m2.1= unlist(sapply(m2.1.i.fix, function(x) x[1])), mean.m2.2=unlist(sapply(m2.2.i.rand, function(x) x[1])))
+
+m2.2.i.abar &lt;- inla.zmarginal( inla.tmarginal (inverse_logit, m2.2.i$marginals.fixed[[&quot;(Intercept)&quot;]] ))</code></pre>
+<pre><code>## Mean            0.371073 
+## Stdev           0.0192741 
+## Quantile  0.025 0.332832 
+## Quantile  0.25  0.358143 
+## Quantile  0.5   0.371126 
+## Quantile  0.75  0.384026 
+## Quantile  0.975 0.408777</code></pre>
+<pre class="r"><code>m2.i.district.plot &lt;- ggplot() +
+  geom_point(data= m2.i.mean, aes(x= district, y= mean.m2.1), color= &quot;blue&quot;, alpha= 0.5)+
+  geom_point(data= m2.i.mean, aes(x= district, y= mean.m2.2), color= &quot;black&quot;, alpha= 0.5, shape= 1)+
+  geom_hline(yintercept=m2.2.i.abar[[1]], linetype=&#39;longdash&#39;) +
+  ylim(0,1)+
+  labs(y = &quot;prob use contraception&quot;)+
+  theme_bw()
+  
+
+m2.i.district.plot</code></pre>
+<p><img src="rethinkingINLA_HW8_files/figure-html/8.2.3%20plot%20inla-1.png" width="672" /></p>
+<p>The blue points are the fixed estimations. The open points are the varying effects. As you’d expect, they are shrunk towards the mean (the dashed line). Some are shrunk more than others. The third district from the left shrunk a lot. Let’s look at the sample size in each district:</p>
+<pre class="r"><code> table(d$district_id)</code></pre>
+<pre><code>## 
+##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+## 117  20   2  30  39  65  18  37  23  13  21  29  24 118  22  20  24  47  26  15 
+##  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
+##  18  20  15  14  67  13  44  49  32  61  33  24  14  35  48  17  13  14  26  41 
+##  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60 
+##  26  11  45  27  39  86  15  42   4  19  37  61  19   6  45  27  33  10  32  42</code></pre>
+<p>District 3 has only 2 women sampled. So it shrinks a lot. There are couple of other districts, like 49 and 54, that also have very few women sampled. But their fixed estimates aren’t as extreme, so they don’t shrink as much as district 3 does. All of this is explained by partial pooling, of course.</p>
+</div>
+</div>
+</div>
+<div id="section-2" class="section level1">
+<h1>3.</h1>
+<p>I don’t really care about ordered categorical data so i’m going to skip exercise 3.</p>
 </div>
 
 
