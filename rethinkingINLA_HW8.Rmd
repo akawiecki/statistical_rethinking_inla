@@ -1,9 +1,11 @@
 ---
 title: "Statistical Rethinking 2nd edition Homework 8 in INLA"
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r global_options, include=FALSE}
@@ -228,6 +230,7 @@ precis(m1.3,  depth=2)
 
 library(brinla)
 library(INLA)
+library(tidyverse)
 
 d1.i <- d %>% 
   mutate(tank = row_number(), 
@@ -252,9 +255,9 @@ m1.3.i <- inla(surv ~ 1 + size.small+ size.big + f(tank, model="iid", hyper = hc
               Ntrials = density, 
               control.fixed = list(
         mean= 0,
-        prec= 0.5, 
+        prec= 1/(0.5^2), 
         mean.intercept= 0, 
-        prec.intercept= 1.5),
+        prec.intercept= 1/(1.5^2)),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, dic=TRUE, waic= TRUE))
@@ -267,7 +270,6 @@ bri.hyperpar.summary(m1.3.i)
 
 ```
 
-** these estimates are super off, probably something is wrong**
 
 ## 1.4 varying intercepts + predation + size
 

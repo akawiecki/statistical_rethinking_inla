@@ -1,0 +1,129 @@
+---
+title: "Statistical Rethinking 2nd edition Homework 9 in INLA"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE)
+```
+
+```{r libraries, message= FALSE}
+
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)
+```
+
+# 1. 
+
+**Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.**
+
+
+```{r 9.1 re mean}
+library(rethinking) 
+data(bangladesh)
+d <- bangladesh
+
+dat_list <- list(
+C = d$use.contraception,
+did = as.integer( as.factor(d$district) ), 
+urban = d$urban
+)
+
+m1.1 <- ulam( 
+  alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did] + b[did]*urban,
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+bbar ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1) 
+) , data=dat_list , chains=4 , cores=4 )
+
+precis(m1.1)
+```
+
+This is a conventional varying slopes model, with a centered parameterization. No surprises. If you peek at the posterior distributions for the average effects, you’ll see that the average slope is positive. This implies that urban areas use contraception more. Not surprising. 
+
+Now consider the distribution of varying effects:
+
+```{r 9.1 re rho }
+precis( m1.1 , depth=3 , pars=c("Rho","Sigma") )
+```
+
+The correlation between the intercepts and slopes is quite negative. 
+
+Let’s plot the individual effects to appreciate this. 
+
+
+```{r 9.1 re plot }
+
+post <- extract.samples(m1.1)
+
+a <- apply( post$a , 2 , mean ) 
+b <- apply( post$b , 2 , mean )
+plot( a, b , xlab="a (intercept)" , ylab="b (urban slope)" )
+abline( h=0 , lty=2 )
+abline( v=0 , lty=2 )
+library(ellipse)
+R <- apply( post$Rho , 2:3 , mean ) 
+s <- apply( post$Sigma , 2 , mean ) 
+S <- diag(s) %*% R %*% diag(s)
+ll <- c( 0.5 , 0.67 , 0.89 , 0.97 ) 
+for ( l in ll ) {
+el <- ellipse( S , centre=c( mean(post$abar) , mean(post$bbar) ) , level=l )
+lines( el , col="black" , lwd=0.5 ) }
+ 
+```
+There’s the negative correlation — districts with higher use outside urban areas (a values) have smaller slopes. Since the slope is the difference between urban and non-urban areas, you can see this as saying that districts with high use in rural areas have urban areas that aren’t as different.
+
+On the outcome scale, what this ends up meaning is that urban places are much the same in all districts, but rural areas vary a lot. Plotting now in the outcome scale:
+
+```{r 9.1 re plot outcome}
+u0 <- inv_logit( a )
+u1 <- inv_logit( a + b )
+plot( u0 , u1 , xlim=c(0,1) , ylim=c(0,1) , xlab="urban = 0" , ylab="urban = 1" )
+abline( h=0.5 , lty=2 )
+abline( v=0.5 , lty=2 )
+ 
+```
+This plot is on the probability scale. The horizontal axis is probability of contracep- tive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.
+
+In fact, if we fit the model so it instead has two intercepts, one for rural and one for urban, there is no strong correlation between those intercepts. Here’s such a model:
+
+```{r 9.1.2 re}
+
+# version with matrix instead of slopes 
+dat_list$uid <- dat_list$urban + 1L
+
+
+m1.2 <- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did,uid],
+vector[2]:a[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+bbar ~ normal(0,1),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1) 
+) , data=dat_list )
+
+precis( m1.2 , depth=3 , pars="Rho" )
+```
+
+
+
+
+# 2. 
+**Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?**
+
+#3.
+**Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Chil- dren here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
