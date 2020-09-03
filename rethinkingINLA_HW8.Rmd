@@ -175,7 +175,7 @@ m1.2.i <- inla(surv ~ 1 + pred + f(tank, model="iid", hyper = hcprior), data= d1
         mean= -0.5,
         prec= 1, 
         mean.intercept= 0, 
-        prec.intercept= 1.5),
+        prec.intercept= 1/(1.5^2)),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, dic=TRUE, waic= TRUE))
@@ -330,7 +330,7 @@ m1.4.i <- inla(surv ~ 1 + pred + size.small+ size.big + f(tank, model="iid", hyp
         mean= list(pred= -0.5,size.small= 0, size.big= 0 ),
         prec= list(pred= 1,size.small= 1, size.big= 1 ), 
         mean.intercept= 0, 
-        prec.intercept= 1.5),
+        prec.intercept= 1/(1.5^2)),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, dic=TRUE, waic= TRUE))
@@ -406,7 +406,7 @@ m1.5.i <- inla(surv ~ 1 + size.small+ size.big + pred*size.small + pred*size.big
         mean= list(pred= -0.5,size.small= 0, size.big= 0 ),
         prec= list(pred= 1,size.small= 1, size.big= 1 ), 
         mean.intercept= 0, 
-        prec.intercept= 1.5),
+        prec.intercept= 1/(1.5^2)),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, dic=TRUE, waic= TRUE))
@@ -552,7 +552,7 @@ m2.1.i <- inla(use.contraception ~ d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9+d.10+d.11
               control.family = list(control.link=list(model="logit")),
               control.fixed = list(
         mean=  0 ,
-        prec= 1.5),
+        prec= 1/(1.5^2)),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, waic= TRUE))
 summary(m2.1.i)
@@ -588,7 +588,7 @@ m2.2.i <- inla(use.contraception ~ f(district_id, model="iid"), data= d2.i, fami
               control.family = list(control.link=list(model="logit")),
               control.fixed = list(
         mean.intercept=  0 ,
-        prec.intercept= 1.5),
+        prec.intercept= 1/(1.5^2)),
               control.predictor=list(link=1, compute=T),
               control.compute=list(config=T, waic= TRUE))
 summary(m2.2.i)

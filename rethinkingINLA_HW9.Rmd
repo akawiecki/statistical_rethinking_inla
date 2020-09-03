@@ -26,6 +26,16 @@ library(stringr)
 
 **Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.**
 
+## 1.1 model varying slops of urban
+
+$C_{did} \sim Bernoulli(p_{did})$
+
+$logit(p_{did}) = \alpha_{did} + \beta_{did}*urban_{did}$
+
+$\begin{pmatrix}a_{did}\\b_{did}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , & Sigma ,& Rho\end{pmatrix}$ 
+
+
+### 1.1 rethinking
 
 ```{r 9.1 re mean}
 library(rethinking) 
@@ -59,8 +69,63 @@ Now consider the distribution of varying effects:
 ```{r 9.1 re rho }
 precis( m1.1 , depth=3 , pars=c("Rho","Sigma") )
 ```
+The correlation between the intercepts and slopes is quite negative.
 
-The correlation between the intercepts and slopes is quite negative. 
+### 1.1. inla
+random slope of x1 within bloc with correlated intercept
+
+lmer
+model_slope_intercept_correlated <- lmer( y ~ x1 + (x1|bloc), data =
+mydata)
+summary(model_slope_intercept_correlated)
+
+inla
+n.block = max(mydata$block) ## = 4
+mydata$i.intercept = mydata$bloc
+mydata$j.intercept = mydata$bloc + n.block ## see doc for iid2d
+
+
+formule_random_correlated_intercept_slope = y ~ x1 +
+
+f(i.intercept, model="iid2d", n=2*n.block) +
+f(j.intercept, x1, copy="i.intercept")
+model_random_correlated_intercept_slope_INLA = inla.cpo(
+formula=formule_random_correlated_intercept_slope,
+
+
+data=mydata, family="gaussian", control.compute=list(dic=TRUE))
+summary(model_random_correlated_intercept_slope_INLA)
+
+```{r 9.1 re mean}
+library(INLA)
+library(brinla)
+
+d1.i <- d %>% 
+#make a new variable of district that is continuous
+mutate(did = as.integer( as.factor(d$district)), 
+       a.did= did,
+       b.did= did + max(d1.i$did)
+)
+
+n.district= max(d1.i$did) ## = 60
+
+
+m1.1.i <- inla(use.contraception ~ f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
+              Ntrials = 1, 
+              #control.fixed = list(
+        #mean= 0,
+        #prec= 1/(0.5^2), 
+        #mean.intercept= 0, 
+        #prec.intercept= 1),
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m1.1.i)
+
+m1.1.i$marginals.random
+
+```
+
 
 Let’s plot the individual effects to appreciate this. 
 
@@ -96,7 +161,11 @@ abline( h=0.5 , lty=2 )
 abline( v=0.5 , lty=2 )
  
 ```
-This plot is on the probability scale. The horizontal axis is probability of contracep- tive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.
+This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.
+
+
+
+## 1.2 model urban index intercepts. 
 
 In fact, if we fit the model so it instead has two intercepts, one for rural and one for urban, there is no strong correlation between those intercepts. Here’s such a model:
 
@@ -118,6 +187,10 @@ Sigma ~ exponential(1)
 
 precis( m1.2 , depth=3 , pars="Rho" )
 ```
+
+Correlation all gone.
+
+## 1. INLA 
 
 
 
