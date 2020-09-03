@@ -71,114 +71,7 @@ precis( m1.1 , depth=3 , pars=c("Rho","Sigma") )
 ```
 The correlation between the intercepts and slopes is quite negative.
 
-### 1.1. inla
-random slope of x1 within bloc with correlated intercept
-
-lmer
-model_slope_intercept_correlated <- lmer( y ~ x1 + (x1|bloc), data =
-mydata)
-summary(model_slope_intercept_correlated)
-
-inla
-n.block = max(mydata$block) ## = 4
-mydata$i.intercept = mydata$bloc
-mydata$j.intercept = mydata$bloc + n.block ## see doc for iid2d
-
-
-formule_random_correlated_intercept_slope = y ~ x1 +
-
-f(i.intercept, model="iid2d", n=2*n.block) +
-f(j.intercept, x1, copy="i.intercept")
-model_random_correlated_intercept_slope_INLA = inla.cpo(
-formula=formule_random_correlated_intercept_slope,
-
-
-data=mydata, family="gaussian", control.compute=list(dic=TRUE))
-summary(model_random_correlated_intercept_slope_INLA)
-
-```{r 9.1 re mean}
-library(INLA)
-library(brinla)
-
-d1.i <- d %>% 
-#make a new variable of district that is continuous
-mutate(did = as.integer( as.factor(d$district)), 
-       a.did= did,
-       b.did= did + max(did)
-)
-
-n.district= max(d1.i$did) ## = 60
-
-
-m1.1.i <- inla(use.contraception ~  0+ f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
-              Ntrials = 1, 
-              #control.fixed = list(
-        #mean= 0,
-        #prec= 1/(0.5^2), 
-        #mean.intercept= 0, 
-        #prec.intercept= 1),
-              control.family = list(control.link=list(model="logit")),
-              control.predictor=list(link=1, compute=T),
-              control.compute=list(config=T, dic=TRUE, waic= TRUE))
-summary(m1.1.i)
-
-bri.hyperpar.summary(m1.1.i)
-
-bri.hyperpar.plot(m1.1.i)
-
-```
-
-
-```{r 9.1.1 plot inla}
-
-inverse_logit <- function (x){
-    p <- 1/(1 + exp(-x))
-    p <- ifelse(x == Inf, 1, p)
-    p }
-
-#inla.tmarginal : apply inverse logit to all district marginals 
-#inla.zmarginal : summary of the logit-transformed marginals 
-
-#m1.1.i$marginals.random has 2 elements: a.did and b.did, but they are identical 
-
-m1.1.i.a<- lapply(m1.1.i$marginals.random$a.did, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
-
-# very confused: both a.did and b.did have 120 elements. shouldn't each of them have 60?
-
-m1.1.i.a.mean <- unlist(sapply(m1.1.i.a, function(x) x[1]))
-
-
-m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i.a.mean), mean= m1.1.i.a.mean) %>% 
-  mutate(param= if_else(did <= n.district, "a.did", "b.did"), 
-         district= rep(1:60,2)) %>% 
-  group_split(param) %>% 
-  reduce(left_join, by= "district") %>% 
-  select(c( "district", "mean.x", "mean.y")) %>% 
-  rename("a.did"= "mean.x", "b.did"= "mean.y")
-
-
-
-m1.1.i.mean.plot <-  ggplot()+
-  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
-   geom_hline(yintercept=0, linetype='longdash') +
-  geom_vline(xintercept = 0)+
-  labs(x= "a (intercept)", y = "b (urban slope)")
-
-m1.1.i.mean.plot
-
-m1.1.i.mean.plot 
-  
-plot( a, b , xlab="a (intercept)" , ylab="b (urban slope)" )
-abline( h=0 , lty=2 )
-abline( v=0 , lty=2 )
-
-
-
-```
-
-
 Let’s plot the individual effects to appreciate this. 
-
 
 ```{r 9.1 re plot }
 
@@ -213,13 +106,100 @@ abline( v=0.5 , lty=2 )
 ```
 This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.
 
+### 1.1. inla
+
+
+```{r 9.1 re mean}
+library(INLA)
+library(brinla)
+
+d1.i <- d %>% 
+#make a new variable of district that is continuous
+mutate(did = as.integer( as.factor(d$district)), 
+       a.did= did,
+       b.did= did + max(did)
+)
+
+n.district= max(d1.i$did) ## = 60
+
+
+m1.1.i <- inla(use.contraception ~ 1 + urban + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m1.1.i)
+
+bri.hyperpar.summary(m1.1.i)
+
+bri.hyperpar.plot(m1.1.i)
+
+```
+
+
+```{r 9.1.1 plot inla}
+
+
+m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][["mean"]]), mean= m1.1.i$summary.random[[1]][["mean"]]) %>% 
+  mutate(param= if_else(did <= n.district, "a.did", "b.did"), 
+         district= rep(1:60,2)) %>% 
+  group_split(param) %>% 
+  reduce(left_join, by= "district") %>% 
+  select(c( "district", "mean.x", "mean.y")) %>% 
+  rename("a.did"= "mean.x", "b.did"= "mean.y")
+
+
+
+m1.1.i.mean.plot <-  ggplot()+
+  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
+   geom_hline(yintercept=0, linetype='longdash') +
+  geom_vline(xintercept = 0)+
+  labs(x= "a (intercept)", y = "b (urban slope)")+
+  theme_bw()
+
+m1.1.i.mean.plot
+
+
+```
+
+```{r 9.1.1 outcome plot inla}
+
+inverse_logit <- function (x){
+    p <- 1/(1 + exp(-x))
+    p <- ifelse(x == Inf, 1, p)
+    p }
+
+
+m1.1.i.outcome <- m1.1.i.mean %>% 
+  mutate(u0.i = inverse_logit(a.did), 
+         u1.i= inverse_logit(a.did + b.did))
+
+
+m1.1.i.outcome.plot <-  ggplot()+
+  geom_point(data= m1.1.i.outcome, aes(x=u0.i, y= u1.i))+
+  geom_hline(yintercept=0.5, linetype='longdash') +
+  geom_vline(xintercept = 0.5)+
+  labs(x= "urban = 0", y = "urban = 1")+
+  xlim(0,1) +
+  ylim(0,1)+
+  theme_bw()
+
+m1.1.i.outcome.plot
+
+```
+
 
 
 ## 1.2 model urban index intercepts. 
 
 In fact, if we fit the model so it instead has two intercepts, one for rural and one for urban, there is no strong correlation between those intercepts. Here’s such a model:
 
-```{r 9.1.2 re}
+```{r 9.1.2 re, eval= FALSE}
 
 # version with matrix instead of slopes 
 dat_list$uid <- dat_list$urban + 1L
