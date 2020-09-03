@@ -104,13 +104,13 @@ d1.i <- d %>%
 #make a new variable of district that is continuous
 mutate(did = as.integer( as.factor(d$district)), 
        a.did= did,
-       b.did= did + max(d1.i$did)
+       b.did= did + max(did)
 )
 
 n.district= max(d1.i$did) ## = 60
 
 
-m1.1.i <- inla(use.contraception ~  f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
+m1.1.i <- inla(use.contraception ~  0+ f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
               Ntrials = 1, 
               #control.fixed = list(
         #mean= 0,
@@ -148,14 +148,30 @@ m1.1.i.a<- lapply(m1.1.i$marginals.random$a.did, function (x) inla.zmarginal( in
 m1.1.i.a.mean <- unlist(sapply(m1.1.i.a, function(x) x[1]))
 
 
-m1.1.i.b<- lapply(m1.1.i$marginals.random$b.did, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
+m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i.a.mean), mean= m1.1.i.a.mean) %>% 
+  mutate(param= if_else(did <= n.district, "a.did", "b.did"), 
+         district= rep(1:60,2)) %>% 
+  group_split(param) %>% 
+  reduce(left_join, by= "district") %>% 
+  select(c( "district", "mean.x", "mean.y")) %>% 
+  rename("a.did"= "mean.x", "b.did"= "mean.y")
 
-# very confused: both a.did and b.did have 120 elements. shouldn't each of them have 60?
-
-m1.1.i.b.mean <- unlist(sapply(m1.1.i.b, function(x) x[1]))
 
 
-m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i.b.mean), a.did= m1.1.i.a.mean, b.did= m1.1.i.b.mean)
+m1.1.i.mean.plot <-  ggplot()+
+  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
+   geom_hline(yintercept=0, linetype='longdash') +
+  geom_vline(xintercept = 0)+
+  labs(x= "a (intercept)", y = "b (urban slope)")
+
+m1.1.i.mean.plot
+
+m1.1.i.mean.plot 
+  
+plot( a, b , xlab="a (intercept)" , ylab="b (urban slope)" )
+abline( h=0 , lty=2 )
+abline( v=0 , lty=2 )
+
 
 
 ```
