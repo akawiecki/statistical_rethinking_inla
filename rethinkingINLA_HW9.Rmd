@@ -124,6 +124,8 @@ summary(m1.1.i)
 
 bri.hyperpar.summary(m1.1.i)
 
+bri.hyperpar.plot(m1.1.i)
+
 ```
 
 
@@ -136,21 +138,26 @@ inverse_logit <- function (x){
 
 #inla.tmarginal : apply inverse logit to all district marginals 
 #inla.zmarginal : summary of the logit-transformed marginals 
-m1.1.i.a<- lapply(m1.1.i$marginals.random$a.did, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
 
-m1.1.i$marginals.random$b.did
+#m1.1.i$marginals.random has 2 elements: a.did and b.did, but they are identical 
+
+m1.1.i.a<- lapply(m1.1.i$marginals.random$a.did, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
 
 # very confused: both a.did and b.did have 120 elements. shouldn't each of them have 60?
 
-m1.1.i.a.mean <-  unlist(sapply(m1.1.i.a, function(x) x[1]))
+m1.1.i.a.mean <- unlist(sapply(m1.1.i.a, function(x) x[1]))
 
-m1.1.i.a.1 <- m1.1.i.a[1][[1]]
 
-m1.1.i.a.1
+m1.1.i.b<- lapply(m1.1.i$marginals.random$b.did, function (x) inla.zmarginal( inla.tmarginal (inverse_logit, x )))
 
-m1.1.i.a.1.1 <- m1.1.i.a.1[[1]]
+# very confused: both a.did and b.did have 120 elements. shouldn't each of them have 60?
 
-m1.1.i.a.1.1$mean
+m1.1.i.b.mean <- unlist(sapply(m1.1.i.b, function(x) x[1]))
+
+
+m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i.b.mean), a.did= m1.1.i.a.mean, b.did= m1.1.i.b.mean)
+
+
 ```
 
 
