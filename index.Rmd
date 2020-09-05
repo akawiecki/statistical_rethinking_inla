@@ -12,7 +12,7 @@ Solutions to the homework exercises using the rethinking package are provided fo
 
 **Resources used for this work:** 
 
-[Statistical Rethinking: A Bayesian Course with Examples in R and Stan. Second edition](http://xcelab.net/rm/statistical-rethinking/)
+[Statistical Rethinking: A Bayesian Course with Examples in R and Stan. Second edition by Richard McElreath](http://xcelab.net/rm/statistical-rethinking/)
 
 [Homework Solutions of Statistical Rethinking by Richard McElreath](https://github.com/rmcelreath/statrethinking_winter2019/tree/master/homework)
 
@@ -37,6 +37,12 @@ https://www.flutterbys.com.au/stats/tut/tut12.10.html#h2_16
 https://people.bath.ac.uk/jjf23/inla/oneway.html
 
 https://people.bath.ac.uk/jjf23/brinla/reeds.html
+
+* INLA correlated slope and intercept examples:
+
+https://rpubs.com/corey_sparks/431920
+
+https://groups.google.com/g/r-inla-discussion-group/c/iQELaQF8M9Q
 
 
 

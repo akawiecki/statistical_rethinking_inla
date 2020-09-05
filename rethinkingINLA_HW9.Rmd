@@ -109,21 +109,22 @@ This plot is on the probability scale. The horizontal axis is probability of con
 ### 1.1. inla
 
 
-```{r 9.1 re mean}
+```{r 9.1 inla}
 library(INLA)
 library(brinla)
 
 d1.i <- d %>% 
-#make a new variable of district that is continuous
-mutate(did = as.integer( as.factor(d$district)), 
-       a.did= did,
-       b.did= did + max(did)
-)
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer( as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did)
+  )
 
 n.district= max(d1.i$did) ## = 60
 
 
-m1.1.i <- inla(use.contraception ~ 1 + urban + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
+m1.1.i <- inla(C ~ 1 + urban + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d1.i, family = "binomial", 
               Ntrials = 1, 
               control.fixed = list(
         mean= 0,
@@ -144,11 +145,17 @@ bri.hyperpar.plot(m1.1.i)
 
 ```{r 9.1.1 plot inla}
 
+#m1.1.i$summary.random has 2 elements: a.did and b.did but they are identical.
 
+#extract the means of the random effects with m1.1.i$summary.random[[1]][["mean"]]
 m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][["mean"]]), mean= m1.1.i$summary.random[[1]][["mean"]]) %>% 
+  #assign first 60 rows to a.did and 61:120 to b.did in new variable "param" 
   mutate(param= if_else(did <= n.district, "a.did", "b.did"), 
+  #new variable "district" assigns the district index 1:60 to both a.did and b.did estimates. 
          district= rep(1:60,2)) %>% 
+  #split dataframe by param into a list of 2: a.did and b.did 
   group_split(param) %>% 
+  #join the a.did and b.did elements of the list into a dataframe by "district"
   reduce(left_join, by= "district") %>% 
   select(c( "district", "mean.x", "mean.y")) %>% 
   rename("a.did"= "mean.x", "b.did"= "mean.y")
@@ -197,6 +204,14 @@ m1.1.i.outcome.plot
 
 ## 1.2 model urban index intercepts. 
 
+$C_{did} \sim Bernoulli(p_{i})$
+
+$logit(p_{i}) = \alpha_{district[i],urban[j]} $
+
+$\begin{pmatrix}a_{urban1,i}\\b_{urban0,i}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , & Sigma ,& Rho\end{pmatrix}$ 
+
+### 1.2 rethinking
+
 In fact, if we fit the model so it instead has two intercepts, one for rural and one for urban, there is no strong correlation between those intercepts. Here’s such a model:
 
 ```{r 9.1.2 re, eval= FALSE}
@@ -216,17 +231,130 @@ Sigma ~ exponential(1)
 ) , data=dat_list )
 
 precis( m1.2 , depth=3 , pars="Rho" )
+precis(m1.2)
 ```
 
 Correlation all gone.
 
-## 1. INLA 
+### 1.2 INLA
+```{r 9.2 inla mean}
+library(INLA)
+library(brinla)
+
+d1.2.i <- d %>% 
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer(as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did), 
+         urban= as.factor(urban)
+  )
+
+n.district= max(d1.i$did) ## = 60
 
 
+m1.2.i <- inla(C ~ 0 + urban + f(did, model="iid2d", n= 2*n.district), data= d1.2.i, family = "binomial", 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1),
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m1.2.i)
 
+bri.hyperpar.summary(m1.2.i)
+
+bri.hyperpar.plot(m1.2.i)
+
+```
+
+** i think it's not totally correct, the sigmas ar off (they're not=1)*
 
 # 2. 
 **Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?**
 
+```{r 9.2 dag}
+
+library(dagitty)
+
+hw9.2dag <- dagitty("dag{
+                  C <- A
+                  K <- A
+                  C <- K
+                  }")
+plot(hw9.2dag)
+
+```
+A is age, K is number of children, and C is contraception use. 
+
+To study this DAG, we should estimate both the total causal influence of A and then condition also on K and see if the direct influence of A is smaller. 
+
+## 2.1  model for the total influence of A
+
+### 2.1 rethinking
+
+```{r 9.2.1 rethinking}
+ 
+dat_list$children <- standardize( d$living.children ) 
+dat_list$age <- standardize( d$age.centered )
+
+m2.1 <- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did] + b[did]*urban + bA*age,
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+c(bbar,bA) ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1)
+) , data=dat_list , chains=4 , cores=4 )
+
+precis(m2.1)
+
+precis( m2.1 , depth=3 , pars=c("Rho","Sigma") )
+```
+
+### 2.1 inla
+
+```{r 9.2.1 inla}
+library(INLA)
+library(brinla)
+
+ 
+dat_list$children <- standardize( d$living.children ) 
+dat_list$age <- standardize( d$age.centered )
+
+
+d2.i <- d %>% 
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer( as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did), 
+         children= standardize( living.children ) , 
+         age = standardize( age.centered )
+  )
+
+n.district= max(d1.i$did) ## = 60
+
+
+m2.1.i <- inla(C ~ 0+ did + urban + age + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d2.i, family = "binomial", 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= list(did= 1, urban= 1/(0.5^2), age= 1/(0.5^2))
+        ),
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m2.1.i)
+
+bri.hyperpar.summary(m2.1.i)
+
+bri.hyperpar.plot(m2.1.i)
+
+```
+
+
 #3.
-**Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Chil- dren here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
+**Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
