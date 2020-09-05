@@ -313,6 +313,7 @@ precis(m2.1)
 
 precis( m2.1 , depth=3 , pars=c("Rho","Sigma") )
 ```
+In this model, the total causal effect of age is positive and very small. Older individuals use slightly more contraception.
 
 ### 2.1 inla
 
@@ -338,11 +339,13 @@ d2.i <- d %>%
 n.district= max(d1.i$did) ## = 60
 
 
-m2.1.i <- inla(C ~ 0+ did + urban + age + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d2.i, family = "binomial", 
+m2.1.i <- inla(C ~ 1+ urban + age + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d2.i, family = "binomial", 
               Ntrials = 1, 
               control.fixed = list(
         mean= 0,
-        prec= list(did= 1, urban= 1/(0.5^2), age= 1/(0.5^2))
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1
         ),
               control.family = list(control.link=list(model="logit")),
               control.predictor=list(link=1, compute=T),
@@ -352,6 +355,61 @@ summary(m2.1.i)
 bri.hyperpar.summary(m2.1.i)
 
 bri.hyperpar.plot(m2.1.i)
+
+```
+
+the intercept is abar
+
+
+*why didn't it work using did as an intercept instead of 1?*
+
+
+## 2.2  model for the direct influence of A (with both K and A)
+
+### 2.2 rethinking
+
+```{r 9.2.2 rethinking}
+
+m2.2 <- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did] + b[did]*urban + bK*children + bA*age, 
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+c(bbar,bK,bA) ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1)
+) , data=dat_list , chains=4 , cores=4 )
+
+precis(m2.2)
+
+precis( m2.2 , depth=3 , pars=c("Rho","Sigma") )
+```
+
+In this model, the direct effect of age is negative, and much farther from zero than before. The effect of number of children is strong and positive. These results are consistent with the DAG, because they imply that the reason the total effect of age, from m2.1, is positive is that older individuals also have more kids. Having more kids increases contraception. Being older, controlling for kids, actually makes con- traception less likely.
+
+### 2.2 inla
+
+```{r 9.2.1 inla}
+library(INLA)
+library(brinla)
+
+
+m2.2.i <- inla(C ~ 1+ urban + age + children + f(a.did, model="iid2d", n= 2*n.district) + f(b.did, urban, copy= "a.did"), data= d2.i, family = "binomial", 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1
+        ),
+              control.family = list(control.link=list(model="logit")),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m2.2.i)
+
+bri.hyperpar.summary(m2.2.i)
+
+bri.hyperpar.plot(m2.2.i)
 
 ```
 
