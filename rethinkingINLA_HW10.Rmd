@@ -1,0 +1,138 @@
+---
+title: "Statistical Rethinking 2nd edition Homework 9 in INLA"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE)
+```
+
+```{r libraries, message= FALSE}
+
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)
+```
+
+# 1. 
+Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error.
+We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble.
+Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:
+
+```{r 10.1 }
+
+library(rethinking)
+data(Primates301)
+d <- Primates301
+cc <- complete.cases( d$brain , d$body )
+B <- d$brain[cc]
+M <- d$body[cc]
+B <- B / max(B) 
+M <- M / max(M)
+```
+
+
+Now I’ll make up some standard errors for B and M, assuming error is 10% of the measurement.
+```{r 10.1 error}
+Bse <- B*0.1 
+Mse <- M*0.1
+```
+
+Let’s model these variables with this relationship:
+Bi ∼ Log-Normal(μi, σ)
+μi =α+βlogMi
+
+
+This says that brain volume is a log-normal variable, and the mean on the log scale is given by μ. What this model implies is that the expected value of B is:
+E(Bi|Mi) = exp(α)Mi^β
+
+
+So this is a standard allometric scaling relationship—incredibly common in biology.
+
+Ignoring measurement error, the corresponding ulam model is:
+
+
+```{r 10.1 model}
+dat_list <- list( B = B,
+M=M)
+m1.1 <- ulam( 
+  alist(  
+B ~ dlnorm( mu , sigma ), 
+mu <- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) 
+) , data=dat_list )
+
+precis( m1.1 )
+```
+
+Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:
+
+```{r 10.1 list}
+ start=list( M_true=dat_list$M , B_true=dat_list$B )
+```
+
+
+Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?
+
+## 1.1 model with measurement error 
+
+To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression. It looks like this:
+
+
+### 1.1 rethinking
+
+```{r 10.1 error model re}
+
+
+```
+
+
+
+# 2. 
+
+Now consider missing values—this data set is lousy with them. You can ignore measurement error in this problem. Let’s get a quick idea of the missing values by counting them in each variable:
+
+```{r 10.2 data}
+
+library(rethinking) 
+data(Primates301) 
+d <- Primates301 
+colSums( is.na(d) )
+
+```
+
+We’ll continue to focus on just brain and body, to stave off insanity. Consider only those species with measured body masses:
+
+
+```{r 10.2 data filter}
+
+cc <- complete.cases( d$body ) 
+M <- d$body[cc]
+M <- M / max(M)
+B <- d$brain[cc]
+B <- B / max( B , na.rm=TRUE )
+```
+
+You should end up with 238 species and 56 missing brain values among them. First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR)
+is this?
+Second, impute missing values for brain size. It might help to initialize the 56 imputed variables to a valid value:
+
+
+```{r 10.2 imputed}
+start=list( B_impute=rep(0.5,56) )
+```
+
+
+This just helps the chain get started.
+Compare the inferences to an analysis that drops all the missing values. Has any-
+thing changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.
+
+

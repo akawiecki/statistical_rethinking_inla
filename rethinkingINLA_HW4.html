@@ -365,6 +365,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW8.html">Homework 8</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW9.html">Homework 9</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -536,10 +539,11 @@ m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3,
 summary(m6.9.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, control.compute = list(dic = TRUE, 
-##    waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
+##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, control.compute = list(dic 
+##    = TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; i_married = 1, 
+##    A = 2)))&quot;) 
 ## Time used:
-##     Pre = 1.27, Running = 0.463, Post = 0.232, Total = 1.96 
+##     Pre = 1.23, Running = 0.476, Post = 0.212, Total = 1.91 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -597,10 +601,10 @@ precis(m6.10)</code></pre>
 summary(m6.10.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), control.fixed = 
-##    list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), 
+##    control.fixed = list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.1, Running = 0.469, Post = 0.231, Total = 1.8 
+##     Pre = 1.16, Running = 0.498, Post = 0.205, Total = 1.86 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
@@ -614,7 +618,7 @@ summary(m6.10.inla.prior )</code></pre>
 ## Number of equivalent replicates : 481.52 
 ## 
 ## Deviance Information Criterion (DIC) ...............: 3102.67
-## Deviance Information Criterion (DIC, saturated) ....: 966.07
+## Deviance Information Criterion (DIC, saturated) ....: 966.06
 ## Effective number of parameters .....................: 3.03
 ## 
 ## Watanabe-Akaike information criterion (WAIC) ...: 3102.05

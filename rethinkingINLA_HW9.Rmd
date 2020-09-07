@@ -1,11 +1,9 @@
 ---
 title: "Statistical Rethinking 2nd edition Homework 9 in INLA"
 output:
-  pdf_document:
-    toc: yes
   html_document:
-    toc: yes
-    toc_float: yes
+    toc: true
+    toc_float: true
 ---
 
 ```{r global_options, include=FALSE}
@@ -389,7 +387,7 @@ In this model, the direct effect of age is negative, and much farther from zero 
 
 ### 2.2 inla
 
-```{r 9.2.1 inla}
+```{r 9.2.2 inla}
 library(INLA)
 library(brinla)
 
@@ -416,3 +414,6 @@ bri.hyperpar.plot(m2.2.i)
 
 #3.
 **Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
+
+
+nope, not doing ordered categories

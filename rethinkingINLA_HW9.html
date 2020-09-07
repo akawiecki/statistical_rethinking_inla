@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Rethinking 2nd edition Homework 9 in INLA</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="rethinkingINLA_HW2.html">Homework 2</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW3.html">Homework 3</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW4.html">Homework 4</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW5.html">Homework 5</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW6.html">Homework 6</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW8.html">Homework 8</a>
+</li>
+<li>
+  <a href="rethinkingINLA_HW9.html">Homework 9</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 9 in INLA</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(INLA)
+library(knitr)
+library(stringr)</code></pre>
+<div id="section" class="section level1">
+<h1>1.</h1>
+<p><strong>Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.</strong></p>
+<div id="model-varying-slops-of-urban" class="section level2">
+<h2>1.1 model varying slops of urban</h2>
+<p><span class="math inline">\(C_{did} \sim Bernoulli(p_{did})\)</span></p>
+<p><span class="math inline">\(logit(p_{did}) = \alpha_{did} + \beta_{did}*urban_{did}\)</span></p>
+<p><span class="math inline">\(\begin{pmatrix}a_{did}\\b_{did}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , &amp; Sigma ,&amp; Rho\end{pmatrix}\)</span></p>
+<div id="rethinking" class="section level3">
+<h3>1.1 rethinking</h3>
+<pre class="r"><code>library(rethinking) 
+data(bangladesh)
+d &lt;- bangladesh
+
+dat_list &lt;- list(
+C = d$use.contraception,
+did = as.integer( as.factor(d$district) ), 
+urban = d$urban
+)
+
+m1.1 &lt;- ulam( 
+  alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did] + b[did]*urban,
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+bbar ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1) 
+) , data=dat_list , chains=4 , cores=4 )</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre><code>## Warning: There were 1 divergent transitions after warmup. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+## to find out why this is a problem and how to eliminate them.</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+<pre class="r"><code>precis(m1.1)</code></pre>
+<pre><code>##            mean         sd       5.5%      94.5%    n_eff     Rhat4
+## abar -0.6874153 0.09808489 -0.8486391 -0.5378259 2049.412 0.9995384
+## bbar  0.6403738 0.16171664  0.3840845  0.9006771 1346.809 0.9995591</code></pre>
+<p>This is a conventional varying slopes model, with a centered parameterization. No surprises. If you peek at the posterior distributions for the average effects, you’ll see that the average slope is positive. This implies that urban areas use contraception more. Not surprising.</p>
+<p>Now consider the distribution of varying effects:</p>
+<pre class="r"><code>precis( m1.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
+<pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
+## Rho[1,2] -0.6486241 1.705632e-01 -0.8630298 -0.3442609  429.8225 1.001104
+## Rho[2,1] -0.6486241 1.705632e-01 -0.8630298 -0.3442609  429.8225 1.001104
+## Rho[2,2]  1.0000000 6.117841e-17  1.0000000  1.0000000 2098.4762 0.997998
+## Sigma[1]  0.5726745 9.846645e-02  0.4250881  0.7390003  775.7683 1.006852
+## Sigma[2]  0.7772306 1.998150e-01  0.4690818  1.1085853  226.1745 1.025560</code></pre>
+<p>The correlation between the intercepts and slopes is quite negative.</p>
+<p>Let’s plot the individual effects to appreciate this.</p>
+<pre class="r"><code>post &lt;- extract.samples(m1.1)
+
+a &lt;- apply( post$a , 2 , mean ) 
+b &lt;- apply( post$b , 2 , mean )
+plot( a, b , xlab=&quot;a (intercept)&quot; , ylab=&quot;b (urban slope)&quot; )
+abline( h=0 , lty=2 )
+abline( v=0 , lty=2 )
+library(ellipse)
+R &lt;- apply( post$Rho , 2:3 , mean ) 
+s &lt;- apply( post$Sigma , 2 , mean ) 
+S &lt;- diag(s) %*% R %*% diag(s)
+ll &lt;- c( 0.5 , 0.67 , 0.89 , 0.97 ) 
+for ( l in ll ) {
+el &lt;- ellipse( S , centre=c( mean(post$abar) , mean(post$bbar) ) , level=l )
+lines( el , col=&quot;black&quot; , lwd=0.5 ) }</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot-1.png" width="672" /> There’s the negative correlation — districts with higher use outside urban areas (a values) have smaller slopes. Since the slope is the difference between urban and non-urban areas, you can see this as saying that districts with high use in rural areas have urban areas that aren’t as different.</p>
+<p>On the outcome scale, what this ends up meaning is that urban places are much the same in all districts, but rural areas vary a lot. Plotting now in the outcome scale:</p>
+<pre class="r"><code>u0 &lt;- inv_logit( a )
+u1 &lt;- inv_logit( a + b )
+plot( u0 , u1 , xlim=c(0,1) , ylim=c(0,1) , xlab=&quot;urban = 0&quot; , ylab=&quot;urban = 1&quot; )
+abline( h=0.5 , lty=2 )
+abline( v=0.5 , lty=2 )</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot%20outcome-1.png" width="672" /> This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.</p>
+</div>
+<div id="inla" class="section level3">
+<h3>1.1. inla</h3>
+<pre class="r"><code>library(INLA)
+library(brinla)
+
+d1.i &lt;- d %&gt;% 
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer( as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did)
+  )
+
+n.district= max(d1.i$did) ## = 60
+
+
+m1.1.i &lt;- inla(C ~ 1 + urban + f(a.did, model=&quot;iid2d&quot;, n= 2*n.district) + f(b.did, urban, copy= &quot;a.did&quot;), data= d1.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1),
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m1.1.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * 
+##    &quot;, &quot; n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
+##    \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 3.35, Running = 3.26, Post = 0.501, Total = 7.11 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.686 0.099     -0.884   -0.686     -0.492 -0.685   0
+## urban        0.639 0.157      0.331    0.639      0.950  0.638   0
+## 
+## Random effects:
+##   Name     Model
+##     a.did IID2D model
+##    b.did Copy
+## 
+## Model hyperparameters:
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  3.115 1.029      1.582    2.955      5.572
+## Precision for a.did (component 2)  1.921 0.936      0.709    1.723      4.278
+## Rho1:2 for a.did                  -0.664 0.146     -0.874   -0.689     -0.312
+##                                    mode
+## Precision for a.did (component 1)  2.66
+## Precision for a.did (component 2)  1.39
+## Rho1:2 for a.did                  -0.74
+## 
+## Expected number of effective parameters(stdev): 51.59(5.30)
+## Number of equivalent replicates : 37.49 
+## 
+## Deviance Information Criterion (DIC) ...............: 2467.53
+## Deviance Information Criterion (DIC, saturated) ....: 2467.53
+## Effective number of parameters .....................: 52.66
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2467.09
+## Effective number of parameters .................: 50.50
+## 
+## Marginal log-Likelihood:  -1252.49 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>bri.hyperpar.summary(m1.1.i)</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5
+## SD for a.did (component 1)  0.5887788 0.09423246  0.4243071  0.5816066
+## SD for a.did (component 2)  0.7805681 0.17929237  0.4843403  0.7614524
+## Rho1:2 for a.did           -0.6636992 0.14555091 -0.8738944 -0.6895578
+##                                q0.975       mode
+## SD for a.did (component 1)  0.7934828  0.5683934
+## SD for a.did (component 2)  1.1851196  0.7251542
+## Rho1:2 for a.did           -0.3135566 -0.7405877</code></pre>
+<pre class="r"><code>bri.hyperpar.plot(m1.1.i)</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20inla-1.png" width="672" /></p>
+<pre class="r"><code>#m1.1.i$summary.random has 2 elements: a.did and b.did but they are identical.
+
+#extract the means of the random effects with m1.1.i$summary.random[[1]][[&quot;mean&quot;]]
+m1.1.i.mean &lt;- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][[&quot;mean&quot;]]), mean= m1.1.i$summary.random[[1]][[&quot;mean&quot;]]) %&gt;% 
+  #assign first 60 rows to a.did and 61:120 to b.did in new variable &quot;param&quot; 
+  mutate(param= if_else(did &lt;= n.district, &quot;a.did&quot;, &quot;b.did&quot;), 
+  #new variable &quot;district&quot; assigns the district index 1:60 to both a.did and b.did estimates. 
+         district= rep(1:60,2)) %&gt;% 
+  #split dataframe by param into a list of 2: a.did and b.did 
+  group_split(param) %&gt;% 
+  #join the a.did and b.did elements of the list into a dataframe by &quot;district&quot;
+  reduce(left_join, by= &quot;district&quot;) %&gt;% 
+  select(c( &quot;district&quot;, &quot;mean.x&quot;, &quot;mean.y&quot;)) %&gt;% 
+  rename(&quot;a.did&quot;= &quot;mean.x&quot;, &quot;b.did&quot;= &quot;mean.y&quot;)
+
+
+
+m1.1.i.mean.plot &lt;-  ggplot()+
+  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
+   geom_hline(yintercept=0, linetype=&#39;longdash&#39;) +
+  geom_vline(xintercept = 0)+
+  labs(x= &quot;a (intercept)&quot;, y = &quot;b (urban slope)&quot;)+
+  theme_bw()
+
+m1.1.i.mean.plot</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1.1%20plot%20inla-1.png" width="672" /></p>
+<pre class="r"><code>inverse_logit &lt;- function (x){
+    p &lt;- 1/(1 + exp(-x))
+    p &lt;- ifelse(x == Inf, 1, p)
+    p }
+
+
+m1.1.i.outcome &lt;- m1.1.i.mean %&gt;% 
+  mutate(u0.i = inverse_logit(a.did), 
+         u1.i= inverse_logit(a.did + b.did))
+
+
+m1.1.i.outcome.plot &lt;-  ggplot()+
+  geom_point(data= m1.1.i.outcome, aes(x=u0.i, y= u1.i))+
+  geom_hline(yintercept=0.5, linetype=&#39;longdash&#39;) +
+  geom_vline(xintercept = 0.5)+
+  labs(x= &quot;urban = 0&quot;, y = &quot;urban = 1&quot;)+
+  xlim(0,1) +
+  ylim(0,1)+
+  theme_bw()
+
+m1.1.i.outcome.plot</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1.1%20outcome%20plot%20inla-1.png" width="672" /></p>
+</div>
+</div>
+<div id="model-urban-index-intercepts." class="section level2">
+<h2>1.2 model urban index intercepts.</h2>
+<p><span class="math inline">\(C_{did} \sim Bernoulli(p_{i})\)</span></p>
+<p>$logit(p_{i}) = _{district[i],urban[j]} $</p>
+<p><span class="math inline">\(\begin{pmatrix}a_{urban1,i}\\b_{urban0,i}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , &amp; Sigma ,&amp; Rho\end{pmatrix}\)</span></p>
+<div id="rethinking-1" class="section level3">
+<h3>1.2 rethinking</h3>
+<p>In fact, if we fit the model so it instead has two intercepts, one for rural and one for urban, there is no strong correlation between those intercepts. Here’s such a model:</p>
+<pre class="r"><code># version with matrix instead of slopes 
+dat_list$uid &lt;- dat_list$urban + 1L
+
+
+m1.2 &lt;- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did,uid],
+vector[2]:a[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+bbar ~ normal(0,1),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1) 
+) , data=dat_list )
+
+precis( m1.2 , depth=3 , pars=&quot;Rho&quot; )
+precis(m1.2)</code></pre>
+<p>Correlation all gone.</p>
+</div>
+<div id="inla-1" class="section level3">
+<h3>1.2 INLA</h3>
+<pre class="r"><code>library(INLA)
+library(brinla)
+
+d1.2.i &lt;- d %&gt;% 
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer(as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did), 
+         urban= as.factor(urban)
+  )
+
+n.district= max(d1.i$did) ## = 60
+
+
+m1.2.i &lt;- inla(C ~ 0 + urban + f(did, model=&quot;iid2d&quot;, n= 2*n.district), data= d1.2.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1),
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m1.2.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, 
+##    &quot; n.district), family = \&quot;binomial\&quot;, data = d1.2.i, Ntrials = 1, &quot;, &quot; 
+##    control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; 
+##    control.predictor = list(link = 1, compute = T), control.family = 
+##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = 1))&quot;) 
+## Time used:
+##     Pre = 2.05, Running = 3.77, Post = 0.379, Total = 6.2 
+## Fixed effects:
+##          mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## urban0 -0.698 0.087     -0.871   -0.697     -0.529 -0.696   0
+## urban1 -0.053 0.117     -0.284   -0.052      0.174 -0.051   0
+## 
+## Random effects:
+##   Name     Model
+##     did IID2D model
+## 
+## Model hyperparameters:
+##                                   mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for did (component 1)  5.113 1.602      2.684    4.876      8.910
+## Precision for did (component 2)  3.910 2.753      0.669    3.265     10.923
+## Rho1:2 for did                  -0.006 0.318     -0.606   -0.007      0.598
+##                                   mode
+## Precision for did (component 1)  4.436
+## Precision for did (component 2)  1.880
+## Rho1:2 for did                  -0.009
+## 
+## Expected number of effective parameters(stdev): 33.89(3.74)
+## Number of equivalent replicates : 57.06 
+## 
+## Deviance Information Criterion (DIC) ...............: 2490.42
+## Deviance Information Criterion (DIC, saturated) ....: 2490.41
+## Effective number of parameters .....................: 34.10
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2490.32
+## Effective number of parameters .................: 33.29
+## 
+## Marginal log-Likelihood:  -1257.78 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>bri.hyperpar.summary(m1.2.i)</code></pre>
+<pre><code>##                                  mean         sd     q0.025         q0.5
+## SD for did (component 1)  0.457905716 0.06978712  0.3356060  0.452735735
+## SD for did (component 2)  0.607659726 0.23711773  0.3031733  0.552883810
+## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026
+##                            q0.975         mode
+## SD for did (component 1) 0.609076  0.443241189
+## SD for did (component 2) 1.215125  0.462597098
+## Rho1:2 for did           0.592858 -0.009533963</code></pre>
+<pre class="r"><code>bri.hyperpar.plot(m1.2.i)</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.2%20inla%20mean-1.png" width="672" /></p>
+<p>** i think it’s not totally correct, the sigmas ar off (they’re not=1)*</p>
+</div>
+</div>
+</div>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
+<p><strong>Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?</strong></p>
+<pre class="r"><code>library(dagitty)
+
+hw9.2dag &lt;- dagitty(&quot;dag{
+                  C &lt;- A
+                  K &lt;- A
+                  C &lt;- K
+                  }&quot;)
+plot(hw9.2dag)</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.2%20dag-1.png" width="672" /> A is age, K is number of children, and C is contraception use.</p>
+<p>To study this DAG, we should estimate both the total causal influence of A and then condition also on K and see if the direct influence of A is smaller.</p>
+<div id="model-for-the-total-influence-of-a" class="section level2">
+<h2>2.1 model for the total influence of A</h2>
+<div id="rethinking-2" class="section level3">
+<h3>2.1 rethinking</h3>
+<pre class="r"><code>dat_list$children &lt;- standardize( d$living.children ) 
+dat_list$age &lt;- standardize( d$age.centered )
+
+m2.1 &lt;- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did] + b[did]*urban + bA*age,
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+c(bbar,bA) ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1)
+) , data=dat_list , chains=4 , cores=4 )</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+<pre class="r"><code>precis(m2.1)</code></pre>
+<pre><code>##             mean        sd         5.5%      94.5%    n_eff     Rhat4
+## abar -0.69118782 0.1002558 -0.845328684 -0.5320284 1611.539 0.9999463
+## bA    0.08315204 0.0483389  0.007236082  0.1604138 3323.217 0.9989450
+## bbar  0.64800893 0.1615238  0.387555486  0.9112172 1188.585 1.0012843</code></pre>
+<pre class="r"><code>precis( m2.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
+<pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
+## Rho[1,2] -0.6412562 1.772953e-01 -0.8592863 -0.3320159  431.8684 1.010302
+## Rho[2,1] -0.6412562 1.772953e-01 -0.8592863 -0.3320159  431.8684 1.010302
+## Rho[2,2]  1.0000000 5.651565e-17  1.0000000  1.0000000 1550.5075 0.997998
+## Sigma[1]  0.5792873 9.768824e-02  0.4296376  0.7418399  589.1409 1.003822
+## Sigma[2]  0.7869052 1.949777e-01  0.4852282  1.1143046  333.5019 1.005796</code></pre>
+<p>In this model, the total causal effect of age is positive and very small. Older individuals use slightly more contraception.</p>
+</div>
+<div id="inla-2" class="section level3">
+<h3>2.1 inla</h3>
+<pre class="r"><code>library(INLA)
+library(brinla)
+
+ 
+dat_list$children &lt;- standardize( d$living.children ) 
+dat_list$age &lt;- standardize( d$age.centered )
+
+
+d2.i &lt;- d %&gt;% 
+  #make a new variable of district that is continuous
+  mutate(C = use.contraception,
+         did = as.integer( as.factor(d$district)), 
+         a.did= did,
+         b.did= did + max(did), 
+         children= standardize( living.children ) , 
+         age = standardize( age.centered )
+  )
+
+n.district= max(d1.i$did) ## = 60
+
+
+m2.1.i &lt;- inla(C ~ 1+ urban + age + f(a.did, model=&quot;iid2d&quot;, n= 2*n.district) + f(b.did, urban, copy= &quot;a.did&quot;), data= d2.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1
+        ),
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m2.1.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, 
+##    &quot; n = 2 * n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
+##    \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 2.16, Running = 4.34, Post = 0.46, Total = 6.95 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.689 0.100     -0.887   -0.689     -0.495 -0.688   0
+## urban        0.640 0.158      0.331    0.639      0.951  0.639   0
+## age          0.084 0.049     -0.012    0.084      0.180  0.084   0
+## 
+## Random effects:
+##   Name     Model
+##     a.did IID2D model
+##    b.did Copy
+## 
+## Model hyperparameters:
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  3.088 1.017      1.570    2.930      5.516
+## Precision for a.did (component 2)  1.904 0.925      0.703    1.709      4.234
+## Rho1:2 for a.did                  -0.662 0.146     -0.873   -0.687     -0.309
+##                                     mode
+## Precision for a.did (component 1)  2.640
+## Precision for a.did (component 2)  1.384
+## Rho1:2 for a.did                  -0.739
+## 
+## Expected number of effective parameters(stdev): 52.75(5.30)
+## Number of equivalent replicates : 36.66 
+## 
+## Deviance Information Criterion (DIC) ...............: 2466.13
+## Deviance Information Criterion (DIC, saturated) ....: 2466.13
+## Effective number of parameters .....................: 53.80
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2465.68
+## Effective number of parameters .................: 51.57
+## 
+## Marginal log-Likelihood:  -1253.38 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>bri.hyperpar.summary(m2.1.i)</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5
+## SD for a.did (component 1)  0.5912211 0.09440575  0.4264479  0.5840307
+## SD for a.did (component 2)  0.7838379 0.17978820  0.4868598  0.7646316
+## Rho1:2 for a.did           -0.6619113 0.14617008 -0.8730792 -0.6878622
+##                                q0.975       mode
+## SD for a.did (component 1)  0.7963088  0.5707599
+## SD for a.did (component 2)  1.1895932  0.7281630
+## Rho1:2 for a.did           -0.3103507 -0.7391103</code></pre>
+<pre class="r"><code>bri.hyperpar.plot(m2.1.i)</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.2.1%20inla-1.png" width="672" /></p>
+<p>the intercept is abar</p>
+<p><em>why didn’t it work using did as an intercept instead of 1?</em></p>
+</div>
+</div>
+<div id="model-for-the-direct-influence-of-a-with-both-k-and-a" class="section level2">
+<h2>2.2 model for the direct influence of A (with both K and A)</h2>
+<div id="rethinking-3" class="section level3">
+<h3>2.2 rethinking</h3>
+<pre class="r"><code>m2.2 &lt;- ulam( alist(
+C ~ bernoulli( p ),
+logit(p) &lt;- a[did] + b[did]*urban + bK*children + bA*age, 
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ), 
+abar ~ normal(0,1),
+c(bbar,bK,bA) ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1)
+) , data=dat_list , chains=4 , cores=4 )</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+<pre class="r"><code>precis(m2.2)</code></pre>
+<pre><code>##            mean         sd       5.5%      94.5%    n_eff    Rhat4
+## abar -0.7131333 0.10509009 -0.8843947 -0.5447077 1382.028 1.006999
+## bA   -0.2652243 0.06761575 -0.3745846 -0.1570144 1816.668 1.001635
+## bK    0.5147331 0.07030823  0.4037676  0.6231769 1828.845 1.000795
+## bbar  0.6823462 0.16359728  0.4178688  0.9490309 1009.780 1.009033</code></pre>
+<pre class="r"><code>precis( m2.2 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
+<pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
+## Rho[1,2] -0.6253645 1.741797e-01 -0.8532946 -0.3145013  401.7878 1.005551
+## Rho[2,1] -0.6253645 1.741797e-01 -0.8532946 -0.3145013  401.7878 1.005551
+## Rho[2,2]  1.0000000 6.517986e-17  1.0000000  1.0000000 2112.9449 0.997998
+## Sigma[1]  0.6082910 1.001638e-01  0.4622073  0.7775256  603.9735 1.002630
+## Sigma[2]  0.7933216 2.068789e-01  0.4882606  1.1545058  326.2879 1.001939</code></pre>
+<p>In this model, the direct effect of age is negative, and much farther from zero than before. The effect of number of children is strong and positive. These results are consistent with the DAG, because they imply that the reason the total effect of age, from m2.1, is positive is that older individuals also have more kids. Having more kids increases contraception. Being older, controlling for kids, actually makes con- traception less likely.</p>
+</div>
+<div id="inla-3" class="section level3">
+<h3>2.2 inla</h3>
+<pre class="r"><code>library(INLA)
+library(brinla)
+
+
+m2.2.i &lt;- inla(C ~ 1+ urban + age + children + f(a.did, model=&quot;iid2d&quot;, n= 2*n.district) + f(b.did, urban, copy= &quot;a.did&quot;), data= d2.i, family = &quot;binomial&quot;, 
+              Ntrials = 1, 
+              control.fixed = list(
+        mean= 0,
+        prec= 1/(0.5^2), 
+        mean.intercept= 0, 
+        prec.intercept= 1
+        ),
+              control.family = list(control.link=list(model=&quot;logit&quot;)),
+              control.predictor=list(link=1, compute=T),
+              control.compute=list(config=T, dic=TRUE, waic= TRUE))
+summary(m2.2.i)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = 
+##    \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, copy = 
+##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, 
+##    control.compute = list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), 
+##    control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
+##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
+##    prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 2.15, Running = 3.85, Post = 0.422, Total = 6.43 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+## (Intercept) -0.718 0.103     -0.922   -0.717     -0.516 -0.716   0
+## urban        0.693 0.158      0.381    0.693      1.005  0.692   0
+## age         -0.264 0.070     -0.401   -0.264     -0.128 -0.263   0
+## children     0.512 0.071      0.375    0.512      0.652  0.511   0
+## 
+## Random effects:
+##   Name     Model
+##     a.did IID2D model
+##    b.did Copy
+## 
+## Model hyperparameters:
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  2.832 0.926      1.449    2.688      5.040
+## Precision for a.did (component 2)  1.958 0.968      0.713    1.751      4.401
+## Rho1:2 for a.did                  -0.657 0.148     -0.871   -0.682     -0.299
+##                                     mode
+## Precision for a.did (component 1)  2.424
+## Precision for a.did (component 2)  1.409
+## Rho1:2 for a.did                  -0.734
+## 
+## Expected number of effective parameters(stdev): 54.03(5.28)
+## Number of equivalent replicates : 35.79 
+## 
+## Deviance Information Criterion (DIC) ...............: 2411.00
+## Deviance Information Criterion (DIC, saturated) ....: 2411.00
+## Effective number of parameters .....................: 55.02
+## 
+## Watanabe-Akaike information criterion (WAIC) ...: 2410.73
+## Effective number of parameters .................: 52.90
+## 
+## Marginal log-Likelihood:  -1228.29 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+<pre class="r"><code>bri.hyperpar.summary(m2.2.i)</code></pre>
+<pre><code>##                                  mean        sd     q0.025       q0.5
+## SD for a.did (component 1)  0.6170742 0.0977858  0.4460300  0.6097704
+## SD for a.did (component 2)  0.7746153 0.1801363  0.4774009  0.7553064
+## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040
+##                                q0.975       mode
+## SD for a.did (component 1)  0.8291373  0.5965057
+## SD for a.did (component 2)  1.1813881  0.7186946
+## Rho1:2 for a.did           -0.3010549 -0.7346392</code></pre>
+<pre class="r"><code>bri.hyperpar.plot(m2.2.i)</code></pre>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.2.2%20inla-1.png" width="672" /></p>
+<p>#3. <strong>Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?</strong></p>
+<p>nope, not doing ordered categories</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -365,6 +365,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW8.html">Homework 8</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW9.html">Homework 9</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -901,35 +904,35 @@ m2.i&lt;- inla(height ~ f(log_w, model = &quot;clinear&quot;, range=c(0, Inf),
 summary(m2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = list(theta = list(prior = 
-##    \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, control.compute = list(config = TRUE), &quot;, &quot; 
-##    control.predictor = list(compute = TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 
-##    178, prec.intercept = 1/(20^2)))&quot; ) 
+##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = list(theta = 
+##    list(prior = \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, control.compute = list(config 
+##    = TRUE), &quot;, &quot; control.predictor = list(compute = TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = 
+##    list(mean.intercept = 178, prec.intercept = 1/(20^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.35, Running = 2.89, Post = 0.657, Total = 4.89 
+##     Pre = 1.35, Running = 1.9, Post = 0.394, Total = 3.65 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant    mode kld
-## (Intercept) 136.873 0.222    136.437  136.873    137.308 136.873   0
+## (Intercept) 136.874 0.221     136.44  136.874    137.308 136.874   0
 ## 
 ## Random effects:
 ##   Name     Model
 ##     log_w Constrained linear
 ## 
 ## Model hyperparameters:
-##                                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for the Gaussian observations  0.036 0.002      0.032    0.036      0.039  0.036
-## Beta for log_w                          45.089 0.289     44.623   45.053     45.739 44.918
+##                                          mean    sd 0.025quant 0.5quant 0.975quant   mode
+## Precision for the Gaussian observations  0.04 0.002      0.036     0.04      0.045  0.041
+## Beta for log_w                          47.56 0.355     46.871    47.56     48.268 47.560
 ## 
 ## Expected number of effective parameters(stdev): 1.00(0.00)
 ## Number of equivalent replicates : 543.99 
 ## 
-## Marginal log-Likelihood:  -1711.37 
+## Marginal log-Likelihood:  -1697.21 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.i)</code></pre>
 <pre><code>##                                       mean        sd    q0.025      q0.5    q0.975      mode
-## SD for the Gaussian observations  5.290956 0.1364384  5.049547  5.280377  5.582682  5.246148
-## Beta for log_w                   45.088729 0.2890074 44.625383 45.051050 45.734425 44.907433</code></pre>
+## SD for the Gaussian observations  4.994549 0.1413984  4.742262  4.984361  5.295303  4.951911
+## Beta for log_w                   47.564153 0.3544527 46.872242 47.561723 48.261311 47.560110</code></pre>
 <pre class="r"><code>#indices of the weights with missing values of height 
 d2.i.na &lt;- which(is.na(d2.i$height))
 

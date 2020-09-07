@@ -11,7 +11,7 @@
 
 
 
-<title>Statistical Rethinking 2nd edition Homework 7 in INLA</title>
+<title>Statistical Rethinking 2nd edition Homework 9 in INLA</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -380,7 +380,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 7 in INLA</h1>
+<h1 class="title toc-ignore">Statistical Rethinking 2nd edition Homework 9 in INLA</h1>
 
 </div>
 
@@ -391,16 +391,84 @@ library(dagitty)
 library(INLA)
 library(knitr)
 library(stringr)</code></pre>
-<div id="homework-7" class="section level1">
-<h1>Homework 7</h1>
-<div id="section" class="section level2">
-<h2>1.</h2>
-<p><strong>In the Trolley data —data(Trolley)—we saw how education level (modeled as an ordered category) is associated with responses. Is this association causal? One plausible confound is that education is also associated with age, through a causal process: People are older when they finish school than when they begin it. Reconsider the Trolley data in this light. Draw a DAG that represents hypothetical causal relationships among response, education, and age. Which statical model or models do you need to evaluate the causal influence of education on responses? Fit these models to the trolley data. What do you conclude about the causal relationships among these three variables?</strong></p>
+<div id="section" class="section level1">
+<h1>1.</h1>
+<p>Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error. We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble. Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:</p>
+<pre class="r"><code>library(rethinking)
+data(Primates301)
+d &lt;- Primates301
+cc &lt;- complete.cases( d$brain , d$body )
+B &lt;- d$brain[cc]
+M &lt;- d$body[cc]
+B &lt;- B / max(B) 
+M &lt;- M / max(M)</code></pre>
+<p>Now I’ll make up some standard errors for B and M, assuming error is 10% of the measurement.</p>
+<pre class="r"><code> Bse &lt;- B*0.1 
+Mse &lt;- M*0.1</code></pre>
+<p>Let’s model these variables with this relationship: Bi ∼ Log-Normal(μi, σ) μi =α+βlogMi</p>
+<p>This says that brain volume is a log-normal variable, and the mean on the log scale is given by μ. What this model implies is that the expected value of B is: E(Bi|Mi) = exp(α)Mi^β</p>
+<p>So this is a standard allometric scaling relationship—incredibly common in biology. Ignoring measurement error, the corresponding ulam model is:</p>
+<pre class="r"><code>dat_list &lt;- list( B = B,
+M=M)
+m1.1 &lt;- ulam( 
+  alist(  
+B ~ dlnorm( mu , sigma ), 
+mu &lt;- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) 
+) , data=dat_list )</code></pre>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;2bcae94530709687a15da757cbb5d4b7&#39; NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 3.3e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)
+## Chain 1: Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Chain 1: Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Chain 1: Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Chain 1: Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 0.104148 seconds (Warm-up)
+## Chain 1:                0.073187 seconds (Sampling)
+## Chain 1:                0.177335 seconds (Total)
+## Chain 1:</code></pre>
+<p>Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:</p>
+<pre class="r"><code> start=list( M_true=dat_list$M , B_true=dat_list$B )</code></pre>
+<p>Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?</p>
 </div>
-<div id="section-1" class="section level2">
-<h2>2.</h2>
-<p><strong>Consider one more variable in the Trolley data: Gender. Suppose that gender might influence education as well as response directly. Draw the DAG now that includes response, education, age, and gender. Using only the DAG, is it possible that the inferences from Problem 1 are con- founded by gender? If so, define any additional models you need to infer the causal influence of education on response. What do you conclude?</strong></p>
-</div>
+<div id="section-1" class="section level1">
+<h1>2.</h1>
+<p>Now consider missing values—this data set is lousy with them. You can ignore measurement error in this problem. Let’s get a quick idea of the missing values by counting them in each variable:</p>
+<pre class="r"><code>library(rethinking) 
+data(Primates301) 
+d &lt;- Primates301 
+colSums( is.na(d) )</code></pre>
+<pre><code>##                name               genus             species          subspecies              spp_id            genus_id 
+##                   0                   0                   0                 267                   0                   0 
+##     social_learning     research_effort               brain                body          group_size           gestation 
+##                  98                 115                 117                  63                 114                 161 
+##             weaning           longevity        sex_maturity maternal_investment 
+##                 185                 181                 194                 197</code></pre>
+<p>We’ll continue to focus on just brain and body, to stave off insanity. Consider only those species with measured body masses:</p>
+<pre class="r"><code>cc &lt;- complete.cases( d$body ) 
+M &lt;- d$body[cc]
+M &lt;- M / max(M)
+B &lt;- d$brain[cc]
+B &lt;- B / max( B , na.rm=TRUE )</code></pre>
+<p>You should end up with 238 species and 56 missing brain values among them. First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR) is this? Second, impute missing values for brain size. It might help to initialize the 56 imputed variables to a valid value:</p>
+<pre class="r"><code>start=list( B_impute=rep(0.5,56) )</code></pre>
+<p>This just helps the chain get started. Compare the inferences to an analysis that drops all the missing values. Has any- thing changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.</p>
 </div>
 
 

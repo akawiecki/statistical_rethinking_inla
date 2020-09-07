@@ -1,11 +1,9 @@
 ---
 title: "Statistical Rethinking 2nd edition Homework 8 in INLA"
 output:
-  pdf_document:
-    toc: yes
   html_document:
-    toc: yes
-    toc_float: yes
+    toc: true
+    toc_float: true
 ---
 
 ```{r global_options, include=FALSE}
@@ -693,7 +691,9 @@ m2.i.district.plot
 
 ```
 
-The blue points are the fixed estimations. The open points are the varying effects. As you’d expect, they are shrunk towards the mean (the dashed line). Some are shrunk more than others. The third district from the left shrunk a lot. Let’s look at the sample size in each district:
+The blue points are the fixed estimations. The open points are the varying effects. As you’d expect, they are shrunk towards the mean (the dashed line). Some are shrunk more than others. The third district from the left shrunk a lot. 
+
+Let’s look at the sample size in each district:
 
 ```{r 8.2.3 table}
  table(d$district_id)
@@ -703,10 +703,6 @@ District 3 has only 2 women sampled. So it shrinks a lot. There are couple of ot
 All of this is explained by partial pooling, of course.
 
 
-# 3. 
-
-
-I don't really care about ordered categorical data so i'm going to skip exercise 3.
 
 
 
