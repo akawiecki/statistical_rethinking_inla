@@ -403,11 +403,12 @@ M &lt;- d$body[cc]
 B &lt;- B / max(B) 
 M &lt;- M / max(M)</code></pre>
 <p>Now I’ll make up some standard errors for B and M, assuming error is 10% of the measurement.</p>
-<pre class="r"><code> Bse &lt;- B*0.1 
+<pre class="r"><code>Bse &lt;- B*0.1 
 Mse &lt;- M*0.1</code></pre>
 <p>Let’s model these variables with this relationship: Bi ∼ Log-Normal(μi, σ) μi =α+βlogMi</p>
 <p>This says that brain volume is a log-normal variable, and the mean on the log scale is given by μ. What this model implies is that the expected value of B is: E(Bi|Mi) = exp(α)Mi^β</p>
-<p>So this is a standard allometric scaling relationship—incredibly common in biology. Ignoring measurement error, the corresponding ulam model is:</p>
+<p>So this is a standard allometric scaling relationship—incredibly common in biology.</p>
+<p>Ignoring measurement error, the corresponding ulam model is:</p>
 <pre class="r"><code>dat_list &lt;- list( B = B,
 M=M)
 m1.1 &lt;- ulam( 
@@ -421,8 +422,8 @@ sigma ~ exponential(1)
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;2bcae94530709687a15da757cbb5d4b7&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 3.3e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
+## Chain 1: Gradient evaluation took 3.2e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -439,13 +440,25 @@ sigma ~ exponential(1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.104148 seconds (Warm-up)
-## Chain 1:                0.073187 seconds (Sampling)
-## Chain 1:                0.177335 seconds (Total)
+## Chain 1:  Elapsed Time: 0.094932 seconds (Warm-up)
+## Chain 1:                0.069744 seconds (Sampling)
+## Chain 1:                0.164676 seconds (Total)
 ## Chain 1:</code></pre>
+<pre class="r"><code>precis( m1.1 )</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff     Rhat4
+## a     0.4253366 0.06137017 0.3283829 0.5239404 192.6267 1.0005518
+## b     0.7830490 0.01489448 0.7596230 0.8064079 191.9412 0.9996223
+## sigma 0.2948666 0.01705121 0.2682706 0.3246473 269.0981 0.9989297</code></pre>
 <p>Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:</p>
 <pre class="r"><code> start=list( M_true=dat_list$M , B_true=dat_list$B )</code></pre>
 <p>Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?</p>
+<div id="model-with-measurement-error" class="section level2">
+<h2>1.1 model with measurement error</h2>
+<p>To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression. It looks like this:</p>
+<div id="rethinking" class="section level3">
+<h3>1.1 rethinking</h3>
+</div>
+</div>
 </div>
 <div id="section-1" class="section level1">
 <h1>2.</h1>

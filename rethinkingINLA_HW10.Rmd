@@ -90,10 +90,32 @@ To build the measurement error model, all we really need to do is add the observ
 ### 1.1 rethinking
 
 ```{r 10.1 error model re}
+m1.2 <- ulam( alist(
+# B model
+B ~ normal( B_true , Bse ), 
+vector[N_spp]:B_true ~ dlnorm( mu , sigma ),
+mu <- a + b*log( M_true[i] ),
+# M model
+M ~ normal( M_true , Mse ), 
+vector[N_spp]:M_true ~ normal( 0.5 , 1 ),
+# priors
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list ,
+start=list( M_true=dat_list$M , B_true=dat_list$B ) , 
+chains=4 , cores=4 , 
+control=list(max_treedepth=15) )
 
+precis( m1.2 )
 
 ```
 
+
+The top chunk is the model for the B values. The first line is the measurement process. Then the next two lines are the same regression as before, but with B_true replacing the observed B values. Likewise M_true replaces the observed M in the linear model.
+The second chunk is the measurement model for M. The prior for M_true covers the entire range of the normalize variable—it ranges from 0 to 1 now, recall, because we scaled it that way to start by dividing by the maximum observed value.
+The last chunk holds the same priors as before.
+Note the control list at the bottom. If you run this model without that, it will work, but be inefficient and warn about exceeding maximum “treedepth.” This is not a concern for the validity of the chains, just how well they run. Treedepth is a control parameter for NUTS algorithm. The Stan manual contains more detail, if you want it.
 
 
 # 2. 

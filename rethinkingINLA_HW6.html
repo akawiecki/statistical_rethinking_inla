@@ -472,9 +472,9 @@ a[gid] ~ normal(-1,1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.009878 seconds (Warm-up)
-## Chain 1:                0.008936 seconds (Sampling)
-## Chain 1:                0.018814 seconds (Total)
+## Chain 1:  Elapsed Time: 0.010139 seconds (Warm-up)
+## Chain 1:                0.009039 seconds (Sampling)
+## Chain 1:                0.019178 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 2).
@@ -497,15 +497,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.010391 seconds (Warm-up)
-## Chain 2:                0.009514 seconds (Sampling)
-## Chain 2:                0.019905 seconds (Total)
+## Chain 2:  Elapsed Time: 0.010633 seconds (Warm-up)
+## Chain 2:                0.009621 seconds (Sampling)
+## Chain 2:                0.020254 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 7e-06 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
+## Chain 3: Gradient evaluation took 8e-06 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -522,15 +522,15 @@ a[gid] ~ normal(-1,1)
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.009403 seconds (Warm-up)
-## Chain 3:                0.009986 seconds (Sampling)
-## Chain 3:                0.019389 seconds (Total)
+## Chain 3:  Elapsed Time: 0.009544 seconds (Warm-up)
+## Chain 3:                0.010158 seconds (Sampling)
+## Chain 3:                0.019702 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;81eae820e39db5841689425b0c0bd23c&#39; NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 6e-06 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.06 seconds.
+## Chain 4: Gradient evaluation took 7e-06 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -547,9 +547,9 @@ a[gid] ~ normal(-1,1)
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.011702 seconds (Warm-up)
-## Chain 4:                0.009217 seconds (Sampling)
-## Chain 4:                0.020919 seconds (Total)
+## Chain 4:  Elapsed Time: 0.0119 seconds (Warm-up)
+## Chain 4:                0.009321 seconds (Sampling)
+## Chain 4:                0.021221 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis(m1_total,2)</code></pre>
 <pre><code>##           mean         sd      5.5%     94.5%    n_eff    Rhat4
@@ -588,11 +588,11 @@ m1a.i &lt;- inla(awards ~ -1 + m + f , data= d1.i, family = &quot;binomial&quot;
 summary(m1a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = awards ~ -1 + m + f, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; Ntrials = applications, 
-##    control.compute = list(config = T), &quot;, &quot; control.predictor = list(link = 1, compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = -1, prec = 1))&quot;) 
+##    c(&quot;inla(formula = awards ~ -1 + m + f, family = \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; Ntrials = applications, control.compute 
+##    = list(config = T), &quot;, &quot; control.predictor = list(link = 1, compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = -1, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.18, Running = 0.127, Post = 0.133, Total = 1.44 
+##     Pre = 1.22, Running = 0.132, Post = 0.142, Total = 1.49 
 ## Fixed effects:
 ##     mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m -1.532 0.065     -1.660   -1.531     -1.407 -1.530   0
@@ -645,7 +645,7 @@ m1a.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
    m1a.i.samples)
 summary(as.vector(m1a.i.contrast1))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.01604  0.01845  0.02757  0.02783  0.03697  0.07574</code></pre>
+## -0.02410  0.01851  0.02793  0.02789  0.03771  0.08349</code></pre>
 </div>
 </div>
 <div id="b-direct-effect-of-gender" class="section level2">
@@ -714,13 +714,12 @@ m1b.i &lt;- inla(awards ~ -1 + m + f + d.1+d.2+d.3+d.4+d.5+d.6+d.7+d.8+d.9, data
 summary(m1b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; d.5 + d.6 + d.7 + d.8 + d.9, family = 
-##    \&quot;binomial\&quot;, data = d1.i, &quot;, &quot; Ntrials = applications, control.compute = list(config = T), &quot;, &quot; 
-##    control.predictor = list(link = 1, compute = T), control.family = list(control.link = list(model = 
-##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = list(m = -1, f = -1, d.1 = 0, &quot;, &quot; d.2 = 0, d.3 = 0, d.4 = 0, 
-##    d.5 = 0, d.6 = 0, d.7 = 0, &quot;, &quot; d.8 = 0, d.9), prec = 1))&quot;) 
+##    c(&quot;inla(formula = awards ~ -1 + m + f + d.1 + d.2 + d.3 + d.4 + &quot;, &quot; d.5 + d.6 + d.7 + d.8 + d.9, family = \&quot;binomial\&quot;, 
+##    data = d1.i, &quot;, &quot; Ntrials = applications, control.compute = list(config = T), &quot;, &quot; control.predictor = list(link = 1, 
+##    compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = list(m = 
+##    -1, f = -1, d.1 = 0, &quot;, &quot; d.2 = 0, d.3 = 0, d.4 = 0, d.5 = 0, d.6 = 0, d.7 = 0, &quot;, &quot; d.8 = 0, d.9), prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.82, Running = 0.145, Post = 0.22, Total = 2.18 
+##     Pre = 1.93, Running = 0.16, Post = 0.234, Total = 2.32 
 ## Fixed effects:
 ##       mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## m   -1.348 0.308     -1.953   -1.348     -0.745 -1.348   0
@@ -754,7 +753,7 @@ m1b.i.contrast1 &lt;- inla.posterior.sample.eval(function(...) {
    m1b.i.samples)
 summary(as.vector(m1b.i.contrast1))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.26710  0.07267  0.14329  0.14524  0.21871  0.46918</code></pre>
+## -0.14886  0.07529  0.15144  0.14902  0.22066  0.51718</code></pre>
 </div>
 </div>
 </div>
@@ -821,12 +820,11 @@ m2a.i &lt;- inla(A ~ D+G, data= dat_sim, family = &quot;binomial&quot;,
 summary(m2a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim, &quot;, &quot; Ntrials = 1, control.compute = 
-##    list(config = T), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim, &quot;, &quot; Ntrials = 1, control.compute = list(config = 
+##    T), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), 
+##    &quot;, &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.28, Running = 0.257, Post = 0.183, Total = 1.72 
+##     Pre = 1.49, Running = 0.259, Post = 0.173, Total = 1.93 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.073 0.143     -1.358   -1.072     -0.798 -1.069   0
@@ -879,12 +877,11 @@ m2b.i &lt;- inla(A ~ D+G, data= dat_sim2, family = &quot;binomial&quot;,
 summary(m2b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim2, &quot;, &quot; Ntrials = 1, control.compute = 
-##    list(config = T), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = A ~ D + G, family = \&quot;binomial\&quot;, data = dat_sim2, &quot;, &quot; Ntrials = 1, control.compute = list(config = 
+##    T), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), 
+##    &quot;, &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.25, Running = 0.253, Post = 0.171, Total = 1.67 
+##     Pre = 1.36, Running = 0.272, Post = 0.173, Total = 1.81 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.120 0.119     -1.358   -1.119     -0.889 -1.116   0
@@ -957,12 +954,11 @@ m3.1.i &lt;- inla( soc_learn~ log_brain, family=&#39;poisson&#39;,
 summary(m3.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = soc_learn ~ log_brain, family = \&quot;poisson\&quot;, data = d3.i, &quot;, &quot; control.compute = list(dic 
-##    = TRUE, cpo = TRUE, waic = TRUE), &quot;, &quot; control.predictor = list(link = 1, compute = TRUE), control.family = 
-##    list(link = \&quot;log\&quot;), &quot;, &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept 
-##    = 1/(0.5^2)))&quot;) 
+##    c(&quot;inla(formula = soc_learn ~ log_brain, family = \&quot;poisson\&quot;, data = d3.i, &quot;, &quot; control.compute = list(dic = TRUE, cpo 
+##    = TRUE, waic = TRUE), &quot;, &quot; control.predictor = list(link = 1, compute = TRUE), control.family = list(link = \&quot;log\&quot;), &quot;, 
+##    &quot; control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 1.24, Running = 0.16, Post = 0.158, Total = 1.55 
+##     Pre = 1.2, Running = 0.158, Post = 0.163, Total = 1.52 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -1.190 0.116     -1.421   -1.188     -0.966 -1.185   0
@@ -1024,14 +1020,14 @@ c(bb,be) ~ normal(0,0.5)
 ), data=dat , chains=4 , cores=4 ) 
 precis( m3_2 )</code></pre>
 <pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
-## a  -5.9451328 0.29470984 -6.3978258 -5.4850235 563.3221 1.000959
-## be  1.5270146 0.06213115  1.4266011  1.6206812 525.2892 1.001324
-## bb  0.4667404 0.07885722  0.3407965  0.5918229 631.2911 1.000782</code></pre>
+## a  -5.9477850 0.30576059 -6.4424193 -5.4717645 529.8906 1.004730
+## be  1.5282768 0.06470528  1.4266866  1.6302622 449.2585 1.007132
+## bb  0.4631106 0.07999385  0.3380067  0.5997393 501.2486 1.006742</code></pre>
 <pre class="r"><code>precis( m3_2)</code></pre>
 <pre><code>##          mean         sd       5.5%      94.5%    n_eff    Rhat4
-## a  -5.9451328 0.29470984 -6.3978258 -5.4850235 563.3221 1.000959
-## be  1.5270146 0.06213115  1.4266011  1.6206812 525.2892 1.001324
-## bb  0.4667404 0.07885722  0.3407965  0.5918229 631.2911 1.000782</code></pre>
+## a  -5.9477850 0.30576059 -6.4424193 -5.4717645 529.8906 1.004730
+## be  1.5282768 0.06470528  1.4266866  1.6302622 449.2585 1.007132
+## bb  0.4631106 0.07999385  0.3380067  0.5997393 501.2486 1.006742</code></pre>
 <pre class="r"><code>postcheck(m3_2,window=50)</code></pre>
 <p><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-1.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-2.png" width="672" /><img src="rethinkingINLA_HW6_files/figure-html/6.3.2%20rethinking-3.png" width="672" /></p>
 <p>Brain size bb is still positively associated, but much less. Research effort be is strongly associated. To see how these models disagree, let’s use pointwise WAIC to see which cases each predicts well.</p>
@@ -1061,12 +1057,11 @@ m3.2.i &lt;- inla( soc_learn~ log_brain + log_effort, family=&#39;poisson&#39;,
 summary(m3.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = soc_learn ~ log_brain + log_effort, family = \&quot;poisson\&quot;, &quot;, &quot; data = d3.i, 
-##    control.compute = list(dic = TRUE, cpo = TRUE, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, compute 
-##    = TRUE), &quot;, &quot; control.family = list(link = \&quot;log\&quot;), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, 
-##    mean.intercept = 0, prec.intercept = 1/(0.5^2)))&quot; ) 
+##    c(&quot;inla(formula = soc_learn ~ log_brain + log_effort, family = \&quot;poisson\&quot;, &quot;, &quot; data = d3.i, control.compute = list(dic 
+##    = TRUE, cpo = TRUE, &quot;, &quot; waic = TRUE), control.predictor = list(link = 1, compute = TRUE), &quot;, &quot; control.family = 
+##    list(link = \&quot;log\&quot;), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, mean.intercept = 0, prec.intercept = 1/(0.5^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.32, Running = 0.159, Post = 0.167, Total = 1.65 
+##     Pre = 1.24, Running = 0.231, Post = 0.178, Total = 1.65 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -4.833 0.239     -5.310   -4.831     -4.372 -4.825   0

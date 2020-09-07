@@ -421,31 +421,6 @@ bbar ~ normal(0,0.5),
 Rho ~ lkj_corr(2),
 Sigma ~ exponential(1) 
 ) , data=dat_list , chains=4 , cores=4 )</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
-<pre><code>## Warning: There were 1 divergent transitions after warmup. See
-## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
-## to find out why this is a problem and how to eliminate them.</code></pre>
-<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
@@ -454,18 +429,18 @@ Sigma ~ exponential(1)
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m1.1)</code></pre>
 <pre><code>##            mean         sd       5.5%      94.5%    n_eff     Rhat4
-## abar -0.6874153 0.09808489 -0.8486391 -0.5378259 2049.412 0.9995384
-## bbar  0.6403738 0.16171664  0.3840845  0.9006771 1346.809 0.9995591</code></pre>
+## abar -0.6871263 0.09675295 -0.8399084 -0.5314113 1575.744 0.9989719
+## bbar  0.6349576 0.16133464  0.3769257  0.8934361 1187.804 0.9988104</code></pre>
 <p>This is a conventional varying slopes model, with a centered parameterization. No surprises. If you peek at the posterior distributions for the average effects, you’ll see that the average slope is positive. This implies that urban areas use contraception more. Not surprising.</p>
 <p>Now consider the distribution of varying effects:</p>
 <pre class="r"><code>precis( m1.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6486241 1.705632e-01 -0.8630298 -0.3442609  429.8225 1.001104
-## Rho[2,1] -0.6486241 1.705632e-01 -0.8630298 -0.3442609  429.8225 1.001104
-## Rho[2,2]  1.0000000 6.117841e-17  1.0000000  1.0000000 2098.4762 0.997998
-## Sigma[1]  0.5726745 9.846645e-02  0.4250881  0.7390003  775.7683 1.006852
-## Sigma[2]  0.7772306 1.998150e-01  0.4690818  1.1085853  226.1745 1.025560</code></pre>
+## Rho[1,2] -0.6360923 1.704964e-01 -0.8619874 -0.3282091  326.7252 1.003435
+## Rho[2,1] -0.6360923 1.704964e-01 -0.8619874 -0.3282091  326.7252 1.003435
+## Rho[2,2]  1.0000000 6.345421e-17  1.0000000  1.0000000 1840.9261 0.997998
+## Sigma[1]  0.5741916 9.445344e-02  0.4235380  0.7331865  613.3162 1.001606
+## Sigma[2]  0.7928310 1.875865e-01  0.5199024  1.1043550  230.2590 1.003429</code></pre>
 <p>The correlation between the intercepts and slopes is quite negative.</p>
 <p>Let’s plot the individual effects to appreciate this.</p>
 <pre class="r"><code>post &lt;- extract.samples(m1.1)
@@ -521,15 +496,12 @@ m1.1.i &lt;- inla(C ~ 1 + urban + f(a.did, model=&quot;iid2d&quot;, n= 2*n.distr
 summary(m1.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * 
-##    &quot;, &quot; n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
-##    \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = 
-##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
-##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
-##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district) + f(b.did, urban, copy = 
+##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = TRUE, 
+##    waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = 
+##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 3.35, Running = 3.26, Post = 0.501, Total = 7.11 
+##     Pre = 2.21, Running = 5.78, Post = 0.483, Total = 8.48 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.686 0.099     -0.884   -0.686     -0.492 -0.685   0
@@ -541,14 +513,10 @@ summary(m1.1.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for a.did (component 1)  3.115 1.029      1.582    2.955      5.572
-## Precision for a.did (component 2)  1.921 0.936      0.709    1.723      4.278
-## Rho1:2 for a.did                  -0.664 0.146     -0.874   -0.689     -0.312
-##                                    mode
-## Precision for a.did (component 1)  2.66
-## Precision for a.did (component 2)  1.39
-## Rho1:2 for a.did                  -0.74
+##                                     mean    sd 0.025quant 0.5quant 0.975quant  mode
+## Precision for a.did (component 1)  3.115 1.029      1.582    2.955      5.572  2.66
+## Precision for a.did (component 2)  1.921 0.936      0.709    1.723      4.278  1.39
+## Rho1:2 for a.did                  -0.664 0.146     -0.874   -0.689     -0.312 -0.74
 ## 
 ## Expected number of effective parameters(stdev): 51.59(5.30)
 ## Number of equivalent replicates : 37.49 
@@ -564,14 +532,10 @@ summary(m1.1.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m1.1.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025       q0.5
-## SD for a.did (component 1)  0.5887788 0.09423246  0.4243071  0.5816066
-## SD for a.did (component 2)  0.7805681 0.17929237  0.4843403  0.7614524
-## Rho1:2 for a.did           -0.6636992 0.14555091 -0.8738944 -0.6895578
-##                                q0.975       mode
-## SD for a.did (component 1)  0.7934828  0.5683934
-## SD for a.did (component 2)  1.1851196  0.7251542
-## Rho1:2 for a.did           -0.3135566 -0.7405877</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5     q0.975       mode
+## SD for a.did (component 1)  0.5887788 0.09423246  0.4243071  0.5816066  0.7934828  0.5683934
+## SD for a.did (component 2)  0.7805681 0.17929237  0.4843403  0.7614524  1.1851196  0.7251542
+## Rho1:2 for a.did           -0.6636992 0.14555091 -0.8738944 -0.6895578 -0.3135566 -0.7405877</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m1.1.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20inla-1.png" width="672" /></p>
 <pre class="r"><code>#m1.1.i$summary.random has 2 elements: a.did and b.did but they are identical.
@@ -678,14 +642,12 @@ m1.2.i &lt;- inla(C ~ 0 + urban + f(did, model=&quot;iid2d&quot;, n= 2*n.distric
 summary(m1.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, 
-##    &quot; n.district), family = \&quot;binomial\&quot;, data = d1.2.i, Ntrials = 1, &quot;, &quot; 
-##    control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; 
-##    control.predictor = list(link = 1, compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district), family = \&quot;binomial\&quot;, data = 
+##    d1.2.i, Ntrials = 1, &quot;, &quot; control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; control.predictor = 
+##    list(link = 1, compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = 0, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 2.05, Running = 3.77, Post = 0.379, Total = 6.2 
+##     Pre = 1.56, Running = 3.2, Post = 0.401, Total = 5.17 
 ## Fixed effects:
 ##          mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## urban0 -0.698 0.087     -0.871   -0.697     -0.529 -0.696   0
@@ -696,14 +658,10 @@ summary(m1.2.i)</code></pre>
 ##     did IID2D model
 ## 
 ## Model hyperparameters:
-##                                   mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for did (component 1)  5.113 1.602      2.684    4.876      8.910
-## Precision for did (component 2)  3.910 2.753      0.669    3.265     10.923
-## Rho1:2 for did                  -0.006 0.318     -0.606   -0.007      0.598
-##                                   mode
-## Precision for did (component 1)  4.436
-## Precision for did (component 2)  1.880
-## Rho1:2 for did                  -0.009
+##                                   mean    sd 0.025quant 0.5quant 0.975quant   mode
+## Precision for did (component 1)  5.113 1.602      2.684    4.876      8.910  4.436
+## Precision for did (component 2)  3.910 2.753      0.669    3.265     10.923  1.880
+## Rho1:2 for did                  -0.006 0.318     -0.606   -0.007      0.598 -0.009
 ## 
 ## Expected number of effective parameters(stdev): 33.89(3.74)
 ## Number of equivalent replicates : 57.06 
@@ -719,14 +677,10 @@ summary(m1.2.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m1.2.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025         q0.5
-## SD for did (component 1)  0.457905716 0.06978712  0.3356060  0.452735735
-## SD for did (component 2)  0.607659726 0.23711773  0.3031733  0.552883810
-## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026
-##                            q0.975         mode
-## SD for did (component 1) 0.609076  0.443241189
-## SD for did (component 2) 1.215125  0.462597098
-## Rho1:2 for did           0.592858 -0.009533963</code></pre>
+<pre><code>##                                  mean         sd     q0.025         q0.5   q0.975         mode
+## SD for did (component 1)  0.457905716 0.06978712  0.3356060  0.452735735 0.609076  0.443241189
+## SD for did (component 2)  0.607659726 0.23711773  0.3031733  0.552883810 1.215125  0.462597098
+## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026 0.592858 -0.009533963</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m1.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2%20inla%20mean-1.png" width="672" /></p>
 <p>** i think it’s not totally correct, the sigmas ar off (they’re not=1)*</p>
@@ -762,27 +716,6 @@ c(bbar,bA) ~ normal(0,0.5),
 Rho ~ lkj_corr(2),
 Sigma ~ exponential(1)
 ) , data=dat_list , chains=4 , cores=4 )</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
@@ -790,18 +723,18 @@ Sigma ~ exponential(1)
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.1)</code></pre>
-<pre><code>##             mean        sd         5.5%      94.5%    n_eff     Rhat4
-## abar -0.69118782 0.1002558 -0.845328684 -0.5320284 1611.539 0.9999463
-## bA    0.08315204 0.0483389  0.007236082  0.1604138 3323.217 0.9989450
-## bbar  0.64800893 0.1615238  0.387555486  0.9112172 1188.585 1.0012843</code></pre>
+<pre><code>##             mean         sd        5.5%      94.5%    n_eff     Rhat4
+## abar -0.68517714 0.09784093 -0.84515556 -0.5282374 1367.933 0.9999113
+## bA    0.08392238 0.04956576  0.00719067  0.1626580 2769.433 0.9999017
+## bbar  0.63764019 0.16202934  0.37473359  0.8926529 1191.553 0.9994621</code></pre>
 <pre class="r"><code>precis( m2.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6412562 1.772953e-01 -0.8592863 -0.3320159  431.8684 1.010302
-## Rho[2,1] -0.6412562 1.772953e-01 -0.8592863 -0.3320159  431.8684 1.010302
-## Rho[2,2]  1.0000000 5.651565e-17  1.0000000  1.0000000 1550.5075 0.997998
-## Sigma[1]  0.5792873 9.768824e-02  0.4296376  0.7418399  589.1409 1.003822
-## Sigma[2]  0.7869052 1.949777e-01  0.4852282  1.1143046  333.5019 1.005796</code></pre>
+## Rho[1,2] -0.6379264 1.703431e-01 -0.8557888 -0.3369363  344.2250 1.021646
+## Rho[2,1] -0.6379264 1.703431e-01 -0.8557888 -0.3369363  344.2250 1.021646
+## Rho[2,2]  1.0000000 6.374506e-17  1.0000000  1.0000000 1818.5853 0.997998
+## Sigma[1]  0.5801582 9.859271e-02  0.4276409  0.7420936  491.4691 1.011082
+## Sigma[2]  0.8003183 1.972202e-01  0.4933837  1.1201625  213.1804 1.022122</code></pre>
 <p>In this model, the total causal effect of age is positive and very small. Older individuals use slightly more contraception.</p>
 </div>
 <div id="inla-2" class="section level3">
@@ -841,15 +774,12 @@ m2.1.i &lt;- inla(C ~ 1+ urban + age + f(a.did, model=&quot;iid2d&quot;, n= 2*n.
 summary(m2.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, 
-##    &quot; n = 2 * n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
-##    \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = 
-##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
-##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
-##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, copy = 
+##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = TRUE, 
+##    waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = 
+##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 2.16, Running = 4.34, Post = 0.46, Total = 6.95 
+##     Pre = 2.03, Running = 4.23, Post = 0.388, Total = 6.65 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.689 0.100     -0.887   -0.689     -0.495 -0.688   0
@@ -862,14 +792,10 @@ summary(m2.1.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for a.did (component 1)  3.088 1.017      1.570    2.930      5.516
-## Precision for a.did (component 2)  1.904 0.925      0.703    1.709      4.234
-## Rho1:2 for a.did                  -0.662 0.146     -0.873   -0.687     -0.309
-##                                     mode
-## Precision for a.did (component 1)  2.640
-## Precision for a.did (component 2)  1.384
-## Rho1:2 for a.did                  -0.739
+##                                     mean    sd 0.025quant 0.5quant 0.975quant   mode
+## Precision for a.did (component 1)  3.088 1.017      1.570    2.930      5.516  2.640
+## Precision for a.did (component 2)  1.904 0.925      0.703    1.709      4.234  1.384
+## Rho1:2 for a.did                  -0.662 0.146     -0.873   -0.687     -0.309 -0.739
 ## 
 ## Expected number of effective parameters(stdev): 52.75(5.30)
 ## Number of equivalent replicates : 36.66 
@@ -885,14 +811,10 @@ summary(m2.1.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.1.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025       q0.5
-## SD for a.did (component 1)  0.5912211 0.09440575  0.4264479  0.5840307
-## SD for a.did (component 2)  0.7838379 0.17978820  0.4868598  0.7646316
-## Rho1:2 for a.did           -0.6619113 0.14617008 -0.8730792 -0.6878622
-##                                q0.975       mode
-## SD for a.did (component 1)  0.7963088  0.5707599
-## SD for a.did (component 2)  1.1895932  0.7281630
-## Rho1:2 for a.did           -0.3103507 -0.7391103</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5     q0.975       mode
+## SD for a.did (component 1)  0.5912211 0.09440575  0.4264479  0.5840307  0.7963088  0.5707599
+## SD for a.did (component 2)  0.7838379 0.17978820  0.4868598  0.7646316  1.1895932  0.7281630
+## Rho1:2 for a.did           -0.6619113 0.14617008 -0.8730792 -0.6878622 -0.3103507 -0.7391103</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m2.1.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2.1%20inla-1.png" width="672" /></p>
 <p>the intercept is abar</p>
@@ -912,27 +834,6 @@ c(bbar,bK,bA) ~ normal(0,0.5),
 Rho ~ lkj_corr(2),
 Sigma ~ exponential(1)
 ) , data=dat_list , chains=4 , cores=4 )</code></pre>
-<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
-## namespace Eigen {
-## ^
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
-## namespace Eigen {
-##                ^
-##                ;
-## In file included from &lt;built-in&gt;:1:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
-## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
-## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
-## #include &lt;complex&gt;
-##          ^~~~~~~~~
-## 3 errors generated.
-## make: *** [foo.o] Error 1</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
@@ -940,19 +841,19 @@ Sigma ~ exponential(1)
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.2)</code></pre>
-<pre><code>##            mean         sd       5.5%      94.5%    n_eff    Rhat4
-## abar -0.7131333 0.10509009 -0.8843947 -0.5447077 1382.028 1.006999
-## bA   -0.2652243 0.06761575 -0.3745846 -0.1570144 1816.668 1.001635
-## bK    0.5147331 0.07030823  0.4037676  0.6231769 1828.845 1.000795
-## bbar  0.6823462 0.16359728  0.4178688  0.9490309 1009.780 1.009033</code></pre>
+<pre><code>##            mean         sd       5.5%      94.5%     n_eff     Rhat4
+## abar -0.7184769 0.10379940 -0.8785798 -0.5566035 1557.9352 1.0016289
+## bA   -0.2647132 0.07122837 -0.3775861 -0.1529971 2785.0559 0.9997277
+## bK    0.5146257 0.07155337  0.4028377  0.6339342 2547.4179 0.9992012
+## bbar  0.6927776 0.15728319  0.4438723  0.9418507  756.8728 1.0025623</code></pre>
 <pre class="r"><code>precis( m2.2 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
-<pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
-## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6253645 1.741797e-01 -0.8532946 -0.3145013  401.7878 1.005551
-## Rho[2,1] -0.6253645 1.741797e-01 -0.8532946 -0.3145013  401.7878 1.005551
-## Rho[2,2]  1.0000000 6.517986e-17  1.0000000  1.0000000 2112.9449 0.997998
-## Sigma[1]  0.6082910 1.001638e-01  0.4622073  0.7775256  603.9735 1.002630
-## Sigma[2]  0.7933216 2.068789e-01  0.4882606  1.1545058  326.2879 1.001939</code></pre>
+<pre><code>##                mean           sd       5.5%      94.5%     n_eff     Rhat4
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN       NaN
+## Rho[1,2] -0.6297354 1.705498e-01 -0.8560714 -0.3187215  387.4209 1.0127602
+## Rho[2,1] -0.6297354 1.705498e-01 -0.8560714 -0.3187215  387.4209 1.0127602
+## Rho[2,2]  1.0000000 6.202919e-17  1.0000000  1.0000000 1801.3686 0.9979980
+## Sigma[1]  0.6083485 1.018400e-01  0.4510735  0.7832795  720.5566 0.9998064
+## Sigma[2]  0.7718248 2.016480e-01  0.4526084  1.1044055  177.6732 1.0305212</code></pre>
 <p>In this model, the direct effect of age is negative, and much farther from zero than before. The effect of number of children is strong and positive. These results are consistent with the DAG, because they imply that the reason the total effect of age, from m2.1, is positive is that older individuals also have more kids. Having more kids increases contraception. Being older, controlling for kids, actually makes con- traception less likely.</p>
 </div>
 <div id="inla-3" class="section level3">
@@ -975,16 +876,13 @@ m2.2.i &lt;- inla(C ~ 1+ urban + age + children + f(a.did, model=&quot;iid2d&quo
 summary(m2.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = 
-##    \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, copy = 
-##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, 
-##    control.compute = list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), 
-##    control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
-##    list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, 
+##    urban, copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; 
+##    dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept 
+##    = 1))&quot;) 
 ## Time used:
-##     Pre = 2.15, Running = 3.85, Post = 0.422, Total = 6.43 
+##     Pre = 2.03, Running = 3.68, Post = 0.425, Total = 6.13 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.718 0.103     -0.922   -0.717     -0.516 -0.716   0
@@ -998,14 +896,10 @@ summary(m2.2.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant
-## Precision for a.did (component 1)  2.832 0.926      1.449    2.688      5.040
-## Precision for a.did (component 2)  1.958 0.968      0.713    1.751      4.401
-## Rho1:2 for a.did                  -0.657 0.148     -0.871   -0.682     -0.299
-##                                     mode
-## Precision for a.did (component 1)  2.424
-## Precision for a.did (component 2)  1.409
-## Rho1:2 for a.did                  -0.734
+##                                     mean    sd 0.025quant 0.5quant 0.975quant   mode
+## Precision for a.did (component 1)  2.832 0.926      1.449    2.688      5.040  2.424
+## Precision for a.did (component 2)  1.958 0.968      0.713    1.751      4.401  1.409
+## Rho1:2 for a.did                  -0.657 0.148     -0.871   -0.682     -0.299 -0.734
 ## 
 ## Expected number of effective parameters(stdev): 54.03(5.28)
 ## Number of equivalent replicates : 35.79 
@@ -1021,14 +915,10 @@ summary(m2.2.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.2.i)</code></pre>
-<pre><code>##                                  mean        sd     q0.025       q0.5
-## SD for a.did (component 1)  0.6170742 0.0977858  0.4460300  0.6097704
-## SD for a.did (component 2)  0.7746153 0.1801363  0.4774009  0.7553064
-## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040
-##                                q0.975       mode
-## SD for a.did (component 1)  0.8291373  0.5965057
-## SD for a.did (component 2)  1.1813881  0.7186946
-## Rho1:2 for a.did           -0.3010549 -0.7346392</code></pre>
+<pre><code>##                                  mean        sd     q0.025       q0.5     q0.975       mode
+## SD for a.did (component 1)  0.6170742 0.0977858  0.4460300  0.6097704  0.8291373  0.5965057
+## SD for a.did (component 2)  0.7746153 0.1801363  0.4774009  0.7553064  1.1813881  0.7186946
+## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040 -0.3010549 -0.7346392</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m2.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2.2%20inla-1.png" width="672" /></p>
 <p>#3. <strong>Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?</strong></p>
