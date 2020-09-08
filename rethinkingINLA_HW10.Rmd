@@ -22,7 +22,9 @@ library(stringr)
 
 # 1. 
 Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error.
+
 We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble.
+
 Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:
 
 ```{r 10.1 }
@@ -39,6 +41,7 @@ M <- M / max(M)
 
 
 Now I’ll make up some standard errors for B and M, assuming error is 10% of the measurement.
+
 ```{r 10.1 error}
 Bse <- B*0.1 
 Mse <- M*0.1
@@ -89,7 +92,18 @@ To build the measurement error model, all we really need to do is add the observ
 
 ### 1.1 rethinking
 
+The top chunk is the model for the B values. The first line is the measurement process. Then the next two lines are the same regression as before, but with B_true replacing the observed B values. Likewise M_true replaces the observed M in the linear model.
+The second chunk is the measurement model for M. The prior for M_true covers the entire range of the normalize variable—it ranges from 0 to 1 now, recall, because we scaled it that way to start by dividing by the maximum observed value.
+The last chunk holds the same priors as before.
+
+Note the control list at the bottom. If you run this model without that, it will work, but be inefficient and warn about exceeding maximum “treedepth.” This is not a concern for the validity of the chains, just how well they run. Treedepth is a control parameter for NUTS algorithm. The Stan manual contains more detail, if you want it.
+
 ```{r 10.1 error model re}
+
+d.complete <- d[which(cc ==TRUE),]
+
+N_spp <- nrow(d.complete)
+  
 m1.2 <- ulam( alist(
 # B model
 B ~ normal( B_true , Bse ), 
@@ -111,11 +125,48 @@ precis( m1.2 )
 
 ```
 
+Those 364 hidden parameters are the estimated true values. We can look at those later on. For now, notice that the posterior distributions of a and b are nearly identical to m1.1. Adding measurement error hasn’t changed a thing! 
 
-The top chunk is the model for the B values. The first line is the measurement process. Then the next two lines are the same regression as before, but with B_true replacing the observed B values. Likewise M_true replaces the observed M in the linear model.
-The second chunk is the measurement model for M. The prior for M_true covers the entire range of the normalize variable—it ranges from 0 to 1 now, recall, because we scaled it that way to start by dividing by the maximum observed value.
-The last chunk holds the same priors as before.
-Note the control list at the bottom. If you run this model without that, it will work, but be inefficient and warn about exceeding maximum “treedepth.” This is not a concern for the validity of the chains, just how well they run. Treedepth is a control parameter for NUTS algorithm. The Stan manual contains more detail, if you want it.
+
+Plotting the regression against the observed values:
+
+
+```{r 10.1 measurement error obs value plot re}
+plot( B ~ M , xlab="body mass" , ylab="brain volume" , col=rangi2 , pch=16 )
+post <- extract.samples(m1.2)
+for ( i in 1:50 ) curve( exp(post$a[i])*x^(post$b[i]) , add=TRUE , col=grau(0.2) )
+ 
+```
+
+The two points in the upper right are gorillas. Most primates are small, and obviously gorillas have something special going on. Now let’s plot the estimated values on this:
+
+
+```{r 10.1 measurement error est value plot re}
+B_est <- apply( post$B_true , 2 , mean ) 
+M_est <- apply( post$M_true , 2 , mean )
+plot( B ~ M , xlab="body mass" , ylab="brain volume" , col=rangi2 , pch=16 ) points( M_est , B_est , pch=1 , lwd=1.5 )
+x_seq <- seq( from=0 , to=1 , length.out=100 )
+EB <- sapply( x_seq , function(x) mean( exp(post$a)*x^(post$b) ) ) lines( x_seq , EB )
+```
+
+The open points are the posterior mean estimates. Notice that they have moved towards the regression line, as you’d expect. But even the outlier gorillas haven’t moved much. The assumed error just isn’t big enough to get them any closer.
+If you increase the amount of error, you can get all of the species to fall right on the regression line. Try for example 30% error. The model will mix poorly, but take a look at the inferred true values.
+The truth of this example is that there are just so many small primates that they dominate the relationship. And their measurement errors are also smaller (in abso- lute terms). So adding plausible amounts of measurement error here doesn’t make a big difference. We still don’t have a good explanation for gorillas.
+
+
+Before moving on, I’ll also plot the estimated species values with 50% compati- bility ellipses.
+
+
+```{r 10.1 ellipse plot re}
+library(ellipse)
+plot( B_est ~ M_est , xlab="body mass" , ylab="brain volume" , lwd=1.5 ,
+col=grau() , xlim=c(0,1.2) , ylim=c(0,1.2) ) 
+
+for ( i in 1:length(B_est) ) {
+SIGMA <- cov( cbind( post$M_true[,i] , post$B_true[,i] ) )
+el <- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col=grau(0.3) )
+}
+```
 
 
 # 2. 
@@ -143,9 +194,14 @@ B <- d$brain[cc]
 B <- B / max( B , na.rm=TRUE )
 ```
 
-You should end up with 238 species and 56 missing brain values among them. First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR)
-is this?
-Second, impute missing values for brain size. It might help to initialize the 56 imputed variables to a valid value:
+You should end up with 238 species and 56 missing brain values among them. 
+
+
+**First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR) is this?**
+
+**Second, impute missing values for brain size.**
+
+It might help to initialize the 56 imputed variables to a valid value:
 
 
 ```{r 10.2 imputed}
@@ -154,7 +210,193 @@ start=list( B_impute=rep(0.5,56) )
 
 
 This just helps the chain get started.
-Compare the inferences to an analysis that drops all the missing values. Has any-
-thing changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.
+
+**Compare the inferences to an analysis that drops all the missing values**. Has anything changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.
+
+## 2.1 pattern of the missing values
+
+
+First,let’s see where the missing values are,to get some idea about the missingness mechanism. If missing brain sizes are associated with certain ranges of body sizes, then it isn’t plausibly MCAR (dog eats any homework). Let’s plot body size against missingness:
+```{r 2.1 plot }
+
+Bna <- is.na(d$brain[cc])
+plot( Bna ~ M , ylab="B is NA" )
+
+```
+Looks like the missing brain values are almost all for small bodied species. This implies at least a MAR (dog eats students’ homework) mechanism. Let’s try a DAG to express it:
+
+```{r 2.1 dag}
+library(dagitty)
+
+hw10.2.1.dag <- dagitty('dag{
+M -> R_B -> "B*" <- B
+M -> B }')
+
+plot(hw10.2.1.dag)
+
+
+```
+M here is body mass, B (unobserved) is brain size, R_B is the missingness mechanism, and B* is the observed brain sizes (with missing values). The arrow from M to R_B indicates that body size influences missingness. In this case, it would imply that small body size makes a missing brain value more likely.
+
+## 2.2 impute missing values for brain size
+
+Now let’s do some imputation. Remember that the model for imputation is really no different than an ordinary model. It just needs a prior for any variable with missing values. In this case, the missing values are in the outcome, so the likelihood is the prior we need. So the model doesn’t change at all. 
+
+### 2.2 rethinking
+
+In ulam:
+
+```{r 10.2.2 m2.1a re}
+dat_list <- list(
+B = B,
+M=M)
+
+
+m2.2 <- ulam( alist(
+B ~ dlnorm( mu , sigma ), 
+mu <- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )
+
+
+
+```
+
+ulam figures out how to do the imputation. But an equivalent model that is more explicit would be:
+
+```{r 10.2.2 m2.1b re }
+
+m2.2b <- ulam( alist(
+B_merge ~ dlnorm( mu , sigma ),
+mu <- a + b*log(M),
+B_merge <- merge_missing( B , B_impute ), 
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )
+
+ precis( m2.2b )
+
+```
+
+It’s a little more obvious now what ulam is doing. It constructs the merged vector of observed and imputed values, B_merge, and then uses that merged vector as the outcome. The outcome distribution at the top of the model is the prior for each B_impute parameter. That prior is adaptive—it has parameters inside it. Hence, shrinkage happens.
+
+
+### 2.2 INLA
+
+```{r 10.2.2 m2.1 inla}
+
+d2.i <- d %>% 
+  mutate(M = body / max(body, na.rm=TRUE), 
+         B= brain / max(brain, na.rm=TRUE), 
+         logM= log(M))
+
+m2.2.i <- inla(B ~ logM, family ="lognormal", data=d2.i, 
+               control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1), 
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+               )
+summary(m2.2.i )
+
+```
+
+
+
+## 2.3 compare to the analysis with complete cases
+
+### 2.3 rethinking
+
+
+```{r 10.2.3 m2.1b re }
+
+cc2 <- complete.cases( B )
+dat_list2 <- list( B = B[cc2],
+M = M[cc2] )
+m2.3 <- ulam( alist(
+B ~ dlnorm( mu , sigma ), 
+mu <- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list2 , chains=4 , cores=4 ) 
+
+precis( m2.3 )
+
+```
+Really no difference from before. 
+
+
+### 2.3 INLA
+
+```{r 10.2.3 m2.1 inla}
+
+d3.i <- d %>% 
+  filter(!is.na(body)) %>% 
+  mutate(M = body / max(body, na.rm=TRUE), 
+         B= brain / max(brain, na.rm=TRUE), 
+         logM= log(M))
+  
+#indices of the weights with missing values of body mass
+d2.i.na <- which(is.na(d2.i$body))
+
+m2.3.i <- inla(B ~ logM, family ="lognormal", data=d3.i, 
+               control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1), 
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+               )
+summary(m2.3.i )
+
+```
+
+In INLA the models have a different intercept when the analysis is run with the missing data and when it's run only with complete cases!
+
+## 2.4 plot the imputed brain sizes together with the observed values.
+
+
+```{r 10.2.4 re}
+post <- extract.samples(m2.1)
+Bi <- apply( post$B_impute , 2 , mean ) 
+miss_idx <- which( is.na(B) )
+plot( M[-miss_idx] , B[-miss_idx] , col=rangi2 , pch=16 , xlab="body mass M" , ylab="brain size B" )
+points( M[miss_idx] , Bi )
+Bi_ci <- apply( post$B_impute , 2 , PI , 0.5 )
+for ( i in 1:length(Bi) ) lines( rep(M[miss_idx][i],2) , Bi_ci[,i] )
+```
+
+
+
+Black open points are the imputed values, with 50% compatibility intervals. Imputation hasn’t done much, apparently because all but one of the missing values are in a very dense region of the body size range. So almost no information was lost—the missing info is redundant.
+
+
+```{r1 10.2.4 inla}
+
+
+#indices of the weights with missing values of body mass
+d2.i.na <- which(is.na(d2.i$body))
+
+z = m2.2.i$summary.linear.predictor$mean
+
+
+# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height m2.i$summary.fitted.values[d2.i.na, ]
+m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
+  select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
+names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
+m2.i.plot <- ggplot()+
+  geom_point(data= d, aes(weight, height))+
+  geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
+  geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
+m2.i.plot 
+```
+
 
 

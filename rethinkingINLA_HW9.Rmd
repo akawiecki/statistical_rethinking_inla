@@ -204,7 +204,7 @@ m1.1.i.outcome.plot
 
 $C_{did} \sim Bernoulli(p_{i})$
 
-$logit(p_{i}) = \alpha_{district[i],urban[j]} $
+$logit(p_{i}) = \alpha_{district[i],urban[j]}$
 
 $\begin{pmatrix}a_{urban1,i}\\b_{urban0,i}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , & Sigma ,& Rho\end{pmatrix}$ 
 
@@ -267,7 +267,7 @@ bri.hyperpar.plot(m1.2.i)
 
 ```
 
-** i think it's not totally correct, the sigmas ar off (they're not=1)*
+** i think it's not totally correct, the sigmas ar off (they're not=1)**
 
 # 2. 
 **Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?**
@@ -412,7 +412,8 @@ bri.hyperpar.plot(m2.2.i)
 ```
 
 
-#3.
+# 3.
+
 **Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
 
 
