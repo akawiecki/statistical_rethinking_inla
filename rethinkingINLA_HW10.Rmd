@@ -87,8 +87,7 @@ Compare the inference of the measurement error model to those of m1.1 above. Has
 
 ## 1.1 model with measurement error 
 
-To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression. It looks like this:
-
+To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression. 
 
 ### 1.1 rethinking
 
@@ -98,7 +97,7 @@ The last chunk holds the same priors as before.
 
 Note the control list at the bottom. If you run this model without that, it will work, but be inefficient and warn about exceeding maximum “treedepth.” This is not a concern for the validity of the chains, just how well they run. Treedepth is a control parameter for NUTS algorithm. The Stan manual contains more detail, if you want it.
 
-```{r 10.1 error model re}
+```{r 10.1 error model re, eval= FALSE}
 
 d.complete <- d[which(cc ==TRUE),]
 
@@ -131,7 +130,7 @@ Those 364 hidden parameters are the estimated true values. We can look at those 
 Plotting the regression against the observed values:
 
 
-```{r 10.1 measurement error obs value plot re}
+```{r 10.1 measurement error obs value plot re, eval= FALSE}
 plot( B ~ M , xlab="body mass" , ylab="brain volume" , col=rangi2 , pch=16 )
 post <- extract.samples(m1.2)
 for ( i in 1:50 ) curve( exp(post$a[i])*x^(post$b[i]) , add=TRUE , col=grau(0.2) )
@@ -141,7 +140,7 @@ for ( i in 1:50 ) curve( exp(post$a[i])*x^(post$b[i]) , add=TRUE , col=grau(0.2)
 The two points in the upper right are gorillas. Most primates are small, and obviously gorillas have something special going on. Now let’s plot the estimated values on this:
 
 
-```{r 10.1 measurement error est value plot re}
+```{r 10.1 measurement error est value plot re, eval= FALSE}
 B_est <- apply( post$B_true , 2 , mean ) 
 M_est <- apply( post$M_true , 2 , mean )
 plot( B ~ M , xlab="body mass" , ylab="brain volume" , col=rangi2 , pch=16 ) points( M_est , B_est , pch=1 , lwd=1.5 )
@@ -157,7 +156,7 @@ The truth of this example is that there are just so many small primates that the
 Before moving on, I’ll also plot the estimated species values with 50% compati- bility ellipses.
 
 
-```{r 10.1 ellipse plot re}
+```{r 10.1 ellipse plot re, eval= FALSE}
 library(ellipse)
 plot( B_est ~ M_est , xlab="body mass" , ylab="brain volume" , lwd=1.5 ,
 col=grau() , xlim=c(0,1.2) , ylim=c(0,1.2) ) 
@@ -166,6 +165,28 @@ for ( i in 1:length(B_est) ) {
 SIGMA <- cov( cbind( post$M_true[,i] , post$B_true[,i] ) )
 el <- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col=grau(0.3) )
 }
+```
+
+
+## 1.1 INLA
+
+good resource for this: 
+http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf
+http://www.r-inla.org/models/tools#TOC-Copying-a-model
+
+But i can't wrap my head around it right now.
+```{r 10.1 INLA}
+
+d1.i <- d %>% 
+  filter(!is.na(brain) &!is.na(body) ) %>% 
+  mutate(B= brain/max(brain), 
+         M= body/max(body), 
+         Bse= B*0.1, 
+         Mse= M*0.1)
+
+n.spp <- nrow(d1.i) # 182 
+
+M_true= rnorm(n.spp, d1.i$M, d1.i$Mse)
 ```
 
 

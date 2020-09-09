@@ -393,7 +393,9 @@ library(knitr)
 library(stringr)</code></pre>
 <div id="section" class="section level1">
 <h1>1.</h1>
-<p>Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error. We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble. Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:</p>
+<p>Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error.</p>
+<p>We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble.</p>
+<p>Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:</p>
 <pre class="r"><code>library(rethinking)
 data(Primates301)
 d &lt;- Primates301
@@ -419,11 +421,32 @@ a ~ normal(0,1),
 b ~ normal(0,1),
 sigma ~ exponential(1) 
 ) , data=dat_list )</code></pre>
-<pre><code>## 
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1
+## 
 ## SAMPLING FOR MODEL &#39;2bcae94530709687a15da757cbb5d4b7&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 3.2e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+## Chain 1: Gradient evaluation took 3.8e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -440,24 +463,84 @@ sigma ~ exponential(1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.094932 seconds (Warm-up)
-## Chain 1:                0.069744 seconds (Sampling)
-## Chain 1:                0.164676 seconds (Total)
+## Chain 1:  Elapsed Time: 0.097109 seconds (Warm-up)
+## Chain 1:                0.068162 seconds (Sampling)
+## Chain 1:                0.165271 seconds (Total)
 ## Chain 1:</code></pre>
 <pre class="r"><code>precis( m1.1 )</code></pre>
 <pre><code>##            mean         sd      5.5%     94.5%    n_eff     Rhat4
-## a     0.4253366 0.06137017 0.3283829 0.5239404 192.6267 1.0005518
-## b     0.7830490 0.01489448 0.7596230 0.8064079 191.9412 0.9996223
-## sigma 0.2948666 0.01705121 0.2682706 0.3246473 269.0981 0.9989297</code></pre>
+## a     0.4284023 0.05751594 0.3376164 0.5161807 188.6526 0.9992343
+## b     0.7837166 0.01333890 0.7625324 0.8050204 202.0326 1.0013107
+## sigma 0.2920707 0.01698006 0.2662782 0.3216175 192.4107 0.9995958</code></pre>
 <p>Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:</p>
 <pre class="r"><code> start=list( M_true=dat_list$M , B_true=dat_list$B )</code></pre>
 <p>Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?</p>
 <div id="model-with-measurement-error" class="section level2">
 <h2>1.1 model with measurement error</h2>
-<p>To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression. It looks like this:</p>
+<p>To build the measurement error model, all we really need to do is add the observation process. This means that the observed values arise from their own distribution, each having a true value as the mean. We use these unknown true values in the regression.</p>
 <div id="rethinking" class="section level3">
 <h3>1.1 rethinking</h3>
+<p>The top chunk is the model for the B values. The first line is the measurement process. Then the next two lines are the same regression as before, but with B_true replacing the observed B values. Likewise M_true replaces the observed M in the linear model. The second chunk is the measurement model for M. The prior for M_true covers the entire range of the normalize variable—it ranges from 0 to 1 now, recall, because we scaled it that way to start by dividing by the maximum observed value. The last chunk holds the same priors as before.</p>
+<p>Note the control list at the bottom. If you run this model without that, it will work, but be inefficient and warn about exceeding maximum “treedepth.” This is not a concern for the validity of the chains, just how well they run. Treedepth is a control parameter for NUTS algorithm. The Stan manual contains more detail, if you want it.</p>
+<pre class="r"><code>d.complete &lt;- d[which(cc ==TRUE),]
+
+N_spp &lt;- nrow(d.complete)
+  
+m1.2 &lt;- ulam( alist(
+# B model
+B ~ normal( B_true , Bse ), 
+vector[N_spp]:B_true ~ dlnorm( mu , sigma ),
+mu &lt;- a + b*log( M_true[i] ),
+# M model
+M ~ normal( M_true , Mse ), 
+vector[N_spp]:M_true ~ normal( 0.5 , 1 ),
+# priors
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list ,
+start=list( M_true=dat_list$M , B_true=dat_list$B ) , 
+chains=4 , cores=4 , 
+control=list(max_treedepth=15) )
+
+precis( m1.2 )</code></pre>
+<p>Those 364 hidden parameters are the estimated true values. We can look at those later on. For now, notice that the posterior distributions of a and b are nearly identical to m1.1. Adding measurement error hasn’t changed a thing!</p>
+<p>Plotting the regression against the observed values:</p>
+<pre class="r"><code>plot( B ~ M , xlab=&quot;body mass&quot; , ylab=&quot;brain volume&quot; , col=rangi2 , pch=16 )
+post &lt;- extract.samples(m1.2)
+for ( i in 1:50 ) curve( exp(post$a[i])*x^(post$b[i]) , add=TRUE , col=grau(0.2) )</code></pre>
+<p>The two points in the upper right are gorillas. Most primates are small, and obviously gorillas have something special going on. Now let’s plot the estimated values on this:</p>
+<pre class="r"><code>B_est &lt;- apply( post$B_true , 2 , mean ) 
+M_est &lt;- apply( post$M_true , 2 , mean )
+plot( B ~ M , xlab=&quot;body mass&quot; , ylab=&quot;brain volume&quot; , col=rangi2 , pch=16 ) points( M_est , B_est , pch=1 , lwd=1.5 )
+x_seq &lt;- seq( from=0 , to=1 , length.out=100 )
+EB &lt;- sapply( x_seq , function(x) mean( exp(post$a)*x^(post$b) ) ) lines( x_seq , EB )</code></pre>
+<p>The open points are the posterior mean estimates. Notice that they have moved towards the regression line, as you’d expect. But even the outlier gorillas haven’t moved much. The assumed error just isn’t big enough to get them any closer. If you increase the amount of error, you can get all of the species to fall right on the regression line. Try for example 30% error. The model will mix poorly, but take a look at the inferred true values. The truth of this example is that there are just so many small primates that they dominate the relationship. And their measurement errors are also smaller (in abso- lute terms). So adding plausible amounts of measurement error here doesn’t make a big difference. We still don’t have a good explanation for gorillas.</p>
+<p>Before moving on, I’ll also plot the estimated species values with 50% compati- bility ellipses.</p>
+<pre class="r"><code>library(ellipse)
+plot( B_est ~ M_est , xlab=&quot;body mass&quot; , ylab=&quot;brain volume&quot; , lwd=1.5 ,
+col=grau() , xlim=c(0,1.2) , ylim=c(0,1.2) ) 
+
+for ( i in 1:length(B_est) ) {
+SIGMA &lt;- cov( cbind( post$M_true[,i] , post$B_true[,i] ) )
+el &lt;- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col=grau(0.3) )
+}</code></pre>
 </div>
+</div>
+<div id="inla" class="section level2">
+<h2>1.1 INLA</h2>
+<p>good resource for this: <a href="http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf" class="uri">http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf</a> <a href="http://www.r-inla.org/models/tools#TOC-Copying-a-model" class="uri">http://www.r-inla.org/models/tools#TOC-Copying-a-model</a></p>
+<p>But i can’t wrap my head around it right now.</p>
+<pre class="r"><code>d1.i &lt;- d %&gt;% 
+  filter(!is.na(brain) &amp;!is.na(body) ) %&gt;% 
+  mutate(B= brain/max(brain), 
+         M= body/max(body), 
+         Bse= B*0.1, 
+         Mse= M*0.1)
+
+n.spp &lt;- nrow(d1.i) # 182 
+
+M_true= rnorm(n.spp, d1.i$M, d1.i$Mse)</code></pre>
 </div>
 </div>
 <div id="section-1" class="section level1">
@@ -467,10 +550,12 @@ sigma ~ exponential(1)
 data(Primates301) 
 d &lt;- Primates301 
 colSums( is.na(d) )</code></pre>
-<pre><code>##                name               genus             species          subspecies              spp_id            genus_id 
-##                   0                   0                   0                 267                   0                   0 
-##     social_learning     research_effort               brain                body          group_size           gestation 
-##                  98                 115                 117                  63                 114                 161 
+<pre><code>##                name               genus             species          subspecies 
+##                   0                   0                   0                 267 
+##              spp_id            genus_id     social_learning     research_effort 
+##                   0                   0                  98                 115 
+##               brain                body          group_size           gestation 
+##                 117                  63                 114                 161 
 ##             weaning           longevity        sex_maturity maternal_investment 
 ##                 185                 181                 194                 197</code></pre>
 <p>We’ll continue to focus on just brain and body, to stave off insanity. Consider only those species with measured body masses:</p>
@@ -479,9 +564,279 @@ M &lt;- d$body[cc]
 M &lt;- M / max(M)
 B &lt;- d$brain[cc]
 B &lt;- B / max( B , na.rm=TRUE )</code></pre>
-<p>You should end up with 238 species and 56 missing brain values among them. First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR) is this? Second, impute missing values for brain size. It might help to initialize the 56 imputed variables to a valid value:</p>
+<p>You should end up with 238 species and 56 missing brain values among them.</p>
+<p><strong>First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR) is this?</strong></p>
+<p><strong>Second, impute missing values for brain size.</strong></p>
+<p>It might help to initialize the 56 imputed variables to a valid value:</p>
 <pre class="r"><code>start=list( B_impute=rep(0.5,56) )</code></pre>
-<p>This just helps the chain get started. Compare the inferences to an analysis that drops all the missing values. Has any- thing changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.</p>
+<p>This just helps the chain get started.</p>
+<p><strong>Compare the inferences to an analysis that drops all the missing values</strong>. Has anything changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.</p>
+<div id="pattern-of-the-missing-values" class="section level2">
+<h2>2.1 pattern of the missing values</h2>
+<p>First,let’s see where the missing values are,to get some idea about the missingness mechanism. If missing brain sizes are associated with certain ranges of body sizes, then it isn’t plausibly MCAR (dog eats any homework). Let’s plot body size against missingness:</p>
+<pre class="r"><code>Bna &lt;- is.na(d$brain[cc])
+plot( Bna ~ M , ylab=&quot;B is NA&quot; )</code></pre>
+<p><img src="rethinkingINLA_HW10_files/figure-html/2.1%20plot-1.png" width="672" /> Looks like the missing brain values are almost all for small bodied species. This implies at least a MAR (dog eats students’ homework) mechanism. Let’s try a DAG to express it:</p>
+<pre class="r"><code>library(dagitty)
+
+hw10.2.1.dag &lt;- dagitty(&#39;dag{
+M -&gt; R_B -&gt; &quot;B*&quot; &lt;- B
+M -&gt; B }&#39;)
+
+plot(hw10.2.1.dag)</code></pre>
+<p><img src="rethinkingINLA_HW10_files/figure-html/2.1%20dag-1.png" width="672" /> M here is body mass, B (unobserved) is brain size, R_B is the missingness mechanism, and B* is the observed brain sizes (with missing values). The arrow from M to R_B indicates that body size influences missingness. In this case, it would imply that small body size makes a missing brain value more likely.</p>
+</div>
+<div id="impute-missing-values-for-brain-size" class="section level2">
+<h2>2.2 impute missing values for brain size</h2>
+<p>Now let’s do some imputation. Remember that the model for imputation is really no different than an ordinary model. It just needs a prior for any variable with missing values. In this case, the missing values are in the outcome, so the likelihood is the prior we need. So the model doesn’t change at all.</p>
+<div id="rethinking-1" class="section level3">
+<h3>2.2 rethinking</h3>
+<p>In ulam:</p>
+<pre class="r"><code>dat_list &lt;- list(
+B = B,
+M=M)
+
+
+m2.2 &lt;- ulam( alist(
+B ~ dlnorm( mu , sigma ), 
+mu &lt;- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<p>ulam figures out how to do the imputation. But an equivalent model that is more explicit would be:</p>
+<pre class="r"><code>m2.2b &lt;- ulam( alist(
+B_merge ~ dlnorm( mu , sigma ),
+mu &lt;- a + b*log(M),
+B_merge &lt;- merge_missing( B , B_impute ), 
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre class="r"><code> precis( m2.2b )</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%     n_eff    Rhat4
+## a     0.4256140 0.05902904 0.3260410 0.5184541  843.9976 1.000115
+## b     0.7830598 0.01431063 0.7603483 0.8059716  879.4381 1.000193
+## sigma 0.2927923 0.01561014 0.2687146 0.3187176 1105.2231 1.001298</code></pre>
+<p>It’s a little more obvious now what ulam is doing. It constructs the merged vector of observed and imputed values, B_merge, and then uses that merged vector as the outcome. The outcome distribution at the top of the model is the prior for each B_impute parameter. That prior is adaptive—it has parameters inside it. Hence, shrinkage happens.</p>
+</div>
+<div id="inla-1" class="section level3">
+<h3>2.2 INLA</h3>
+<pre class="r"><code>d2.i &lt;- d %&gt;% 
+  #only cases with complete body masses
+  filter(!is.na(body)) %&gt;% 
+  mutate(M = body / max(body), 
+         B= brain / max(brain, na.rm=TRUE), 
+         logM= log(M))
+
+m2.2.i &lt;- inla(B ~ logM, family =&quot;lognormal&quot;, data=d2.i, 
+               control.fixed = list(
+        mean= 0, 
+        prec= 1,
+        mean.intercept= 0, 
+        prec.intercept= 1), 
+        control.predictor=list(compute=TRUE)
+               )
+summary(m2.2.i )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d2.i, 
+##    control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 
+##    1))&quot;) 
+## Time used:
+##     Pre = 1.47, Running = 0.231, Post = 0.2, Total = 1.9 
+## Fixed effects:
+##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0
+## logM        0.783 0.014      0.756    0.783      0.811 0.783   0
+## 
+## Model hyperparameters:
+##                                           mean   sd 0.025quant 0.5quant
+## Precision for the lognormal observations 11.91 1.25       9.60    11.87
+##                                          0.975quant  mode
+## Precision for the lognormal observations      14.48 11.78
+## 
+## Expected number of effective parameters(stdev): 2.01(0.002)
+## Number of equivalent replicates : 90.56 
+## 
+## Marginal log-Likelihood:  420.27 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+</div>
+</div>
+<div id="compare-to-the-analysis-with-complete-cases" class="section level2">
+<h2>2.3 compare to the analysis with complete cases</h2>
+<div id="rethinking-2" class="section level3">
+<h3>2.3 rethinking</h3>
+<pre class="r"><code>cc2 &lt;- complete.cases( B )
+dat_list2 &lt;- list( B = B[cc2],
+M = M[cc2] )
+m2.3 &lt;- ulam( alist(
+B ~ dlnorm( mu , sigma ), 
+mu &lt;- a + b*log(M),
+a ~ normal(0,1),
+b ~ normal(0,1),
+sigma ~ exponential(1) ),
+data=dat_list2 , chains=4 , cores=4 ) </code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## clang -mmacosx-version-min=10.13 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Users/annakawiecki/Library/R/4.0/library/Rcpp/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/unsupported&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/BH/include&quot; -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/src/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/RcppParallel/include/&quot;  -I&quot;/Users/annakawiecki/Library/R/4.0/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DBOOST_NO_AUTO_PTR  -include &#39;/Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include   -fPIC  -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:88:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:1: error: unknown type name &#39;namespace&#39;
+## namespace Eigen {
+## ^
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:613:16: error: expected &#39;;&#39; after top level declarator
+## namespace Eigen {
+##                ^
+##                ;
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/StanHeaders/include/stan/math/prim/mat/fun/Eigen.hpp:13:
+## In file included from /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Dense:1:
+## /Users/annakawiecki/Library/R/4.0/library/RcppEigen/include/Eigen/Core:96:10: fatal error: &#39;complex&#39; file not found
+## #include &lt;complex&gt;
+##          ^~~~~~~~~
+## 3 errors generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre class="r"><code>precis( m2.3 )</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a     0.4249129 0.06097609 0.3291787 0.5233200 542.6540 1.010648
+## b     0.7828954 0.01490323 0.7587642 0.8066726 567.5375 1.010075
+## sigma 0.2941026 0.01526328 0.2712563 0.3191482 843.3022 1.004122</code></pre>
+<p>Really no difference from before.</p>
+</div>
+<div id="inla-2" class="section level3">
+<h3>2.3 INLA</h3>
+<pre class="r"><code>d3.i &lt;- d2.i %&gt;% 
+  filter(!is.na(brain))
+
+m2.3.i &lt;- inla(B ~ logM, family =&quot;lognormal&quot;, data=d3.i, 
+               control.fixed = list(
+        mean= 0, 
+        prec= 1, 
+        mean.intercept= 0, 
+        prec.intercept= 1), 
+        control.compute = list(config= TRUE),
+        control.predictor=list(compute=TRUE)
+               )
+summary(m2.3.i )</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d3.i, 
+##    control.compute = list(config = TRUE), &quot;, &quot; control.predictor = 
+##    list(compute = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, 
+##    mean.intercept = 0, prec.intercept = 1))&quot;) 
+## Time used:
+##     Pre = 1.25, Running = 0.166, Post = 0.201, Total = 1.61 
+## Fixed effects:
+##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0
+## logM        0.783 0.014      0.756    0.783      0.811 0.783   0
+## 
+## Model hyperparameters:
+##                                           mean   sd 0.025quant 0.5quant
+## Precision for the lognormal observations 11.91 1.25       9.60    11.87
+##                                          0.975quant  mode
+## Precision for the lognormal observations      14.48 11.78
+## 
+## Expected number of effective parameters(stdev): 2.01(0.002)
+## Number of equivalent replicates : 90.56 
+## 
+## Marginal log-Likelihood:  420.27 
+## Posterior marginals for the linear predictor and
+##  the fitted values are computed</code></pre>
+</div>
+</div>
+<div id="plot-the-imputed-brain-sizes-together-with-the-observed-values." class="section level2">
+<h2>2.4 plot the imputed brain sizes together with the observed values.</h2>
+<div id="rethinking-3" class="section level3">
+<h3>2.4 rethinking</h3>
+<pre class="r"><code>library(rethinking)
+post &lt;- rethinking::extract.samples(m2.2)
+Bi &lt;- apply( post$B_impute , 2 , mean ) 
+miss_idx &lt;- which( is.na(B) )
+plot( M[-miss_idx] , B[-miss_idx] , col=rangi2 , pch=16 , xlab=&quot;body mass M&quot; , ylab=&quot;brain size B&quot; )
+points( M[miss_idx] , Bi )
+Bi_ci &lt;- apply( post$B_impute , 2 , PI , 0.5 )
+for ( i in 1:length(Bi) ) lines( rep(M[miss_idx][i],2) , Bi_ci[,i] )</code></pre>
+<p><img src="rethinkingINLA_HW10_files/figure-html/10.2.4%20re-1.png" width="672" /></p>
+<p>Black open points are the imputed values, with 50% compatibility intervals. Imputation hasn’t done much, apparently because all but one of the missing values are in a very dense region of the body size range. So almost no information was lost—the missing info is redundant.</p>
+</div>
+<div id="inla-3" class="section level3">
+<h3>2.4 INLA</h3>
+<pre class="r"><code>#indices of the weights with missing values of brain 
+d2.i.na &lt;- which(is.na(d2.i$B))
+
+#cases with response data
+d2.i.cc &lt;- d2.i %&gt;% 
+  filter(!is.na(brain))
+
+#cases with no response data
+d2.i.nobrain &lt;- d2.i %&gt;% 
+  filter(is.na(brain))
+
+#imputed values of the response variable in the response scale exp(brain)
+Bi.i &lt;- exp(m2.2.i$summary.fitted.values[d2.i.na,])
+
+#imputed values df
+
+d2.i.imp &lt;- bind_cols(d2.i.nobrain, Bi.i) %&gt;% 
+  rename(&quot;LCI&quot;= &quot;0.025quant&quot;, &quot;UCI&quot;= &quot;0.975quant&quot;)
+
+
+m2.2.i.plot &lt;- ggplot() +
+  geom_point(data= d2.i.cc, aes(M,B), color= &quot;blue&quot;, alpha= 0.8)+
+  geom_pointrange(data= d2.i.imp , aes(x= M,  y= mean, ymin= LCI, ymax= UCI))+
+  theme_bw()
+
+m2.2.i.plot </code></pre>
+<p><img src="rethinkingINLA_HW10_files/figure-html/10.2.4%20plot%20inla-1.png" width="672" /></p>
+</div>
+</div>
 </div>
 
 
