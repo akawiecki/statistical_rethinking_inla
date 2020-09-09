@@ -398,7 +398,7 @@ shade( height.interval, weight.seq )
 
 **Rethinking: Two kinds of uncertainty.** In the procedure above, we encountered both uncertainty in parameter values and uncertainty in a sampling process. These are distinct concepts, even though they are processed much the same way and end up blended together in the posterior predictive simu- lation. The posterior distribution is a ranking of the relative plausibilities of every possible combina- tion of parameter values. The distribution of simulated outcomes, like height, is instead a distribution that includes sampling variation from some process that generates Gaussian random variables. This sampling variation is still a model assumption. It’s no more or less objective than the posterior distribution. Both kinds of uncertainty matter, at least sometimes. But it’s important to keep them straight, because they depend upon different model assumptions. 
 
-# 1. 
+# 1. !Kung census. Provide predicted heights
 
 **The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% compatibility intervals for each of these individuals, using model-based predictions.**
 
@@ -461,7 +461,7 @@ hw2.1 <- data.frame(weight= c(45, 40, 65, 31, 53)) %>%
 print(hw2.1)
 ```
 
-## 1. inla
+## 1. INLA
 
 
 ```{r install brinla}
@@ -516,7 +516,7 @@ m1.i$summary.fitted.values[d1.i.na, ]
 ```
 
 
-# 2. 
+# 2. data(Howell1) Model the relationship between height(cm) and the natural logarithm of weight (log-kg)
 
 Model the relationship between height(cm) and the natural logarithm of weight (log-kg): log(weight). Use the entire Howell1 data frame, all 544 rows, adults and non-adults. Use any model type from Chapter 4 that you think useful: an ordinary linear regression, a polynomial or a spline. Plot the posterior predictions against the raw data.
 
@@ -554,7 +554,7 @@ r = αh
 V = πα2h3 = kh3
 where k = πα2 is just some proportionality constant. 
 
-## 2.INLA
+## 2. INLA
 
 
 ```{r hw2.2 inla clinear }

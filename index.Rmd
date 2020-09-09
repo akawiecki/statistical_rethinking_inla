@@ -1,5 +1,5 @@
 ---
-title: "Statistical Rethinking homework reworked in R-INLA and the tidyverse"
+title: "Statistical Rethinking 2nd edition homework reworked in R-INLA and the tidyverse"
 author: "Anna B. Kawiecki"
 output:
   html_document:
@@ -43,6 +43,18 @@ https://people.bath.ac.uk/jjf23/brinla/reeds.html
 https://rpubs.com/corey_sparks/431920
 
 https://groups.google.com/g/r-inla-discussion-group/c/iQELaQF8M9Q
+
+* INLA missing data and imputation examples: 
+
+https://becarioprecario.bitbucket.io/inla-gitbook/ch-missing.html#sec:missresp
+
+* INLA measurement error examples: 
+
+http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf
+
+http://www.r-inla.org/models/tools#TOC-Copying-a-model
+
+
 
 
 

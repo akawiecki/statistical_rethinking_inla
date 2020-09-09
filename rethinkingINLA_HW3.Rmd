@@ -35,7 +35,8 @@ plot(hw3dag)
 
 ```
 
-# 1. 
+# 1. data(foxes) infer the total causal influence of area on weight
+
 **Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.**
 
 
@@ -97,7 +98,7 @@ m1.inla.prior <- inla(W~A, data= f, control.fixed = list(
 summary(m1.inla.prior)
 ```
 
-# 2. 
+# 2. data(foxes) infer the causal impact of adding food to a territory
 
 **Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?**
 
@@ -156,7 +157,7 @@ summary(m2.inla.prior)
 
 ```
 
-# 3.  
+# 3. data(foxes) infer the causal impact of groupsize
 
 **Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?**
 

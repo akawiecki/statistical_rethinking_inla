@@ -17,6 +17,9 @@ navbar:
     href: rethinkingINLA_HW8.html
   - text: "Homework 9"
     href: rethinkingINLA_HW9.html
+  - text: "Homework 10"
+    href: rethinkingINLA_HW10.html
+    
     
 output:
   html_document:

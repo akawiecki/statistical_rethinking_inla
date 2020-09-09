@@ -20,7 +20,7 @@ library(knitr)
 library(stringr)
 ```
 
-# 1. 
+# 1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes -CHECK
 
 **Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.**
 
@@ -67,7 +67,9 @@ Now consider the distribution of varying effects:
 ```{r 9.1 re rho }
 precis( m1.1 , depth=3 , pars=c("Rho","Sigma") )
 ```
+
 The correlation between the intercepts and slopes is quite negative.
+
 
 Let’s plot the individual effects to appreciate this. 
 
@@ -90,7 +92,10 @@ el <- ellipse( S , centre=c( mean(post$abar) , mean(post$bbar) ) , level=l )
 lines( el , col="black" , lwd=0.5 ) }
  
 ```
+
+
 There’s the negative correlation — districts with higher use outside urban areas (a values) have smaller slopes. Since the slope is the difference between urban and non-urban areas, you can see this as saying that districts with high use in rural areas have urban areas that aren’t as different.
+
 
 On the outcome scale, what this ends up meaning is that urban places are much the same in all districts, but rural areas vary a lot. Plotting now in the outcome scale:
 
@@ -102,6 +107,8 @@ abline( h=0.5 , lty=2 )
 abline( v=0.5 , lty=2 )
  
 ```
+
+
 This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.
 
 ### 1.1. inla
@@ -171,6 +178,8 @@ m1.1.i.mean.plot
 
 
 ```
+
+
 
 ```{r 9.1.1 outcome plot inla}
 
@@ -269,7 +278,8 @@ bri.hyperpar.plot(m1.2.i)
 
 ** i think it's not totally correct, the sigmas ar off (they're not=1)**
 
-# 2. 
+# 2. data(bangladesh) evaluate the influences on contraceptive use (changing attitudes) of age and number of children
+
 **Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?**
 
 ```{r 9.2 dag}
@@ -412,7 +422,7 @@ bri.hyperpar.plot(m2.2.i)
 ```
 
 
-# 3.
+# 3. data(bangladesh) monotonic ordered category - INCOMPLETE
 
 **Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?**
 

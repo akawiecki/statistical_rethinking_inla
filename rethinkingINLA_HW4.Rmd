@@ -21,7 +21,8 @@ library(knitr)
 ```
 
 
-# 1. 
+# 1. Polynesian islands: compute the entropy of each island’s birb distribution, compute the K-L Divergence of each island from the others, treat- ing each island as if it were a statistical model of the other islands
+
 **Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:**
 
 ```{r birb spp table}
@@ -89,11 +90,11 @@ round( Dm , 2 )
 
 The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.
 
-# 2. 
+# 2. marriage,age,and happiness collider bias
 
 Recall the marriage,age,and happiness collider bias example from Chapter 6.
 
-Consider the question of how aging influences happiness.If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?
+Consider the question of how aging influences happiness. If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?
 
 Suppose, just to be provocative, that an individual’s average happiness is a trait that is determined at birth and does not change with age. However, happiness does influence events in one’s life. One of those events is marriage. Happier people are more likely to get married. Another variable that causally influences marriage is age: The more years you are alive, the more likely you are to eventually get married. Putting these three variables together, this is the causal model:
 
@@ -234,7 +235,7 @@ m6.10.inla.prior$waic$waic
 The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.
 
 
-# 3. 
+# 3. data(fexes) Use WAIC or LOO based model comparison on five different models
 
 **Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:**
 (1) avgfood + groupsize + area 

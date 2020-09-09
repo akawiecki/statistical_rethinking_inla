@@ -17,7 +17,8 @@ library(stringr)
 
 
 
-# 1. 
+# 1. data(Wines2012) consider only variation among judges and wines
+
 **Consider the data (Wines2012) data table.These data are expert ratings of 20 different French and American wines by 9 different French and American judges. Your goal is to model score, the subjective rating assigned by each judge to each wine. I recommend standardizing it.**
 
 In this first problem, consider only variation among judges and wines. Construct index variables of judge and wine and then use these index variables to construct a linear regression model. Justify your priors. You should end up with 9 judge parameters and 20 wine parameters. Use ulam instead of quap to build this model, and be sure to check the chains for convergence. If you’d rather build the model directly in Stan or PyMC3, go ahead. I just want you to use Hamiltonian Monte Carlo instead of quadratic approximation.
@@ -123,8 +124,9 @@ The a/j parameters are the judges. Each represents an average deviation of the s
 
 The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.
 
-# 2.
-**Now consider three features of the wines and judges:**
+# 2. data(Wines2012) consider three features of the wines and judges: flight, wine.amer, judge.amer
+
+Now consider three features of the wines and judges:
 
 1. flight: Whether the wine is red or white.
 
@@ -308,7 +310,8 @@ summary(as.vector(m2b.i.contrast))
 
 ```
 
-# 3.
+# 3. data(Wines2012) consider two-way interactions among the three features
+
 **Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead.
 What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?**
 

@@ -20,7 +20,8 @@ library(knitr)
 library(stringr)
 ```
 
-# 1. 
+# 1. data(Primates301) measurement error: INCOMPLETE 
+
 Consider the relationship between brain volume (brain) and bodymass (body) in the data (Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error.
 
 We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation. As a consequence, the uncertainty is not uniform across the values and this could mean trouble.
@@ -172,9 +173,10 @@ el <- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col
 
 good resource for this: 
 http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf
+
 http://www.r-inla.org/models/tools#TOC-Copying-a-model
 
-But i can't wrap my head around it right now.
+**But i can't wrap my head around it right now.**
 ```{r 10.1 INLA}
 
 d1.i <- d %>% 
@@ -190,7 +192,7 @@ M_true= rnorm(n.spp, d1.i$M, d1.i$Mse)
 ```
 
 
-# 2. 
+# 2. data(Primates301) impute missing values for brain size
 
 Now consider missing values—this data set is lousy with them. You can ignore measurement error in this problem. Let’s get a quick idea of the missing values by counting them in each variable:
 

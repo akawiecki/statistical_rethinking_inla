@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -445,8 +448,8 @@ sigma ~ exponential(1)
 ## 
 ## SAMPLING FOR MODEL &#39;2bcae94530709687a15da757cbb5d4b7&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 3.8e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
+## Chain 1: Gradient evaluation took 4.1e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.41 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -463,15 +466,15 @@ sigma ~ exponential(1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.097109 seconds (Warm-up)
-## Chain 1:                0.068162 seconds (Sampling)
-## Chain 1:                0.165271 seconds (Total)
+## Chain 1:  Elapsed Time: 0.119494 seconds (Warm-up)
+## Chain 1:                0.099695 seconds (Sampling)
+## Chain 1:                0.219189 seconds (Total)
 ## Chain 1:</code></pre>
 <pre class="r"><code>precis( m1.1 )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%    n_eff     Rhat4
-## a     0.4284023 0.05751594 0.3376164 0.5161807 188.6526 0.9992343
-## b     0.7837166 0.01333890 0.7625324 0.8050204 202.0326 1.0013107
-## sigma 0.2920707 0.01698006 0.2662782 0.3216175 192.4107 0.9995958</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a     0.4322723 0.05669226 0.3483946 0.5315580 138.2680 1.003606
+## b     0.7844220 0.01371671 0.7645884 0.8086419 139.0159 1.003419
+## sigma 0.2926110 0.01517623 0.2706390 0.3195089 155.9351 1.004581</code></pre>
 <p>Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:</p>
 <pre class="r"><code> start=list( M_true=dat_list$M , B_true=dat_list$B )</code></pre>
 <p>Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?</p>
@@ -656,10 +659,10 @@ data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )</cod
 ## 3 errors generated.
 ## make: *** [foo.o] Error 1</code></pre>
 <pre class="r"><code> precis( m2.2b )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%     n_eff    Rhat4
-## a     0.4256140 0.05902904 0.3260410 0.5184541  843.9976 1.000115
-## b     0.7830598 0.01431063 0.7603483 0.8059716  879.4381 1.000193
-## sigma 0.2927923 0.01561014 0.2687146 0.3187176 1105.2231 1.001298</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%     n_eff     Rhat4
+## a     0.4308374 0.05825864 0.3355201 0.5221980  868.3310 1.0001886
+## b     0.7840493 0.01385899 0.7620001 0.8053178  863.9023 0.9999186
+## sigma 0.2935054 0.01603319 0.2686648 0.3206893 1032.9590 1.0004339</code></pre>
 <p>It’s a little more obvious now what ulam is doing. It constructs the merged vector of observed and imputed values, B_merge, and then uses that merged vector as the outcome. The outcome distribution at the top of the model is the prior for each B_impute parameter. That prior is adaptive—it has parameters inside it. Hence, shrinkage happens.</p>
 </div>
 <div id="inla-1" class="section level3">
@@ -687,7 +690,7 @@ summary(m2.2.i )</code></pre>
 ##    list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 
 ##    1))&quot;) 
 ## Time used:
-##     Pre = 1.47, Running = 0.231, Post = 0.2, Total = 1.9 
+##     Pre = 1.57, Running = 0.248, Post = 0.2, Total = 2.01 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0
@@ -743,10 +746,10 @@ data=dat_list2 , chains=4 , cores=4 ) </code></pre>
 ## 3 errors generated.
 ## make: *** [foo.o] Error 1</code></pre>
 <pre class="r"><code>precis( m2.3 )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
-## a     0.4249129 0.06097609 0.3291787 0.5233200 542.6540 1.010648
-## b     0.7828954 0.01490323 0.7587642 0.8066726 567.5375 1.010075
-## sigma 0.2941026 0.01526328 0.2712563 0.3191482 843.3022 1.004122</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff   Rhat4
+## a     0.4276048 0.06075464 0.3308738 0.5243846 730.6154 1.00159
+## b     0.7834105 0.01489573 0.7602058 0.8069504 713.5963 1.00203
+## sigma 0.2938875 0.01537826 0.2713802 0.3198219 989.7054 1.00186</code></pre>
 <p>Really no difference from before.</p>
 </div>
 <div id="inla-2" class="section level3">
@@ -771,7 +774,7 @@ summary(m2.3.i )</code></pre>
 ##    list(compute = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, 
 ##    mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.25, Running = 0.166, Post = 0.201, Total = 1.61 
+##     Pre = 1.37, Running = 0.196, Post = 0.251, Total = 1.82 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0

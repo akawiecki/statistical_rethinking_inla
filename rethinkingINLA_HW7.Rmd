@@ -15,9 +15,8 @@ library(knitr)
 library(stringr)
 ```
 
-# Homework 7
+# 1. data(Trolley)
 
-## 1. 
 **In the Trolley data —data(Trolley)—we saw how education level (modeled as an ordered category) is associated with responses. Is this association causal? One plausible confound is that education is also associated with age, through a causal process: People are older when they finish school than when they begin it.
 Reconsider the Trolley data in this light. Draw a DAG that represents hypothetical causal relationships among response, education, and age. Which statical model or models do you need to evaluate the causal influence of education on responses? Fit these models to the trolley data. What do you conclude about the causal relationships among these three variables?**
 
@@ -26,7 +25,7 @@ Reconsider the Trolley data in this light. Draw a DAG that represents hypothetic
 
 
 
-## 2. 
+# 2. 
 **Consider one more variable in the Trolley data: Gender. Suppose that gender might influence education as well as response directly. Draw the DAG now that includes response, education, age, and gender.
 Using only the DAG, is it possible that the inferences from Problem 1 are con- founded by gender? If so, define any additional models you need to infer the causal influence of education on response. What do you conclude?**
 
