@@ -246,7 +246,7 @@ Now let’s do some imputation. Remember that the model for imputation is really
 
 In ulam:
 
-```{r 10.2.2 m2.1a re}
+```{r 10.2.2 m2.2a re}
 dat_list <- list(
 B = B,
 M=M)
@@ -283,29 +283,29 @@ data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )
 
 It’s a little more obvious now what ulam is doing. It constructs the merged vector of observed and imputed values, B_merge, and then uses that merged vector as the outcome. The outcome distribution at the top of the model is the prior for each B_impute parameter. That prior is adaptive—it has parameters inside it. Hence, shrinkage happens.
 
-
 ### 2.2 INLA
 
 ```{r 10.2.2 m2.1 inla}
 
+
 d2.i <- d %>% 
-  mutate(M = body / max(body, na.rm=TRUE), 
+  #only cases with complete body masses
+  filter(!is.na(body)) %>% 
+  mutate(M = body / max(body), 
          B= brain / max(brain, na.rm=TRUE), 
          logM= log(M))
 
 m2.2.i <- inla(B ~ logM, family ="lognormal", data=d2.i, 
                control.fixed = list(
         mean= 0, 
-        prec= 1, 
+        prec= 1,
         mean.intercept= 0, 
         prec.intercept= 1), 
-        control.compute = list(config= TRUE),
         control.predictor=list(compute=TRUE)
                )
 summary(m2.2.i )
 
 ```
-
 
 
 ## 2.3 compare to the analysis with complete cases
@@ -332,18 +332,13 @@ precis( m2.3 )
 Really no difference from before. 
 
 
+
 ### 2.3 INLA
 
 ```{r 10.2.3 m2.1 inla}
 
-d3.i <- d %>% 
-  filter(!is.na(body)) %>% 
-  mutate(M = body / max(body, na.rm=TRUE), 
-         B= brain / max(brain, na.rm=TRUE), 
-         logM= log(M))
-  
-#indices of the weights with missing values of body mass
-d2.i.na <- which(is.na(d2.i$body))
+d3.i <- d2.i %>% 
+  filter(!is.na(brain))
 
 m2.3.i <- inla(B ~ logM, family ="lognormal", data=d3.i, 
                control.fixed = list(
@@ -358,13 +353,14 @@ summary(m2.3.i )
 
 ```
 
-In INLA the models have a different intercept when the analysis is run with the missing data and when it's run only with complete cases!
 
 ## 2.4 plot the imputed brain sizes together with the observed values.
 
+### 2.4 rethinking
 
 ```{r 10.2.4 re}
-post <- extract.samples(m2.1)
+library(rethinking)
+post <- rethinking::extract.samples(m2.2)
 Bi <- apply( post$B_impute , 2 , mean ) 
 miss_idx <- which( is.na(B) )
 plot( M[-miss_idx] , B[-miss_idx] , col=rangi2 , pch=16 , xlab="body mass M" , ylab="brain size B" )
@@ -377,26 +373,37 @@ for ( i in 1:length(Bi) ) lines( rep(M[miss_idx][i],2) , Bi_ci[,i] )
 
 Black open points are the imputed values, with 50% compatibility intervals. Imputation hasn’t done much, apparently because all but one of the missing values are in a very dense region of the body size range. So almost no information was lost—the missing info is redundant.
 
+### 2.4 INLA
 
-```{r1 10.2.4 inla}
+```{r 10.2.4 plot inla}
+
+#indices of the weights with missing values of brain 
+d2.i.na <- which(is.na(d2.i$B))
+
+#cases with response data
+d2.i.cc <- d2.i %>% 
+  filter(!is.na(brain))
+
+#cases with no response data
+d2.i.nobrain <- d2.i %>% 
+  filter(is.na(brain))
+
+#imputed values of the response variable in the response scale exp(brain)
+Bi.i <- exp(m2.2.i$summary.fitted.values[d2.i.na,])
+
+#imputed values df
+
+d2.i.imp <- bind_cols(d2.i.nobrain, Bi.i) %>% 
+  rename("LCI"= "0.025quant", "UCI"= "0.975quant")
 
 
-#indices of the weights with missing values of body mass
-d2.i.na <- which(is.na(d2.i$body))
+m2.2.i.plot <- ggplot() +
+  geom_point(data= d2.i.cc, aes(M,B), color= "blue", alpha= 0.8)+
+  geom_pointrange(data= d2.i.imp , aes(x= M,  y= mean, ymin= LCI, ymax= UCI))+
+  theme_bw()
 
-z = m2.2.i$summary.linear.predictor$mean
+m2.2.i.plot 
 
-
-# the summary statistics of the fitted values for the weight values of interest can be shown using index of the values with the missing height m2.i$summary.fitted.values[d2.i.na, ]
-m2.i.postmean <- bind_cols( new_logw[,1], m2.i$summary.linear.predictor[d2.i.na,]) %>% 
-  select(c("log_weight", "mean", "sd",  "0.5quant", "0.975quant"))
-names(m2.i.postmean) <- c("log_weight", "mean", "sd",  "LCI", "UCI")
-m2.i.plot <- ggplot()+
-  geom_point(data= d, aes(weight, height))+
-  geom_line(data= m2.i.postmean, aes(exp(log_weight), mean))+
-  geom_ribbon(data= m2.i.postmean, aes(exp(log_weight), ymin= LCI, ymax= UCI))
-m2.i.plot 
 ```
-
 
 
