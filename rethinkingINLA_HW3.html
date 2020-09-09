@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -398,10 +401,9 @@ library(INLA)</code></pre>
                   }&quot;)
 
 plot(hw3dag)</code></pre>
-<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW3_files/figure-html/hw3%20dag-1.png" width="672" /></p>
-<div id="section" class="section level1">
-<h1>1.</h1>
+<div id="datafoxes-infer-the-total-causal-influence-of-area-on-weight" class="section level1">
+<h1>1. data(foxes) infer the total causal influence of area on weight</h1>
 <p><strong>Use a model to infer the total causal influence of area on weight. Would increasing the area available to each fox make it heavier (healthier)? You might want to standardize the variables. Regardless, use prior predictive simulation to show that your model’s prior predictions stay within the possible outcome range.</strong></p>
 <div id="rethinking" class="section level2">
 <h2>1. rethinking</h2>
@@ -442,7 +444,7 @@ summary(m1.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ A, data = f)&quot; 
 ## Time used:
-##     Pre = 1.93, Running = 0.239, Post = 0.17, Total = 2.34 
+##     Pre = 1.83, Running = 0.151, Post = 0.147, Total = 2.13 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.093     -0.183    0.000      0.183 0.000   0
@@ -470,7 +472,7 @@ summary(m1.inla.prior)</code></pre>
 ##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
 ##    prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.27, Running = 0.134, Post = 0.153, Total = 1.56 
+##     Pre = 1.19, Running = 0.131, Post = 0.142, Total = 1.46 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.084     -0.166    0.000      0.166 0.000   0
@@ -486,8 +488,8 @@ summary(m1.inla.prior)</code></pre>
 ## Marginal log-Likelihood:  -177.65</code></pre>
 </div>
 </div>
-<div id="section-1" class="section level1">
-<h1>2.</h1>
+<div id="datafoxes-infer-the-causal-impact-of-adding-food-to-a-territory" class="section level1">
+<h1>2. data(foxes) infer the causal impact of adding food to a territory</h1>
 <p><strong>Now infer the causal impact of adding food to a territory. Would this make foxes heavier? Which covariates do you need to adjust for to estimate the total causal influence of food?</strong></p>
 <div id="rethinking-1" class="section level2">
 <h2>2.rethinking</h2>
@@ -520,7 +522,7 @@ summary(m2.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F, data = f)&quot; 
 ## Time used:
-##     Pre = 1.21, Running = 0.139, Post = 0.141, Total = 1.49 
+##     Pre = 1.19, Running = 0.134, Post = 0.144, Total = 1.47 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.093     -0.183    0.000      0.183  0.000   0
@@ -551,7 +553,7 @@ summary(m2.inla.prior)</code></pre>
 ##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
 ##    prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.09, Running = 0.132, Post = 0.147, Total = 1.37 
+##     Pre = 1.17, Running = 0.135, Post = 0.148, Total = 1.46 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.084     -0.166    0.000      0.166  0.000   0
@@ -567,8 +569,8 @@ summary(m2.inla.prior)</code></pre>
 ## Marginal log-Likelihood:  -177.64</code></pre>
 </div>
 </div>
-<div id="section-2" class="section level1">
-<h1>3.</h1>
+<div id="datafoxes-infer-the-causal-impact-of-groupsize" class="section level1">
+<h1>3. data(foxes) infer the causal impact of groupsize</h1>
 <p><strong>Now infer the causal impact of groupsize. Which covariates do you need to adjust for? Looking at the posterior distribution of the resulting model, what do you think explains these data? That is, can you explain the estimates for all three problems? How do they go together?</strong></p>
 <div id="rethinking-2" class="section level2">
 <h2>3. rethinking</h2>
@@ -604,7 +606,7 @@ summary(m3.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F + G, family = c(\&quot;gaussian\&quot;), data = f)&quot; 
 ## Time used:
-##     Pre = 1.28, Running = 0.143, Post = 0.153, Total = 1.57 
+##     Pre = 1.26, Running = 0.136, Post = 0.15, Total = 1.55 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.089     -0.174    0.000      0.174  0.000   0
@@ -631,10 +633,10 @@ m3.inla.prior &lt;- inla(W~F+G, data= f, control.fixed = list(
 summary(m3.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = list(F = 1/(0.5^2), G 
-##    = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
+##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = list(F = 
+##    1/(0.5^2), G = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
 ## Time used:
-##     Pre = 1.27, Running = 0.152, Post = 0.166, Total = 1.59 
+##     Pre = 1.23, Running = 0.138, Post = 0.155, Total = 1.52 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.081     -0.159    0.000      0.159  0.000   0

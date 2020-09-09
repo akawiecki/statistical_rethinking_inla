@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -391,8 +394,8 @@ library(dagitty)
 library(INLA)
 library(knitr)
 library(stringr)</code></pre>
-<div id="section" class="section level1">
-<h1>1.</h1>
+<div id="databangladesh-model-with-both-varying-intercepts-by-district_id-and-varying-slopes-of-urban-as-a-01-indicator-variable-by-district_id-and-correlation-between-the-intercepts-and-slopes--check" class="section level1">
+<h1>1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes -CHECK</h1>
 <p><strong>Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.</strong></p>
 <div id="model-varying-slops-of-urban" class="section level2">
 <h2>1.1 model varying slops of urban</h2>
@@ -428,19 +431,19 @@ Sigma ~ exponential(1)
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m1.1)</code></pre>
-<pre><code>##            mean         sd       5.5%      94.5%    n_eff     Rhat4
-## abar -0.6871263 0.09675295 -0.8399084 -0.5314113 1575.744 0.9989719
-## bbar  0.6349576 0.16133464  0.3769257  0.8934361 1187.804 0.9988104</code></pre>
+<pre><code>##            mean         sd       5.5%      94.5%    n_eff    Rhat4
+## abar -0.6834223 0.09971952 -0.8415787 -0.5226726 1465.130 1.000780
+## bbar  0.6324902 0.16275940  0.3750319  0.9047077 1277.163 0.999797</code></pre>
 <p>This is a conventional varying slopes model, with a centered parameterization. No surprises. If you peek at the posterior distributions for the average effects, you’ll see that the average slope is positive. This implies that urban areas use contraception more. Not surprising.</p>
 <p>Now consider the distribution of varying effects:</p>
 <pre class="r"><code>precis( m1.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6360923 1.704964e-01 -0.8619874 -0.3282091  326.7252 1.003435
-## Rho[2,1] -0.6360923 1.704964e-01 -0.8619874 -0.3282091  326.7252 1.003435
-## Rho[2,2]  1.0000000 6.345421e-17  1.0000000  1.0000000 1840.9261 0.997998
-## Sigma[1]  0.5741916 9.445344e-02  0.4235380  0.7331865  613.3162 1.001606
-## Sigma[2]  0.7928310 1.875865e-01  0.5199024  1.1043550  230.2590 1.003429</code></pre>
+## Rho[1,2] -0.6433424 1.654728e-01 -0.8588331 -0.3442460  429.2625 0.999893
+## Rho[2,1] -0.6433424 1.654728e-01 -0.8588331 -0.3442460  429.2625 0.999893
+## Rho[2,2]  1.0000000 5.964743e-17  1.0000000  1.0000000 1980.4243 0.997998
+## Sigma[1]  0.5785838 9.779504e-02  0.4375930  0.7419353  522.1253 1.000373
+## Sigma[2]  0.7954390 2.002403e-01  0.4952094  1.1302376  292.3945 1.008130</code></pre>
 <p>The correlation between the intercepts and slopes is quite negative.</p>
 <p>Let’s plot the individual effects to appreciate this.</p>
 <pre class="r"><code>post &lt;- extract.samples(m1.1)
@@ -458,14 +461,16 @@ ll &lt;- c( 0.5 , 0.67 , 0.89 , 0.97 )
 for ( l in ll ) {
 el &lt;- ellipse( S , centre=c( mean(post$abar) , mean(post$bbar) ) , level=l )
 lines( el , col=&quot;black&quot; , lwd=0.5 ) }</code></pre>
-<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot-1.png" width="672" /> There’s the negative correlation — districts with higher use outside urban areas (a values) have smaller slopes. Since the slope is the difference between urban and non-urban areas, you can see this as saying that districts with high use in rural areas have urban areas that aren’t as different.</p>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot-1.png" width="672" /></p>
+<p>There’s the negative correlation — districts with higher use outside urban areas (a values) have smaller slopes. Since the slope is the difference between urban and non-urban areas, you can see this as saying that districts with high use in rural areas have urban areas that aren’t as different.</p>
 <p>On the outcome scale, what this ends up meaning is that urban places are much the same in all districts, but rural areas vary a lot. Plotting now in the outcome scale:</p>
 <pre class="r"><code>u0 &lt;- inv_logit( a )
 u1 &lt;- inv_logit( a + b )
 plot( u0 , u1 , xlim=c(0,1) , ylim=c(0,1) , xlab=&quot;urban = 0&quot; , ylab=&quot;urban = 1&quot; )
 abline( h=0.5 , lty=2 )
 abline( v=0.5 , lty=2 )</code></pre>
-<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot%20outcome-1.png" width="672" /> This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.</p>
+<p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20re%20plot%20outcome-1.png" width="672" /></p>
+<p>This plot is on the probability scale. The horizontal axis is probability of contraceptive use in rural area of a district. The vertical is the probability in urban area of same district. The urban areas all straddle 0.5. Most the of the rural areas are below 0.5. The negative correlation between the intercepts and slopes is necessary to encode this pattern.</p>
 </div>
 <div id="inla" class="section level3">
 <h3>1.1. inla</h3>
@@ -497,11 +502,12 @@ summary(m1.1.i)</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district) + f(b.did, urban, copy = 
-##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = TRUE, 
-##    waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = 
-##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = 
+##    TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
+##    prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 2.21, Running = 5.78, Post = 0.483, Total = 8.48 
+##     Pre = 1.81, Running = 2.99, Post = 0.434, Total = 5.24 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.686 0.099     -0.884   -0.686     -0.492 -0.685   0
@@ -591,7 +597,7 @@ m1.1.i.outcome.plot</code></pre>
 <div id="model-urban-index-intercepts." class="section level2">
 <h2>1.2 model urban index intercepts.</h2>
 <p><span class="math inline">\(C_{did} \sim Bernoulli(p_{i})\)</span></p>
-<p>$logit(p_{i}) = _{district[i],urban[j]} $</p>
+<p><span class="math inline">\(logit(p_{i}) = \alpha_{district[i],urban[j]}\)</span></p>
 <p><span class="math inline">\(\begin{pmatrix}a_{urban1,i}\\b_{urban0,i}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , &amp; Sigma ,&amp; Rho\end{pmatrix}\)</span></p>
 <div id="rethinking-1" class="section level3">
 <h3>1.2 rethinking</h3>
@@ -642,12 +648,12 @@ m1.2.i &lt;- inla(C ~ 0 + urban + f(did, model=&quot;iid2d&quot;, n= 2*n.distric
 summary(m1.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district), family = \&quot;binomial\&quot;, data = 
-##    d1.2.i, Ntrials = 1, &quot;, &quot; control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; control.predictor = 
+##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district), family = \&quot;binomial\&quot;, data 
+##    = d1.2.i, Ntrials = 1, &quot;, &quot; control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; control.predictor = 
 ##    list(link = 1, compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = 0, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.56, Running = 3.2, Post = 0.401, Total = 5.17 
+##     Pre = 1.46, Running = 3.02, Post = 0.344, Total = 4.82 
 ## Fixed effects:
 ##          mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## urban0 -0.698 0.087     -0.871   -0.697     -0.529 -0.696   0
@@ -683,12 +689,12 @@ summary(m1.2.i)</code></pre>
 ## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026 0.592858 -0.009533963</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m1.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2%20inla%20mean-1.png" width="672" /></p>
-<p>** i think it’s not totally correct, the sigmas ar off (they’re not=1)*</p>
+<p>** i think it’s not totally correct, the sigmas ar off (they’re not=1)**</p>
 </div>
 </div>
 </div>
-<div id="section-1" class="section level1">
-<h1>2.</h1>
+<div id="databangladesh-evaluate-the-influences-on-contraceptive-use-changing-attitudes-of-age-and-number-of-children" class="section level1">
+<h1>2. data(bangladesh) evaluate the influences on contraceptive use (changing attitudes) of age and number of children</h1>
 <p><strong>Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and ur- ban, as in Problem 1. What do you conclude about the causal influence of age and children?</strong></p>
 <pre class="r"><code>library(dagitty)
 
@@ -724,17 +730,17 @@ Sigma ~ exponential(1)
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.1)</code></pre>
 <pre><code>##             mean         sd        5.5%      94.5%    n_eff     Rhat4
-## abar -0.68517714 0.09784093 -0.84515556 -0.5282374 1367.933 0.9999113
-## bA    0.08392238 0.04956576  0.00719067  0.1626580 2769.433 0.9999017
-## bbar  0.63764019 0.16202934  0.37473359  0.8926529 1191.553 0.9994621</code></pre>
+## abar -0.68576920 0.09875436 -0.84490536 -0.5268890 1474.633 0.9996129
+## bA    0.08179146 0.04660512  0.00700422  0.1553170 3426.373 0.9983257
+## bbar  0.64162601 0.15676258  0.39575912  0.8896354 1340.254 0.9994605</code></pre>
 <pre class="r"><code>precis( m2.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6379264 1.703431e-01 -0.8557888 -0.3369363  344.2250 1.021646
-## Rho[2,1] -0.6379264 1.703431e-01 -0.8557888 -0.3369363  344.2250 1.021646
-## Rho[2,2]  1.0000000 6.374506e-17  1.0000000  1.0000000 1818.5853 0.997998
-## Sigma[1]  0.5801582 9.859271e-02  0.4276409  0.7420936  491.4691 1.011082
-## Sigma[2]  0.8003183 1.972202e-01  0.4933837  1.1201625  213.1804 1.022122</code></pre>
+## Rho[1,2] -0.6526711 1.749518e-01 -0.8660731 -0.3408475  364.6056 1.006441
+## Rho[2,1] -0.6526711 1.749518e-01 -0.8660731 -0.3408475  364.6056 1.006441
+## Rho[2,2]  1.0000000 5.881462e-17  1.0000000  1.0000000 1714.2664 0.997998
+## Sigma[1]  0.5745653 9.688525e-02  0.4295537  0.7382072  537.6061 1.008345
+## Sigma[2]  0.7699467 2.042112e-01  0.4471645  1.1078577  262.1892 1.024505</code></pre>
 <p>In this model, the total causal effect of age is positive and very small. Older individuals use slightly more contraception.</p>
 </div>
 <div id="inla-2" class="section level3">
@@ -774,12 +780,13 @@ m2.1.i &lt;- inla(C ~ 1+ urban + age + f(a.did, model=&quot;iid2d&quot;, n= 2*n.
 summary(m2.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, copy = 
-##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = TRUE, 
-##    waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = list(model = 
-##    \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, 
+##    copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; 
+##    dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link 
+##    = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
+##    prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 2.03, Running = 4.23, Post = 0.388, Total = 6.65 
+##     Pre = 1.79, Running = 3.59, Post = 0.342, Total = 5.72 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.689 0.100     -0.887   -0.689     -0.495 -0.688   0
@@ -841,19 +848,19 @@ Sigma ~ exponential(1)
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.2)</code></pre>
-<pre><code>##            mean         sd       5.5%      94.5%     n_eff     Rhat4
-## abar -0.7184769 0.10379940 -0.8785798 -0.5566035 1557.9352 1.0016289
-## bA   -0.2647132 0.07122837 -0.3775861 -0.1529971 2785.0559 0.9997277
-## bK    0.5146257 0.07155337  0.4028377  0.6339342 2547.4179 0.9992012
-## bbar  0.6927776 0.15728319  0.4438723  0.9418507  756.8728 1.0025623</code></pre>
+<pre><code>##            mean         sd       5.5%      94.5%    n_eff     Rhat4
+## abar -0.7187628 0.10173897 -0.8830979 -0.5599270 1583.119 1.0033712
+## bA   -0.2643556 0.07098747 -0.3812679 -0.1533103 1945.980 0.9992275
+## bK    0.5119763 0.07252481  0.3921425  0.6247661 1507.116 1.0005053
+## bbar  0.6842043 0.16095893  0.4269610  0.9394445 1049.025 1.0014846</code></pre>
 <pre class="r"><code>precis( m2.2 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
-<pre><code>##                mean           sd       5.5%      94.5%     n_eff     Rhat4
-## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN       NaN
-## Rho[1,2] -0.6297354 1.705498e-01 -0.8560714 -0.3187215  387.4209 1.0127602
-## Rho[2,1] -0.6297354 1.705498e-01 -0.8560714 -0.3187215  387.4209 1.0127602
-## Rho[2,2]  1.0000000 6.202919e-17  1.0000000  1.0000000 1801.3686 0.9979980
-## Sigma[1]  0.6083485 1.018400e-01  0.4510735  0.7832795  720.5566 0.9998064
-## Sigma[2]  0.7718248 2.016480e-01  0.4526084  1.1044055  177.6732 1.0305212</code></pre>
+<pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
+## Rho[1,2] -0.6019807 1.839418e-01 -0.8397488 -0.2668630  395.4271 1.012317
+## Rho[2,1] -0.6019807 1.839418e-01 -0.8397488 -0.2668630  395.4271 1.012317
+## Rho[2,2]  1.0000000 6.560418e-17  1.0000000  1.0000000 1595.9135 0.997998
+## Sigma[1]  0.6056725 9.924445e-02  0.4592953  0.7712107  508.5028 1.011315
+## Sigma[2]  0.7474246 2.131369e-01  0.4043804  1.0998097  180.6403 1.019900</code></pre>
 <p>In this model, the direct effect of age is negative, and much farther from zero than before. The effect of number of children is strong and positive. These results are consistent with the DAG, because they imply that the reason the total effect of age, from m2.1, is positive is that older individuals also have more kids. Having more kids increases contraception. Being older, controlling for kids, actually makes con- traception less likely.</p>
 </div>
 <div id="inla-3" class="section level3">
@@ -877,12 +884,12 @@ summary(m2.2.i)</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, 
-##    urban, copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; 
-##    dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept 
-##    = 1))&quot;) 
+##    urban, copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, 
+##    &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
+##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept 
+##    = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 2.03, Running = 3.68, Post = 0.425, Total = 6.13 
+##     Pre = 1.89, Running = 3.09, Post = 0.372, Total = 5.35 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.718 0.103     -0.922   -0.717     -0.516 -0.716   0
@@ -921,10 +928,13 @@ summary(m2.2.i)</code></pre>
 ## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040 -0.3010549 -0.7346392</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m2.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2.2%20inla-1.png" width="672" /></p>
-<p>#3. <strong>Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?</strong></p>
+</div>
+</div>
+</div>
+<div id="databangladesh-monotonic-ordered-category---incomplete" class="section level1">
+<h1>3. data(bangladesh) monotonic ordered category - INCOMPLETE</h1>
+<p><strong>Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?</strong></p>
 <p>nope, not doing ordered categories</p>
-</div>
-</div>
 </div>
 
 

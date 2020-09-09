@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -391,8 +394,8 @@ library(dagitty)
 library(INLA)
 library(knitr)
 library(stringr)</code></pre>
-<div id="section" class="section level1">
-<h1>1.</h1>
+<div id="datawines2012-consider-only-variation-among-judges-and-wines" class="section level1">
+<h1>1. data(Wines2012) consider only variation among judges and wines</h1>
 <p><strong>Consider the data (Wines2012) data table.These data are expert ratings of 20 different French and American wines by 9 different French and American judges. Your goal is to model score, the subjective rating assigned by each judge to each wine. I recommend standardizing it.</strong></p>
 <p>In this first problem, consider only variation among judges and wines. Construct index variables of judge and wine and then use these index variables to construct a linear regression model. Justify your priors. You should end up with 9 judge parameters and 20 wine parameters. Use ulam instead of quap to build this model, and be sure to check the chains for convergence. If you’d rather build the model directly in Stan or PyMC3, go ahead. I just want you to use Hamiltonian Monte Carlo instead of quadratic approximation. How do you interpret the variation among individual judges and individual wines? Do you notice any patterns, just by plotting the differences? Which judges gave the highest/lowest ratings? Which wines were rated worst/ best on average?</p>
 <pre class="r"><code>library(rethinking)
@@ -465,7 +468,6 @@ precis(m1, 2)</code></pre>
 <pre><code>## [1] 1000
 ## [1] 1
 ## [1] 1000</code></pre>
-<pre><code>## Waiting to draw page 2 of 2</code></pre>
 <p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-1.png" width="672" /><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-2.png" width="672" /></p>
 <pre class="r"><code>plot(precis(m1, 2))</code></pre>
 <p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-3.png" width="672" /></p>
@@ -499,11 +501,11 @@ m1.i&lt;- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
 summary(m1.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 + w.2 + w.3 + w.4 + w.5 + w.6 
-##    + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, data = d.i, 
-##    control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
+##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 + w.2 + w.3 + w.4 + w.5 
+##    + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, 
+##    data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 2.92, Running = 0.281, Post = 0.441, Total = 3.64 
+##     Pre = 3.18, Running = 0.333, Post = 0.455, Total = 3.97 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -562,10 +564,9 @@ m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
                        upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
                        stringsAsFactors = FALSE)
 
-mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
-<pre><code>## New names:
-## * NA -&gt; ...1</code></pre>
-<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)
+
+m1.i.plot &lt;- mi.i.df %&gt;% 
   mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
   ggplot() + 
     geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
@@ -580,9 +581,9 @@ m1.i.plot </code></pre>
 <p>The w parameters are the wines. Each represents an average score across all judges. Except for wine 18 (a New Jersey red I think), there isn’t that much variation. These are good wines, after all. Overall, there is more variation from judge than from wine.</p>
 </div>
 </div>
-<div id="section-1" class="section level1">
-<h1>2.</h1>
-<p><strong>Now consider three features of the wines and judges:</strong></p>
+<div id="datawines2012-consider-three-features-of-the-wines-and-judges-flight-wine.amer-judge.amer" class="section level1">
+<h1>2. data(Wines2012) consider three features of the wines and judges: flight, wine.amer, judge.amer</h1>
+<p>Now consider three features of the wines and judges:</p>
 <ol style="list-style-type: decimal">
 <li><p>flight: Whether the wine is red or white.</p></li>
 <li><p>wine.amer: Indicator variable for American wines.</p></li>
@@ -623,7 +624,7 @@ precis(m2a)</code></pre>
 ## [1] 1
 ## [1] 1000</code></pre>
 <pre class="r"><code>plot(precis(m2a, 2))</code></pre>
-<p><img src="rethinkingINLA_HW5_files/figure-html/HW5%202a%20re-1.png" width="672" /><img src="rethinkingINLA_HW5_files/figure-html/HW5%202a%20re-2.png" width="672" /></p>
+<p><img src="rethinkingINLA_HW5_files/figure-html/HW5%202a%20re-1.png" width="672" /></p>
 </div>
 <div id="a-inla" class="section level3">
 <h3>2.a INLA</h3>
@@ -644,10 +645,10 @@ control.compute = list(waic= TRUE))
 summary(m2a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = list(waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, 
-##    prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = list(waic = TRUE), &quot;, &quot; control.fixed = list(mean 
+##    = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.27, Running = 0.2, Post = 0.189, Total = 1.66 
+##     Pre = 1.26, Running = 0.21, Post = 0.198, Total = 1.67 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -677,10 +678,9 @@ m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
                        upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
                        stringsAsFactors = FALSE)
 
-mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
-<pre><code>## New names:
-## * NA -&gt; ...1</code></pre>
-<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)
+
+m1.i.plot &lt;- mi.i.df %&gt;% 
   mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
   ggplot() + 
     geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
@@ -765,11 +765,11 @@ m2b.i&lt;- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer
 summary(m2b.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; judge.amer.yes + f.red + f.white, data = 
-##    d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 
-##    0.5))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; judge.amer.yes + f.red + f.white, 
+##    data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, 
+##    &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.41, Running = 0.212, Post = 0.251, Total = 1.87 
+##     Pre = 1.33, Running = 0.201, Post = 0.242, Total = 1.77 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -802,16 +802,16 @@ m2b.i.sum &lt;- summary(m2b.i)
 m2b.i.samp &lt;- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.no = 1, wine.amer.yes = 1))
 
 m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
-   m2b.i.samp)
-
-summary(as.vector(m2b.i.contrast))</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## -0.6255 -0.3071 -0.1899 -0.1956 -0.1091  0.2092</code></pre>
+   m2b.i.samp)</code></pre>
+<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function &#39;inla.posterior.sample.eval()&#39; is experimental.</code></pre>
+<pre class="r"><code>summary(as.vector(m2b.i.contrast))</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.50601 -0.30938 -0.21777 -0.19077 -0.06359  0.25542</code></pre>
 </div>
 </div>
 </div>
-<div id="section-2" class="section level1">
-<h1>3.</h1>
+<div id="datawines2012-consider-two-way-interactions-among-the-three-features" class="section level1">
+<h1>3. data(Wines2012) consider two-way interactions among the three features</h1>
 <p><strong>Now consider two-way interactions among the three features.You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead. What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?</strong></p>
 <p>Again I’ll show both the indicator approach and the index variable approach.</p>
 <div id="a-indicator-variables-1" class="section level2">
@@ -907,12 +907,12 @@ control.predictor=list(compute=TRUE),
 summary(m3a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute = list(config = TRUE, waic = 
-##    TRUE), control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 1/(0.5^2), &quot;, &quot; W = 
-##    1/(0.5^2), J = 1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), mean.intercept = 0, prec.intercept = 
-##    1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute = list(config = TRUE, 
+##    waic = TRUE), control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 
+##    1/(0.5^2), &quot;, &quot; W = 1/(0.5^2), J = 1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), 
+##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.45, Running = 0.212, Post = 0.242, Total = 1.91 
+##     Pre = 1.38, Running = 0.212, Post = 0.245, Total = 1.84 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.073 0.138     -0.344   -0.073      0.199 -0.073   0
@@ -1041,11 +1041,11 @@ m3b.i&lt;- inla(S~ -1 + FwFjRed +FwFjWh+ FwAjRed+ FwAjWh + AwFjRed + AwFjWh +AwA
 summary(m3b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; AwFjRed + AwFjWh + AwAjRed + AwAjWh, data = d3b.i, 
-##    control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 
-##    1/(0.5^2)))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; AwFjRed + AwFjWh + AwAjRed + AwAjWh, data = 
+##    d3b.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; 
+##    prec = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 1.68, Running = 0.219, Post = 0.28, Total = 2.18 
+##     Pre = 2.01, Running = 0.206, Post = 0.252, Total = 2.47 
 ## Fixed effects:
 ##           mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## FwFjRed  0.204 0.221     -0.231    0.204      0.637  0.204   0

@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -390,8 +393,8 @@ library(rethinking)
 library(dagitty)
 library(INLA)
 library(knitr)</code></pre>
-<div id="section" class="section level1">
-<h1>1.</h1>
+<div id="polynesian-islands-compute-the-entropy-of-each-islands-birb-distribution-compute-the-k-l-divergence-of-each-island-from-the-others-treat--ing-each-island-as-if-it-were-a-statistical-model-of-the-other-islands" class="section level1">
+<h1>1. Polynesian islands: compute the entropy of each island’s birb distribution, compute the K-L Divergence of each island from the others, treat- ing each island as if it were a statistical model of the other islands</h1>
 <p><strong>Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the bird population. They have each found the following proportions of 5 important birb species:</strong></p>
 <pre class="r"><code>IB1 &lt;- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
 IB2&lt;- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
@@ -476,12 +479,11 @@ round( Dm , 2 )</code></pre>
 ## [3,] 0.64 2.01 0.00</code></pre>
 <p>The way to read this is each row as a model and each column as a true distribution. So the first island, the first row, has the smaller distances to the other islands. This makes sense, since it has the highest entropy. Why does that give it a shorter distance to the other islands? Because it is less surprised by the other islands, due to its high entropy.</p>
 </div>
-<div id="section-1" class="section level1">
-<h1>2.</h1>
+<div id="marriageageand-happiness-collider-bias" class="section level1">
+<h1>2. marriage,age,and happiness collider bias</h1>
 <p>Recall the marriage,age,and happiness collider bias example from Chapter 6.</p>
-<p>Consider the question of how aging influences happiness.If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?</p>
+<p>Consider the question of how aging influences happiness. If we have a large survey of people rating how happy they are, is age associated with happiness? If so, is that association causal?</p>
 <p>Suppose, just to be provocative, that an individual’s average happiness is a trait that is determined at birth and does not change with age. However, happiness does influence events in one’s life. One of those events is marriage. Happier people are more likely to get married. Another variable that causally influences marriage is age: The more years you are alive, the more likely you are to eventually get married. Putting these three variables together, this is the causal model:</p>
-<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW4_files/figure-html/hw4.2%20dag-1.png" width="672" /></p>
 <p>Happiness (H) and age (A) both cause marriage (M). Marriage is therefore a collider. Even though there is no causal association between happiness and age, if we condition on marriage— which means here, if we include it as a predictor in a regression—then it will induce a statistical association between age and happiness. And this can mislead us to think that happiness changes with age, when in fact it is constant.</p>
 <p><strong>Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree?</strong></p>
@@ -539,10 +541,11 @@ m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3,
 summary(m6.9.inla.prior )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, control.compute = list(dic = TRUE, waic 
-##    = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 2)))&quot;) 
+##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; data = d3, control.compute = list(dic = 
+##    TRUE, waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; i_married = 1, A = 
+##    2)))&quot;) 
 ## Time used:
-##     Pre = 1.16, Running = 0.469, Post = 0.226, Total = 1.85 
+##     Pre = 1.15, Running = 0.459, Post = 0.217, Total = 1.83 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -603,7 +606,7 @@ summary(m6.10.inla.prior )</code></pre>
 ##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), control.fixed = 
 ##    list(mean = 0, prec = 1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.14, Running = 0.466, Post = 0.199, Total = 1.81 
+##     Pre = 1.15, Running = 0.456, Post = 0.206, Total = 1.81 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
@@ -648,11 +651,10 @@ summary(m6.10.inla.prior )</code></pre>
 </div>
 </div>
 </div>
-<div id="section-2" class="section level1">
-<h1>3.</h1>
+<div id="datafexes-use-waic-or-loo-based-model-comparison-on-five-different-models" class="section level1">
+<h1>3. data(fexes) Use WAIC or LOO based model comparison on five different models</h1>
 <p><strong>Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:</strong> (1) avgfood + groupsize + area (2) avgfood + groupsize (3) groupsize + area (4) avgfood (5) area</p>
 <p><strong>Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences (dSE).</strong></p>
-<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW4_files/figure-html/hw3%20dag-1.png" width="672" /></p>
 <pre class="r"><code>library(rethinking)
 data(foxes)

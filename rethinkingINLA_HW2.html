@@ -368,6 +368,9 @@ div.tocify {
 <li>
   <a href="rethinkingINLA_HW9.html">Homework 9</a>
 </li>
+<li>
+  <a href="rethinkingINLA_HW10.html">Homework 10</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -663,20 +666,15 @@ shade( height.interval, weight.seq )</code></pre>
 <p><strong>Rethinking: Two kinds of uncertainty.</strong> In the procedure above, we encountered both uncertainty in parameter values and uncertainty in a sampling process. These are distinct concepts, even though they are processed much the same way and end up blended together in the posterior predictive simu- lation. The posterior distribution is a ranking of the relative plausibilities of every possible combina- tion of parameter values. The distribution of simulated outcomes, like height, is instead a distribution that includes sampling variation from some process that generates Gaussian random variables. This sampling variation is still a model assumption. It’s no more or less objective than the posterior distribution. Both kinds of uncertainty matter, at least sometimes. But it’s important to keep them straight, because they depend upon different model assumptions.</p>
 </div>
 </div>
-<div id="section" class="section level1">
-<h1>1.</h1>
+<div id="kung-census.-provide-predicted-heights" class="section level1">
+<h1>1. !Kung census. Provide predicted heights</h1>
 <p><strong>The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% compatibility intervals for each of these individuals, using model-based predictions.</strong></p>
 <pre class="r"><code>ind &lt;- 1:5
 weight &lt;- c(45, 40, 65, 31, 53)
 expected_height &lt;- NA
 interval &lt;- NA
-kung &lt;- bind_cols(ind, weight, expected_height, interval)</code></pre>
-<pre><code>## New names:
-## * NA -&gt; ...1
-## * NA -&gt; ...2
-## * NA -&gt; ...3
-## * NA -&gt; ...4</code></pre>
-<pre class="r"><code>colnames(kung) &lt;- c(&quot;individual&quot;, &quot;weight&quot;, &quot;expected_height&quot;, &quot;89%interval&quot;)
+kung &lt;- bind_cols(ind, weight, expected_height, interval)
+colnames(kung) &lt;- c(&quot;individual&quot;, &quot;weight&quot;, &quot;expected_height&quot;, &quot;89%interval&quot;)
 kable(kung)</code></pre>
 <table>
 <thead>
@@ -776,7 +774,7 @@ print(hw2.1)</code></pre>
 ## 5     53        161.8957 146.0763 162.9388</code></pre>
 </div>
 <div id="inla" class="section level2">
-<h2>1. inla</h2>
+<h2>1. INLA</h2>
 <pre class="r"><code>library(brinla)
 library(&quot;inlabru&quot;)</code></pre>
 <p>The default mean and precision for fixed effects are:</p>
@@ -795,11 +793,8 @@ d &lt;- Howell1
 d2 &lt;- d[ d$age &gt;= 18 , ]
 dat &lt;-  data.frame(weight= c(45, 40, 65, 31, 53))
 xbar &lt;- mean(d2$weight) 
-new_w &lt;- bind_cols(weight, NA)</code></pre>
-<pre><code>## New names:
-## * NA -&gt; ...1
-## * NA -&gt; ...2</code></pre>
-<pre class="r"><code>colnames(new_w) &lt;- c(&quot;weight&quot;, &quot;height&quot;)
+new_w &lt;- bind_cols(weight, NA)
+colnames(new_w) &lt;- c(&quot;weight&quot;, &quot;height&quot;)
 # add the weight values of interest to the dataframe
 d1.i &lt;- d2  %&gt;% 
   select(c(&quot;weight&quot;, &quot;height&quot;)) %&gt;%  
@@ -833,8 +828,8 @@ m1.i$summary.fitted.values[d1.i.na, ]</code></pre>
 ## fitted.Predictor.357 161.8374 0.4320724   160.9897 161.8375   162.6849 161.8375</code></pre>
 </div>
 </div>
-<div id="section-1" class="section level1">
-<h1>2.</h1>
+<div id="datahowell1-model-the-relationship-between-heightcm-and-the-natural-logarithm-of-weight-log-kg" class="section level1">
+<h1>2. data(Howell1) Model the relationship between height(cm) and the natural logarithm of weight (log-kg)</h1>
 <p>Model the relationship between height(cm) and the natural logarithm of weight (log-kg): log(weight). Use the entire Howell1 data frame, all 544 rows, adults and non-adults. Use any model type from Chapter 4 that you think useful: an ordinary linear regression, a polynomial or a spline. Plot the posterior predictions against the raw data.</p>
 <div id="rethinking-1" class="section level2">
 <h2>2.rethinking</h2>
@@ -867,7 +862,7 @@ shade( mu_ci , exp(x_seq) )</code></pre>
 <p>You could certainly do better—the trend is under-predicting in the mid ages. But just taking the log of weight does most of the work. Why? It’ll help to think of a human body as a cylinder. Roughly. The weight of a cylinder is proportional to its volume. And the volume of a cylinder is: V = πr2h where r is the radius and h is the height. As the cylinder, uh human, gets taller, the radius gets bigger. So we can just say the radius is some fraction α of the height: Substituting that in: r = αh V = πα2h3 = kh3 where k = πα2 is just some proportionality constant.</p>
 </div>
 <div id="inla-1" class="section level2">
-<h2>2.INLA</h2>
+<h2>2. INLA</h2>
 <pre class="r"><code>library(rethinking)
 library(brinla)
 library(INLA)
@@ -876,11 +871,8 @@ library(tidyverse)
 data(Howell1)
 d &lt;- Howell1
 log_wplot &lt;- log(1:60)
-new_logw &lt;- bind_cols(log_wplot, NA)</code></pre>
-<pre><code>## New names:
-## * NA -&gt; ...1
-## * NA -&gt; ...2</code></pre>
-<pre class="r"><code>colnames(new_logw) &lt;- c(&quot;log_weight&quot;, &quot;height&quot;)
+new_logw &lt;- bind_cols(log_wplot, NA)
+colnames(new_logw) &lt;- c(&quot;log_weight&quot;, &quot;height&quot;)
 
 # add the weight values of interest to the dataframe
 d2.i &lt;- d %&gt;% 
@@ -906,13 +898,13 @@ summary(m2.i)</code></pre>
 ## Call:
 ##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = list(theta = list(prior = 
 ##    \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, control.compute = list(config = TRUE), &quot;, &quot; 
-##    control.predictor = list(compute = TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 
-##    178, prec.intercept = 1/(20^2)))&quot; ) 
+##    control.predictor = list(compute = TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept 
+##    = 178, prec.intercept = 1/(20^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.36, Running = 1.99, Post = 0.392, Total = 3.74 
+##     Pre = 1.29, Running = 5.37, Post = 0.848, Total = 7.51 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant    mode kld
-## (Intercept) 136.874 0.221     136.44  136.874    137.307 136.874   0
+## (Intercept) 136.873 0.221    136.439  136.873    137.306 136.873   0
 ## 
 ## Random effects:
 ##   Name     Model
@@ -920,19 +912,19 @@ summary(m2.i)</code></pre>
 ## 
 ## Model hyperparameters:
 ##                                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for the Gaussian observations  0.035 0.002      0.032    0.034       0.04  0.033
-## Beta for log_w                          48.151 0.374     47.327   48.191      48.78 48.341
+## Precision for the Gaussian observations  0.028 0.001      0.026    0.028      0.032  0.027
+## Beta for log_w                          43.123 0.335     42.612   43.073     43.893 42.885
 ## 
 ## Expected number of effective parameters(stdev): 1.00(0.00)
 ## Number of equivalent replicates : 543.99 
 ## 
-## Marginal log-Likelihood:  -1702.69 
+## Marginal log-Likelihood:  -1752.15 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.i)</code></pre>
-<pre><code>##                                       mean        sd    q0.025      q0.5    q0.975      mode
-## SD for the Gaussian observations  5.369713 0.1572527  5.023981  5.387231  5.627582  5.462376
-## Beta for log_w                   48.150782 0.3744400 47.329087 48.190153 48.772480 48.352130</code></pre>
+<pre><code>##                                       mean        sd    q0.025      q0.5    q0.975     mode
+## SD for the Gaussian observations  5.947565 0.1450827  5.629633  5.963085  6.188071  6.03107
+## Beta for log_w                   43.122954 0.3347089 42.615483 43.071747 43.886832 42.86687</code></pre>
 <pre class="r"><code>#indices of the weights with missing values of height 
 d2.i.na &lt;- which(is.na(d2.i$height))
 
