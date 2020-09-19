@@ -1,5 +1,3 @@
-
-
 ### HW9.1 in rethinking 
 
 library(rethinking) 
@@ -50,6 +48,7 @@ abline( v=0.5 , lty=2 )
 
 library(INLA)
 library(brinla)
+library(tid)
 
 d1.i <- d %>% 
 #make a new variable of district that is continuous
@@ -91,12 +90,14 @@ m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][["mean"]]), me
   #join the a.did and b.did elements of the list into a dataframe by "district"
   reduce(left_join, by= "district") %>% 
   select(c( "district", "mean.x", "mean.y")) %>% 
-  rename("a.did"= "mean.x", "b.did"= "mean.y")
+  rename("a.did"= "mean.x", "b.did"= "mean.y") %>% 
+  mutate(intercept= a.did + m1.1.i$summary.fixed[[1]][[1]], 
+         slope= b.did + m1.1.i$summary.fixed[[1]][[2]])
 
 
 
 m1.1.i.mean.plot <-  ggplot()+
-  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
+  geom_point(data= m1.1.i.mean, aes(x=intercept, y= slope))+
   geom_hline(yintercept=0, linetype='longdash') +
   geom_vline(xintercept = 0)+
   labs(x= "a (intercept)", y = "b (urban slope)")+
@@ -113,8 +114,10 @@ inverse_logit <- function (x){
 
 
 m1.1.i.outcome <- m1.1.i.mean %>% 
-  mutate(u0.i = inverse_logit(a.did), 
-         u1.i= inverse_logit(a.did + b.did))
+  mutate(u0.i = inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]]), 
+         u1.i= inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]] + 
+                               b.did + m1.1.i$summary.fixed[[1]][[2]])
+         )
 
 
 m1.1.i.outcome.plot <-  ggplot()+
@@ -129,3 +132,6 @@ m1.1.i.outcome.plot <-  ggplot()+
 m1.1.i.outcome.plot
 
 
+m1.1.i$summary.fixed
+
+a.did

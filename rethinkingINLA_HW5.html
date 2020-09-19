@@ -468,6 +468,7 @@ precis(m1, 2)</code></pre>
 <pre><code>## [1] 1000
 ## [1] 1
 ## [1] 1000</code></pre>
+<pre><code>## Waiting to draw page 2 of 2</code></pre>
 <p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-1.png" width="672" /><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-2.png" width="672" /></p>
 <pre class="r"><code>plot(precis(m1, 2))</code></pre>
 <p><img src="rethinkingINLA_HW5_files/figure-html/hw5.1%20re-3.png" width="672" /></p>
@@ -501,11 +502,13 @@ m1.i&lt;- inla(S~ -1 +j.1+ j.2+j.3+j.4+j.5+j.6+j.7+j.8+j.9+
 summary(m1.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, &quot; j.8 + j.9 + w.1 + w.2 + w.3 + w.4 + w.5 
-##    + w.6 + w.7 + w.8 + &quot;, &quot; w.9 + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + w.16 + w.17 + &quot;, &quot; w.18 + w.19 + w.20, 
-##    data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
+##    c(&quot;inla(formula = S ~ -1 + j.1 + j.2 + j.3 + j.4 + j.5 + j.6 + j.7 + &quot;, 
+##    &quot; j.8 + j.9 + w.1 + w.2 + w.3 + w.4 + w.5 + w.6 + w.7 + w.8 + &quot;, &quot; w.9 
+##    + w.10 + w.11 + w.12 + w.13 + w.14 + w.15 + w.16 + w.17 + &quot;, &quot; w.18 + 
+##    w.19 + w.20, data = d.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = 
+##    TRUE), control.fixed = list(mean = 0, prec = 0.5))&quot; ) 
 ## Time used:
-##     Pre = 3.18, Running = 0.333, Post = 0.455, Total = 3.97 
+##     Pre = 3.18, Running = 0.284, Post = 0.44, Total = 3.9 
 ## Fixed effects:
 ##        mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## j.1  -0.313 0.320     -0.941   -0.313      0.314 -0.313   0
@@ -539,8 +542,10 @@ summary(m1.i )</code></pre>
 ## w.20  0.409 0.377     -0.332    0.409      1.149  0.409   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.41 0.159       1.11     1.40       1.74 1.39
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.41 0.159       1.11     1.40
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.74 1.39
 ## 
 ## Expected number of effective parameters(stdev): 27.12(0.101)
 ## Number of equivalent replicates : 6.64 
@@ -564,9 +569,10 @@ m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
                        upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
                        stringsAsFactors = FALSE)
 
-mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)
-
-m1.i.plot &lt;- mi.i.df %&gt;% 
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1</code></pre>
+<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
   mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
   ggplot() + 
     geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
@@ -645,10 +651,12 @@ control.compute = list(waic= TRUE))
 summary(m2a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = list(waic = TRUE), &quot;, &quot; control.fixed = list(mean 
-##    = 0, prec = list(R = 0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 0, prec.intercept = 0.2))&quot; ) 
+##    c(&quot;inla(formula = S ~ W + J + R, data = d.i2a, control.compute = 
+##    list(waic = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 
+##    0.5, W = 0.5, &quot;, &quot; J = 0.5), mean.intercept = 0, prec.intercept = 
+##    0.2))&quot; ) 
 ## Time used:
-##     Pre = 1.26, Running = 0.21, Post = 0.198, Total = 1.67 
+##     Pre = 1.29, Running = 0.205, Post = 0.193, Total = 1.69 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.021 0.161     -0.336   -0.021      0.295 -0.021   0
@@ -657,8 +665,10 @@ summary(m2a.i)</code></pre>
 ## R           -0.004 0.148     -0.294   -0.004      0.286 -0.004   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.24 1.01
 ## 
 ## Expected number of effective parameters(stdev): 3.96(0.004)
 ## Number of equivalent replicates : 45.42 
@@ -678,9 +688,10 @@ m1.i.df  &lt;- data.frame(mean = m1.i.sum$fixed[,&quot;mean&quot;],
                        upper = m1.i.sum$fixed[,&quot;0.975quant&quot;],
                        stringsAsFactors = FALSE)
 
-mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)
-
-m1.i.plot &lt;- mi.i.df %&gt;% 
+mi.i.df &lt;- bind_cols(as.factor(est), m1.i.df)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1</code></pre>
+<pre class="r"><code>m1.i.plot &lt;- mi.i.df %&gt;% 
   mutate(est= factor(est, levels= c(&quot;j.1&quot;,  &quot;j.2&quot; , &quot;j.3&quot; , &quot;j.4&quot; , &quot;j.5&quot;  ,&quot;j.6&quot; , &quot;j.7&quot; , &quot;j.8&quot; , &quot;j.9&quot; , &quot;w.1&quot; , &quot;w.2&quot; , &quot;w.3&quot; , &quot;w.4&quot; , &quot;w.5&quot; , &quot;w.6&quot; , &quot;w.7&quot; ,&quot;w.8&quot; , &quot;w.9&quot;  ,&quot;w.10&quot; ,&quot;w.11&quot;, &quot;w.12&quot; ,&quot;w.13&quot; ,&quot;w.14&quot;, &quot;w.15&quot; ,&quot;w.16&quot;, &quot;w.17&quot;, &quot;w.18&quot;, &quot;w.19&quot;, &quot;w.20&quot;))) %&gt;% 
   ggplot() + 
     geom_pointrange(aes(x = factor(est), y = mean, ymin = lower, ymax = upper), position = position_dodge(0.5)) +
@@ -765,11 +776,12 @@ m2b.i&lt;- inla(S~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no+ judge.amer
 summary(m2b.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no + &quot;, &quot; judge.amer.yes + f.red + f.white, 
-##    data = d.i2b, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, 
-##    &quot;, &quot; prec = 0.5))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + wine.amer.no + wine.amer.yes + judge.amer.no 
+##    + &quot;, &quot; judge.amer.yes + f.red + f.white, data = d.i2b, control.compute 
+##    = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = 
+##    list(mean = 0, &quot;, &quot; prec = 0.5))&quot;) 
 ## Time used:
-##     Pre = 1.33, Running = 0.201, Post = 0.242, Total = 1.77 
+##     Pre = 1.39, Running = 0.244, Post = 0.245, Total = 1.87 
 ## Fixed effects:
 ##                  mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## wine.amer.no    0.097 0.821     -1.514    0.097      1.707  0.097   0
@@ -780,8 +792,10 @@ summary(m2b.i )</code></pre>
 ## f.white         0.004 0.820     -1.607    0.004      1.613  0.004   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.02 0.108      0.819     1.02       1.24 1.01
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.02 0.108      0.819     1.02
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.24 1.01
 ## 
 ## Expected number of effective parameters(stdev): 3.98(0.002)
 ## Number of equivalent replicates : 45.20 
@@ -803,10 +817,11 @@ m2b.i.samp &lt;- inla.posterior.sample(100, m2b.i , selection = list(wine.amer.n
 
 m2b.i.contrast &lt;- inla.posterior.sample.eval(function(...) {wine.amer.yes - wine.amer.no},
    m2b.i.samp)</code></pre>
-<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function &#39;inla.posterior.sample.eval()&#39; is experimental.</code></pre>
+<pre><code>## Warning in inla.posterior.sample.eval(function(...) {: Function
+## &#39;inla.posterior.sample.eval()&#39; is experimental.</code></pre>
 <pre class="r"><code>summary(as.vector(m2b.i.contrast))</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -0.50601 -0.30938 -0.21777 -0.19077 -0.06359  0.25542</code></pre>
+## -0.58772 -0.29199 -0.20004 -0.20118 -0.09873  0.14084</code></pre>
 </div>
 </div>
 </div>
@@ -838,9 +853,10 @@ m3a &lt;- ulam(
    c(bW,bJ,bR) ~ dnorm(0,0.5),
     c(bWJ,bWR,bJR) ~ dnorm(0,0.25),
   sigma ~ dexp(1)
-    ), data=dat_list2, chains=4 , cores=4)
-
-precis(m3a)</code></pre>
+    ), data=dat_list2, chains=4 , cores=4)</code></pre>
+<pre><code>## Error in open.connection(con, open = mode) : 
+##   Timeout was reached: [github.com] Connection timed out after 10004 milliseconds</code></pre>
+<pre class="r"><code>precis(m3a)</code></pre>
 <pre><code>##              mean         sd        5.5%     94.5%     n_eff     Rhat4
 ## a     -0.05001514 0.13053594 -0.25735302 0.1583739  907.1065 0.9996431
 ## bR     0.08722749 0.18435834 -0.21952709 0.3821642  939.8246 0.9994441
@@ -907,12 +923,14 @@ control.predictor=list(compute=TRUE),
 summary(m3a.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, &quot;, &quot; control.compute = list(config = TRUE, 
-##    waic = TRUE), control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = list(mean = 0, prec = list(R = 
-##    1/(0.5^2), &quot;, &quot; W = 1/(0.5^2), J = 1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), 
+##    c(&quot;inla(formula = S ~ W + J + R + W * J + W * R + J * R, data = d.i3a, 
+##    &quot;, &quot; control.compute = list(config = TRUE, waic = TRUE), 
+##    control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = list(R = 1/(0.5^2), &quot;, &quot; W = 1/(0.5^2), J = 
+##    1/(0.5^2), WJ = 1/(0.25^2), WR = 1/(0.25^2), &quot;, &quot; JR = 1/(0.25^2)), 
 ##    mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.38, Running = 0.212, Post = 0.245, Total = 1.84 
+##     Pre = 1.51, Running = 0.23, Post = 0.265, Total = 2 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.073 0.138     -0.344   -0.073      0.199 -0.073   0
@@ -924,8 +942,10 @@ summary(m3a.i)</code></pre>
 ## J:R          0.142 0.271     -0.389    0.141      0.673  0.141   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.03 0.109      0.825     1.02       1.25 1.02
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.03 0.109      0.825     1.02
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.25 1.02
 ## 
 ## Expected number of effective parameters(stdev): 5.96(0.064)
 ## Number of equivalent replicates : 30.18 
@@ -1041,11 +1061,12 @@ m3b.i&lt;- inla(S~ -1 + FwFjRed +FwFjWh+ FwAjRed+ FwAjWh + AwFjRed + AwFjWh +AwA
 summary(m3b.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; AwFjRed + AwFjWh + AwAjRed + AwAjWh, data = 
-##    d3b.i, control.compute = list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = list(mean = 0, &quot;, &quot; 
-##    prec = 1/(0.5^2)))&quot;) 
+##    c(&quot;inla(formula = S ~ -1 + FwFjRed + FwFjWh + FwAjRed + FwAjWh + &quot;, &quot; 
+##    AwFjRed + AwFjWh + AwAjRed + AwAjWh, data = d3b.i, control.compute = 
+##    list(dic = TRUE, &quot;, &quot; waic = TRUE, config = TRUE), control.fixed = 
+##    list(mean = 0, &quot;, &quot; prec = 1/(0.5^2)))&quot;) 
 ## Time used:
-##     Pre = 2.01, Running = 0.206, Post = 0.252, Total = 2.47 
+##     Pre = 1.5, Running = 0.212, Post = 0.265, Total = 1.98 
 ## Fixed effects:
 ##           mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## FwFjRed  0.204 0.221     -0.231    0.204      0.637  0.204   0
@@ -1058,8 +1079,10 @@ summary(m3b.i)</code></pre>
 ## AwAjWh   0.039 0.169     -0.294    0.039      0.371  0.039   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.04 0.111      0.833     1.03       1.27 1.03
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.04 0.111      0.833     1.03
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.27 1.03
 ## 
 ## Expected number of effective parameters(stdev): 6.78(0.115)
 ## Number of equivalent replicates : 26.57 

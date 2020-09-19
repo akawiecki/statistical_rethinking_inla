@@ -20,11 +20,11 @@ library(knitr)
 library(stringr)
 ```
 
-# 1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes -CHECK
+# 1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes 
 
 **Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.**
 
-## 1.1 model varying slops of urban
+## 1.1 model varying slopes of urban
 
 $C_{did} \sim Bernoulli(p_{did})$
 
@@ -156,20 +156,22 @@ bri.hyperpar.plot(m1.1.i)
 m1.1.i.mean <- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][["mean"]]), mean= m1.1.i$summary.random[[1]][["mean"]]) %>% 
   #assign first 60 rows to a.did and 61:120 to b.did in new variable "param" 
   mutate(param= if_else(did <= n.district, "a.did", "b.did"), 
-  #new variable "district" assigns the district index 1:60 to both a.did and b.did estimates. 
+         #new variable "district" assigns the district index 1:60 to both a.did and b.did estimates. 
          district= rep(1:60,2)) %>% 
   #split dataframe by param into a list of 2: a.did and b.did 
   group_split(param) %>% 
   #join the a.did and b.did elements of the list into a dataframe by "district"
   reduce(left_join, by= "district") %>% 
   select(c( "district", "mean.x", "mean.y")) %>% 
-  rename("a.did"= "mean.x", "b.did"= "mean.y")
+  rename("a.did"= "mean.x", "b.did"= "mean.y") %>% 
+  mutate(intercept= a.did + m1.1.i$summary.fixed[[1]][[1]], 
+         slope= b.did + m1.1.i$summary.fixed[[1]][[2]])
 
 
 
 m1.1.i.mean.plot <-  ggplot()+
-  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
-   geom_hline(yintercept=0, linetype='longdash') +
+  geom_point(data= m1.1.i.mean, aes(x=intercept, y= slope))+
+  geom_hline(yintercept=0, linetype='longdash') +
   geom_vline(xintercept = 0)+
   labs(x= "a (intercept)", y = "b (urban slope)")+
   theme_bw()
@@ -190,8 +192,10 @@ inverse_logit <- function (x){
 
 
 m1.1.i.outcome <- m1.1.i.mean %>% 
-  mutate(u0.i = inverse_logit(a.did), 
-         u1.i= inverse_logit(a.did + b.did))
+  mutate(u0.i = inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]]), 
+         u1.i= inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]] + 
+                               b.did + m1.1.i$summary.fixed[[1]][[2]])
+         )
 
 
 m1.1.i.outcome.plot <-  ggplot()+
@@ -206,6 +210,17 @@ m1.1.i.outcome.plot <-  ggplot()+
 m1.1.i.outcome.plot
 
 ```
+
+### **Difference between the rethinking and INLA model parametrization**
+
+The rethinking random effects are parameterized like N[ (a, b); Sigma ], while the INLA random effects are parameterized like (a, b) + N[ (0, 0); Sigma ]. From INLA's perspective, (a, b) are fixed effects that define the center of the random effect. The INLA plot is centered at (0,0), while in this case, the rethinking plot is centered at (-0.68, 0.65). That's why, when we want to replicate the rethinking model in INLA, we have to add the the fixed effects, which are the center of the distribution, to the random effects, which are deviations from that center. 
+
+Example: 
+
+m1.1.i$summary.fixed[[1]][[1]] is the fixed effect of the intercept
+a.did is the deviation from the intercept by district
+
+a.did + m1.1.i$summary.fixed[[1]][[1]] in INLA is the equivalent of a in the rethinking model. 
 
 
 
@@ -276,7 +291,6 @@ bri.hyperpar.plot(m1.2.i)
 
 ```
 
-** i think it's not totally correct, the sigmas ar off (they're not=1)**
 
 # 2. data(bangladesh) evaluate the influences on contraceptive use (changing attitudes) of age and number of children
 

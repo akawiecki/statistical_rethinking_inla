@@ -673,8 +673,13 @@ shade( height.interval, weight.seq )</code></pre>
 weight &lt;- c(45, 40, 65, 31, 53)
 expected_height &lt;- NA
 interval &lt;- NA
-kung &lt;- bind_cols(ind, weight, expected_height, interval)
-colnames(kung) &lt;- c(&quot;individual&quot;, &quot;weight&quot;, &quot;expected_height&quot;, &quot;89%interval&quot;)
+kung &lt;- bind_cols(ind, weight, expected_height, interval)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1
+## * NA -&gt; ...2
+## * NA -&gt; ...3
+## * NA -&gt; ...4</code></pre>
+<pre class="r"><code>colnames(kung) &lt;- c(&quot;individual&quot;, &quot;weight&quot;, &quot;expected_height&quot;, &quot;89%interval&quot;)
 kable(kung)</code></pre>
 <table>
 <thead>
@@ -793,8 +798,11 @@ d &lt;- Howell1
 d2 &lt;- d[ d$age &gt;= 18 , ]
 dat &lt;-  data.frame(weight= c(45, 40, 65, 31, 53))
 xbar &lt;- mean(d2$weight) 
-new_w &lt;- bind_cols(weight, NA)
-colnames(new_w) &lt;- c(&quot;weight&quot;, &quot;height&quot;)
+new_w &lt;- bind_cols(weight, NA)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1
+## * NA -&gt; ...2</code></pre>
+<pre class="r"><code>colnames(new_w) &lt;- c(&quot;weight&quot;, &quot;height&quot;)
 # add the weight values of interest to the dataframe
 d1.i &lt;- d2  %&gt;% 
   select(c(&quot;weight&quot;, &quot;height&quot;)) %&gt;%  
@@ -871,8 +879,11 @@ library(tidyverse)
 data(Howell1)
 d &lt;- Howell1
 log_wplot &lt;- log(1:60)
-new_logw &lt;- bind_cols(log_wplot, NA)
-colnames(new_logw) &lt;- c(&quot;log_weight&quot;, &quot;height&quot;)
+new_logw &lt;- bind_cols(log_wplot, NA)</code></pre>
+<pre><code>## New names:
+## * NA -&gt; ...1
+## * NA -&gt; ...2</code></pre>
+<pre class="r"><code>colnames(new_logw) &lt;- c(&quot;log_weight&quot;, &quot;height&quot;)
 
 # add the weight values of interest to the dataframe
 d2.i &lt;- d %&gt;% 
@@ -896,12 +907,14 @@ m2.i&lt;- inla(height ~ f(log_w, model = &quot;clinear&quot;, range=c(0, Inf),
 summary(m2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, &quot;, &quot; Inf), hyper = list(theta = list(prior = 
-##    \&quot;normal\&quot;, param = c(0, &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, control.compute = list(config = TRUE), &quot;, &quot; 
-##    control.predictor = list(compute = TRUE), control.inla = list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept 
-##    = 178, prec.intercept = 1/(20^2)))&quot; ) 
+##    c(&quot;inla(formula = height ~ f(log_w, model = \&quot;clinear\&quot;, range = c(0, 
+##    &quot;, &quot; Inf), hyper = list(theta = list(prior = \&quot;normal\&quot;, param = c(0, 
+##    &quot;, &quot; 1)))), data = d2.i, verbose = TRUE, control.compute = list(config 
+##    = TRUE), &quot;, &quot; control.predictor = list(compute = TRUE), control.inla = 
+##    list(h = 1e-04), &quot;, &quot; control.fixed = list(mean.intercept = 178, 
+##    prec.intercept = 1/(20^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.29, Running = 5.37, Post = 0.848, Total = 7.51 
+##     Pre = 1.37, Running = 3.32, Post = 0.584, Total = 5.27 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant    mode kld
 ## (Intercept) 136.873 0.221    136.439  136.873    137.306 136.873   0
@@ -911,20 +924,26 @@ summary(m2.i)</code></pre>
 ##     log_w Constrained linear
 ## 
 ## Model hyperparameters:
-##                                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for the Gaussian observations  0.028 0.001      0.026    0.028      0.032  0.027
-## Beta for log_w                          43.123 0.335     42.612   43.073     43.893 42.885
+##                                           mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations  0.032 0.002      0.029    0.032
+## Beta for log_w                          44.294 0.302     43.818   44.252
+##                                         0.975quant   mode
+## Precision for the Gaussian observations      0.036  0.031
+## Beta for log_w                              44.982 44.094
 ## 
 ## Expected number of effective parameters(stdev): 1.00(0.00)
 ## Number of equivalent replicates : 543.99 
 ## 
-## Marginal log-Likelihood:  -1752.15 
+## Marginal log-Likelihood:  -1725.66 
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.i)</code></pre>
-<pre><code>##                                       mean        sd    q0.025      q0.5    q0.975     mode
-## SD for the Gaussian observations  5.947565 0.1450827  5.629633  5.963085  6.188071  6.03107
-## Beta for log_w                   43.122954 0.3347089 42.615483 43.071747 43.886832 42.86687</code></pre>
+<pre><code>##                                       mean        sd    q0.025      q0.5
+## SD for the Gaussian observations  5.600795 0.1437171  5.301439  5.608808
+## Beta for log_w                   44.293887 0.3015527 43.825753 44.250507
+##                                     q0.975      mode
+## SD for the Gaussian observations  5.862232  5.642139
+## Beta for log_w                   44.976320 44.078662</code></pre>
 <pre class="r"><code>#indices of the weights with missing values of height 
 d2.i.na &lt;- which(is.na(d2.i$height))
 

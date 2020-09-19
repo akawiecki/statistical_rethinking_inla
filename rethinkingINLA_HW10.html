@@ -427,8 +427,8 @@ sigma ~ exponential(1)
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;2bcae94530709687a15da757cbb5d4b7&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 3.2e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+## Chain 1: Gradient evaluation took 3.1e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -445,15 +445,19 @@ sigma ~ exponential(1)
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.106222 seconds (Warm-up)
-## Chain 1:                0.088437 seconds (Sampling)
-## Chain 1:                0.194659 seconds (Total)
+## Chain 1:  Elapsed Time: 0.095752 seconds (Warm-up)
+## Chain 1:                0.078632 seconds (Sampling)
+## Chain 1:                0.174384 seconds (Total)
 ## Chain 1:</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis( m1.1 )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%    n_eff     Rhat4
-## a     0.4259119 0.05887665 0.3374068 0.5208441 181.7934 1.0019144
-## b     0.7832350 0.01483366 0.7608915 0.8076025 178.6098 1.0026378
-## sigma 0.2926246 0.01493256 0.2697484 0.3168074 208.4197 0.9984993</code></pre>
+<p><img src="rethinkingINLA_HW10_files/figure-html/10.1%20model-1.png" width="672" /></p>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a     0.4258513 0.06309011 0.3216981 0.5194801 122.0085 1.000395
+## b     0.7827109 0.01535073 0.7582829 0.8060798 126.6673 1.001423
+## sigma 0.2932021 0.01696458 0.2663286 0.3218230 231.3285 1.005578</code></pre>
 <p>Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:</p>
 <pre class="r"><code> start=list( M_true=dat_list$M , B_true=dat_list$B )</code></pre>
 <p>Compare the inference of the measurement error model to those of m1.1 above. Has anything changed? Why or why not?</p>
@@ -508,9 +512,8 @@ SIGMA &lt;- cov( cbind( post$M_true[,i] , post$B_true[,i] ) )
 el &lt;- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col=grau(0.3) )
 }</code></pre>
 </div>
-</div>
-<div id="inla" class="section level2">
-<h2>1.1 INLA</h2>
+<div id="inla" class="section level3">
+<h3>1.1 INLA</h3>
 <p>good resource for this: <a href="http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf" class="uri">http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf</a></p>
 <p><a href="http://www.r-inla.org/models/tools#TOC-Copying-a-model" class="uri">http://www.r-inla.org/models/tools#TOC-Copying-a-model</a></p>
 <p><strong>But i can’t wrap my head around it right now.</strong></p>
@@ -526,6 +529,7 @@ n.spp &lt;- nrow(d1.i) # 182
 M_true= rnorm(n.spp, d1.i$M, d1.i$Mse)</code></pre>
 </div>
 </div>
+</div>
 <div id="dataprimates301-impute-missing-values-for-brain-size" class="section level1">
 <h1>2. data(Primates301) impute missing values for brain size</h1>
 <p>Now consider missing values—this data set is lousy with them. You can ignore measurement error in this problem. Let’s get a quick idea of the missing values by counting them in each variable:</p>
@@ -533,10 +537,12 @@ M_true= rnorm(n.spp, d1.i$M, d1.i$Mse)</code></pre>
 data(Primates301) 
 d &lt;- Primates301 
 colSums( is.na(d) )</code></pre>
-<pre><code>##                name               genus             species          subspecies              spp_id            genus_id 
-##                   0                   0                   0                 267                   0                   0 
-##     social_learning     research_effort               brain                body          group_size           gestation 
-##                  98                 115                 117                  63                 114                 161 
+<pre><code>##                name               genus             species          subspecies 
+##                   0                   0                   0                 267 
+##              spp_id            genus_id     social_learning     research_effort 
+##                   0                   0                  98                 115 
+##               brain                body          group_size           gestation 
+##                 117                  63                 114                 161 
 ##             weaning           longevity        sex_maturity maternal_investment 
 ##                 185                 181                 194                 197</code></pre>
 <p>We’ll continue to focus on just brain and body, to stave off insanity. Consider only those species with measured body masses:</p>
@@ -585,10 +591,6 @@ a ~ normal(0,1),
 b ~ normal(0,1),
 sigma ~ exponential(1) ),
 data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )</code></pre>
-<pre><code>## Warning: There were 2 divergent transitions after warmup. See
-## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
-## to find out why this is a problem and how to eliminate them.</code></pre>
-<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 <p>ulam figures out how to do the imputation. But an equivalent model that is more explicit would be:</p>
 <pre class="r"><code>m2.2b &lt;- ulam( alist(
 B_merge ~ dlnorm( mu , sigma ),
@@ -597,13 +599,16 @@ B_merge &lt;- merge_missing( B , B_impute ),
 a ~ normal(0,1),
 b ~ normal(0,1),
 sigma ~ exponential(1) ),
-data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )
-
- precis( m2.2b )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%     n_eff    Rhat4
-## a     0.4277670 0.05745658 0.3386178 0.5188117  919.2108 1.003978
-## b     0.7833354 0.01381325 0.7615453 0.8056098  869.1024 1.003267
-## sigma 0.2930630 0.01549106 0.2692653 0.3181740 1366.9956 1.000902</code></pre>
+data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )</code></pre>
+<pre><code>## Warning: There were 1 divergent transitions after warmup. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+## to find out why this is a problem and how to eliminate them.</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre class="r"><code> precis( m2.2b )</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a     0.4273296 0.05674211 0.3338733 0.5155636 1009.783 1.004004
+## b     0.7832613 0.01371273 0.7606915 0.8046014 1050.283 1.003919
+## sigma 0.2936007 0.01576015 0.2695656 0.3203591 1107.455 0.999910</code></pre>
 <p>It’s a little more obvious now what ulam is doing. It constructs the merged vector of observed and imputed values, B_merge, and then uses that merged vector as the outcome. The outcome distribution at the top of the model is the prior for each B_impute parameter. That prior is adaptive—it has parameters inside it. Hence, shrinkage happens.</p>
 </div>
 <div id="inla-1" class="section level3">
@@ -626,18 +631,22 @@ m2.2.i &lt;- inla(B ~ logM, family =&quot;lognormal&quot;, data=d2.i,
 summary(m2.2.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d2.i, control.predictor = list(compute = TRUE), &quot;, &quot; 
-##    control.fixed = list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d2.i, 
+##    control.predictor = list(compute = TRUE), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = 1, mean.intercept = 0, &quot;, &quot; prec.intercept = 
+##    1))&quot;) 
 ## Time used:
-##     Pre = 1.13, Running = 0.19, Post = 0.184, Total = 1.51 
+##     Pre = 1.26, Running = 0.177, Post = 0.2, Total = 1.64 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0
 ## logM        0.783 0.014      0.756    0.783      0.811 0.783   0
 ## 
 ## Model hyperparameters:
-##                                           mean   sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the lognormal observations 11.91 1.25       9.60    11.87      14.48 11.78
+##                                           mean   sd 0.025quant 0.5quant
+## Precision for the lognormal observations 11.91 1.25       9.60    11.87
+##                                          0.975quant  mode
+## Precision for the lognormal observations      14.48 11.78
 ## 
 ## Expected number of effective parameters(stdev): 2.01(0.002)
 ## Number of equivalent replicates : 90.56 
@@ -663,10 +672,10 @@ sigma ~ exponential(1) ),
 data=dat_list2 , chains=4 , cores=4 ) 
 
 precis( m2.3 )</code></pre>
-<pre><code>##            mean         sd      5.5%     94.5%     n_eff    Rhat4
-## a     0.4273064 0.05940478 0.3340308 0.5208391  790.2329 1.004464
-## b     0.7831713 0.01431844 0.7605969 0.8054758  782.8297 1.003401
-## sigma 0.2937160 0.01498928 0.2712218 0.3189396 1156.8286 1.000529</code></pre>
+<pre><code>##            mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a     0.4273367 0.05851702 0.3376391 0.5199382 517.6862 1.009379
+## b     0.7832547 0.01406416 0.7618372 0.8058403 550.7742 1.010300
+## sigma 0.2928598 0.01561973 0.2688230 0.3181607 850.0766 1.001185</code></pre>
 <p>Really no difference from before.</p>
 </div>
 <div id="inla-2" class="section level3">
@@ -686,19 +695,22 @@ m2.3.i &lt;- inla(B ~ logM, family =&quot;lognormal&quot;, data=d3.i,
 summary(m2.3.i )</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d3.i, control.compute = list(config = TRUE), &quot;, &quot; 
-##    control.predictor = list(compute = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, mean.intercept = 0, 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = B ~ logM, family = \&quot;lognormal\&quot;, data = d3.i, 
+##    control.compute = list(config = TRUE), &quot;, &quot; control.predictor = 
+##    list(compute = TRUE), control.fixed = list(mean = 0, &quot;, &quot; prec = 1, 
+##    mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.12, Running = 0.165, Post = 0.181, Total = 1.46 
+##     Pre = 1.22, Running = 0.164, Post = 0.205, Total = 1.59 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.427 0.058      0.313    0.427      0.541 0.427   0
 ## logM        0.783 0.014      0.756    0.783      0.811 0.783   0
 ## 
 ## Model hyperparameters:
-##                                           mean   sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the lognormal observations 11.91 1.25       9.60    11.87      14.48 11.78
+##                                           mean   sd 0.025quant 0.5quant
+## Precision for the lognormal observations 11.91 1.25       9.60    11.87
+##                                          0.975quant  mode
+## Precision for the lognormal observations      14.48 11.78
 ## 
 ## Expected number of effective parameters(stdev): 2.01(0.002)
 ## Number of equivalent replicates : 90.56 

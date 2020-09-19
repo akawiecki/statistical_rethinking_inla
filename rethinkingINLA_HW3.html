@@ -401,6 +401,7 @@ library(INLA)</code></pre>
                   }&quot;)
 
 plot(hw3dag)</code></pre>
+<pre><code>## Plot coordinates for graph not supplied! Generating coordinates, see ?coordinates for how to set your own.</code></pre>
 <p><img src="rethinkingINLA_HW3_files/figure-html/hw3%20dag-1.png" width="672" /></p>
 <div id="datafoxes-infer-the-total-causal-influence-of-area-on-weight" class="section level1">
 <h1>1. data(foxes) infer the total causal influence of area on weight</h1>
@@ -444,15 +445,17 @@ summary(m1.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ A, data = f)&quot; 
 ## Time used:
-##     Pre = 1.83, Running = 0.151, Post = 0.147, Total = 2.13 
+##     Pre = 2.01, Running = 0.133, Post = 0.146, Total = 2.29 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.093     -0.183    0.000      0.183 0.000   0
 ## A           0.019 0.094     -0.165    0.019      0.203 0.019   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28 0.992
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.28 0.992
 ## 
 ## Expected number of effective parameters(stdev): 2.00(0.00)
 ## Number of equivalent replicates : 57.98 
@@ -469,18 +472,20 @@ summary(m1.inla)</code></pre>
 summary(m1.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
-##    prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ A, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
+##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.19, Running = 0.131, Post = 0.142, Total = 1.46 
+##     Pre = 1.17, Running = 0.133, Post = 0.136, Total = 1.44 
 ## Fixed effects:
 ##              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
 ## (Intercept) 0.000 0.084     -0.166    0.000      0.166 0.000   0
 ## A           0.019 0.092     -0.162    0.019      0.199 0.019   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29 0.993
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.29 0.993
 ## 
 ## Expected number of effective parameters(stdev): 1.79(0.025)
 ## Number of equivalent replicates : 64.84 
@@ -522,15 +527,17 @@ summary(m2.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F, data = f)&quot; 
 ## Time used:
-##     Pre = 1.19, Running = 0.134, Post = 0.144, Total = 1.47 
+##     Pre = 1.19, Running = 0.132, Post = 0.139, Total = 1.46 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.093     -0.183    0.000      0.183  0.000   0
 ## F           -0.025 0.094     -0.209   -0.025      0.159 -0.025   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the Gaussian observations 1.01 0.132      0.767     1.00       1.28 0.992
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.767     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.28 0.992
 ## 
 ## Expected number of effective parameters(stdev): 2.00(0.00)
 ## Number of equivalent replicates : 57.98 
@@ -550,18 +557,20 @@ m2.inla.prior &lt;- inla(W~F, data= f, control.fixed = list(
 summary(m2.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; prec = 1/(0.5^2), mean.intercept = 0, 
-##    prec.intercept = 1/(0.2^2)))&quot; ) 
+##    c(&quot;inla(formula = W ~ F, data = f, control.fixed = list(mean = 0, &quot;, &quot; 
+##    prec = 1/(0.5^2), mean.intercept = 0, prec.intercept = 1/(0.2^2)))&quot; ) 
 ## Time used:
-##     Pre = 1.17, Running = 0.135, Post = 0.148, Total = 1.46 
+##     Pre = 1.22, Running = 0.131, Post = 0.149, Total = 1.5 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.084     -0.166    0.000      0.166  0.000   0
 ## F           -0.024 0.092     -0.205   -0.024      0.156 -0.024   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for the Gaussian observations 1.01 0.132      0.769     1.00       1.29 0.994
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.01 0.132      0.769     1.00
+##                                         0.975quant  mode
+## Precision for the Gaussian observations       1.29 0.994
 ## 
 ## Expected number of effective parameters(stdev): 1.79(0.025)
 ## Number of equivalent replicates : 64.84 
@@ -606,7 +615,7 @@ summary(m3.inla)</code></pre>
 ## Call:
 ##    &quot;inla(formula = W ~ F + G, family = c(\&quot;gaussian\&quot;), data = f)&quot; 
 ## Time used:
-##     Pre = 1.26, Running = 0.136, Post = 0.15, Total = 1.55 
+##     Pre = 1.18, Running = 0.133, Post = 0.157, Total = 1.47 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.089     -0.174    0.000      0.174  0.000   0
@@ -614,8 +623,10 @@ summary(m3.inla)</code></pre>
 ## G           -0.739 0.206     -1.144   -0.739     -0.335 -0.739   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.11 0.147      0.845     1.11       1.42 1.09
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.11 0.147      0.845     1.11
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.42 1.09
 ## 
 ## Expected number of effective parameters(stdev): 3.00(0.00)
 ## Number of equivalent replicates : 38.66 
@@ -633,10 +644,11 @@ m3.inla.prior &lt;- inla(W~F+G, data= f, control.fixed = list(
 summary(m3.inla.prior)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = list(F = 0, &quot;, &quot; G = 0), prec = list(F = 
-##    1/(0.5^2), G = 1/(0.5^2)), mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
+##    c(&quot;inla(formula = W ~ F + G, data = f, control.fixed = list(mean = 
+##    list(F = 0, &quot;, &quot; G = 0), prec = list(F = 1/(0.5^2), G = 1/(0.5^2)), 
+##    mean.intercept = 0, &quot;, &quot; prec.intercept = 1/(0.2^2)))&quot;) 
 ## Time used:
-##     Pre = 1.23, Running = 0.138, Post = 0.155, Total = 1.52 
+##     Pre = 1.25, Running = 0.138, Post = 0.148, Total = 1.54 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept)  0.000 0.081     -0.159    0.000      0.159  0.000   0
@@ -644,8 +656,10 @@ summary(m3.inla.prior)</code></pre>
 ## G           -0.570 0.181     -0.923   -0.571     -0.213 -0.573   0
 ## 
 ## Model hyperparameters:
-##                                         mean    sd 0.025quant 0.5quant 0.975quant mode
-## Precision for the Gaussian observations 1.11 0.147      0.843     1.11       1.42 1.09
+##                                         mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 1.11 0.147      0.843     1.11
+##                                         0.975quant mode
+## Precision for the Gaussian observations       1.42 1.09
 ## 
 ## Expected number of effective parameters(stdev): 2.58(0.047)
 ## Number of equivalent replicates : 45.03 

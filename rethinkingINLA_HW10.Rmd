@@ -169,7 +169,7 @@ el <- ellipse( SIGMA , centre=c(M_est[i],B_est[i]) , level=0.5 ) lines( el , col
 ```
 
 
-## 1.1 INLA
+### 1.1 INLA
 
 good resource for this: 
 http://www.biometrische-gesellschaft.de/fileadmin/AG_Daten/BayesMethodik/workshops_etc/2016-12_Mainz/Muff2016-slides.pdf

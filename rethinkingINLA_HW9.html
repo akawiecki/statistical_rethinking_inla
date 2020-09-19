@@ -394,11 +394,11 @@ library(dagitty)
 library(INLA)
 library(knitr)
 library(stringr)</code></pre>
-<div id="databangladesh-model-with-both-varying-intercepts-by-district_id-and-varying-slopes-of-urban-as-a-01-indicator-variable-by-district_id-and-correlation-between-the-intercepts-and-slopes--check" class="section level1">
-<h1>1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes -CHECK</h1>
+<div id="databangladesh-model-with-both-varying-intercepts-by-district_id-and-varying-slopes-of-urban-as-a-01-indicator-variable-by-district_id-and-correlation-between-the-intercepts-and-slopes" class="section level1">
+<h1>1. data(bangladesh) model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id and correlation between the intercepts and slopes</h1>
 <p><strong>Revisit the Bangladesh fertility data, data(bangladesh).Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.</strong></p>
-<div id="model-varying-slops-of-urban" class="section level2">
-<h2>1.1 model varying slops of urban</h2>
+<div id="model-varying-slopes-of-urban" class="section level2">
+<h2>1.1 model varying slopes of urban</h2>
 <p><span class="math inline">\(C_{did} \sim Bernoulli(p_{did})\)</span></p>
 <p><span class="math inline">\(logit(p_{did}) = \alpha_{did} + \beta_{did}*urban_{did}\)</span></p>
 <p><span class="math inline">\(\begin{pmatrix}a_{did}\\b_{did}\end{pmatrix}= MVNormal \begin{pmatrix}\left[\begin{array}{ccc}\bar{a}\\\bar{b}\end{array}\right] , &amp; Sigma ,&amp; Rho\end{pmatrix}\)</span></p>
@@ -424,26 +424,26 @@ bbar ~ normal(0,0.5),
 Rho ~ lkj_corr(2),
 Sigma ~ exponential(1) 
 ) , data=dat_list , chains=4 , cores=4 )</code></pre>
+<pre><code>## Warning: The largest R-hat is NA, indicating chains have not mixed.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#r-hat</code></pre>
 <pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
-<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m1.1)</code></pre>
-<pre><code>##            mean         sd       5.5%      94.5%    n_eff    Rhat4
-## abar -0.6834223 0.09971952 -0.8415787 -0.5226726 1465.130 1.000780
-## bbar  0.6324902 0.16275940  0.3750319  0.9047077 1277.163 0.999797</code></pre>
+<pre><code>##            mean        sd       5.5%      94.5%    n_eff     Rhat4
+## abar -0.6865358 0.1017140 -0.8472127 -0.5281305 1680.789 0.9996217
+## bbar  0.6427001 0.1581673  0.3919394  0.8948358 1159.847 0.9997477</code></pre>
 <p>This is a conventional varying slopes model, with a centered parameterization. No surprises. If you peek at the posterior distributions for the average effects, you’ll see that the average slope is positive. This implies that urban areas use contraception more. Not surprising.</p>
 <p>Now consider the distribution of varying effects:</p>
 <pre class="r"><code>precis( m1.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6433424 1.654728e-01 -0.8588331 -0.3442460  429.2625 0.999893
-## Rho[2,1] -0.6433424 1.654728e-01 -0.8588331 -0.3442460  429.2625 0.999893
-## Rho[2,2]  1.0000000 5.964743e-17  1.0000000  1.0000000 1980.4243 0.997998
-## Sigma[1]  0.5785838 9.779504e-02  0.4375930  0.7419353  522.1253 1.000373
-## Sigma[2]  0.7954390 2.002403e-01  0.4952094  1.1302376  292.3945 1.008130</code></pre>
+## Rho[1,2] -0.6546999 1.671207e-01 -0.8699901 -0.3556045  247.3203 1.023925
+## Rho[2,1] -0.6546999 1.671207e-01 -0.8699901 -0.3556045  247.3203 1.023925
+## Rho[2,2]  1.0000000 5.918041e-17  1.0000000  1.0000000 1232.7053 0.997998
+## Sigma[1]  0.5748587 1.001156e-01  0.4299495  0.7461187  639.2464 1.010080
+## Sigma[2]  0.7737014 1.920344e-01  0.4755791  1.0783823  248.7727 1.027379</code></pre>
 <p>The correlation between the intercepts and slopes is quite negative.</p>
 <p>Let’s plot the individual effects to appreciate this.</p>
 <pre class="r"><code>post &lt;- extract.samples(m1.1)
@@ -501,13 +501,15 @@ m1.1.i &lt;- inla(C ~ 1 + urban + f(a.did, model=&quot;iid2d&quot;, n= 2*n.distr
 summary(m1.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district) + f(b.did, urban, copy = 
-##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; dic = 
-##    TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
-##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + f(a.did, model = \&quot;iid2d\&quot;, n = 2 * 
+##    &quot;, &quot; n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
+##    \&quot;binomial\&quot;, &quot;, &quot; data = d1.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.81, Running = 2.99, Post = 0.434, Total = 5.24 
+##     Pre = 1.81, Running = 2.83, Post = 0.396, Total = 5.04 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.686 0.099     -0.884   -0.686     -0.492 -0.685   0
@@ -519,10 +521,14 @@ summary(m1.1.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant  mode
-## Precision for a.did (component 1)  3.115 1.029      1.582    2.955      5.572  2.66
-## Precision for a.did (component 2)  1.921 0.936      0.709    1.723      4.278  1.39
-## Rho1:2 for a.did                  -0.664 0.146     -0.874   -0.689     -0.312 -0.74
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  3.115 1.029      1.582    2.955      5.572
+## Precision for a.did (component 2)  1.921 0.936      0.709    1.723      4.278
+## Rho1:2 for a.did                  -0.664 0.146     -0.874   -0.689     -0.312
+##                                    mode
+## Precision for a.did (component 1)  2.66
+## Precision for a.did (component 2)  1.39
+## Rho1:2 for a.did                  -0.74
 ## 
 ## Expected number of effective parameters(stdev): 51.59(5.30)
 ## Number of equivalent replicates : 37.49 
@@ -538,10 +544,14 @@ summary(m1.1.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m1.1.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025       q0.5     q0.975       mode
-## SD for a.did (component 1)  0.5887788 0.09423246  0.4243071  0.5816066  0.7934828  0.5683934
-## SD for a.did (component 2)  0.7805681 0.17929237  0.4843403  0.7614524  1.1851196  0.7251542
-## Rho1:2 for a.did           -0.6636992 0.14555091 -0.8738944 -0.6895578 -0.3135566 -0.7405877</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5
+## SD for a.did (component 1)  0.5887788 0.09423246  0.4243071  0.5816066
+## SD for a.did (component 2)  0.7805681 0.17929237  0.4843403  0.7614524
+## Rho1:2 for a.did           -0.6636992 0.14555091 -0.8738944 -0.6895578
+##                                q0.975       mode
+## SD for a.did (component 1)  0.7934828  0.5683934
+## SD for a.did (component 2)  1.1851196  0.7251542
+## Rho1:2 for a.did           -0.3135566 -0.7405877</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m1.1.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.1%20inla-1.png" width="672" /></p>
 <pre class="r"><code>#m1.1.i$summary.random has 2 elements: a.did and b.did but they are identical.
@@ -550,20 +560,22 @@ summary(m1.1.i)</code></pre>
 m1.1.i.mean &lt;- bind_cols(did= 1:length(m1.1.i$summary.random[[1]][[&quot;mean&quot;]]), mean= m1.1.i$summary.random[[1]][[&quot;mean&quot;]]) %&gt;% 
   #assign first 60 rows to a.did and 61:120 to b.did in new variable &quot;param&quot; 
   mutate(param= if_else(did &lt;= n.district, &quot;a.did&quot;, &quot;b.did&quot;), 
-  #new variable &quot;district&quot; assigns the district index 1:60 to both a.did and b.did estimates. 
+         #new variable &quot;district&quot; assigns the district index 1:60 to both a.did and b.did estimates. 
          district= rep(1:60,2)) %&gt;% 
   #split dataframe by param into a list of 2: a.did and b.did 
   group_split(param) %&gt;% 
   #join the a.did and b.did elements of the list into a dataframe by &quot;district&quot;
   reduce(left_join, by= &quot;district&quot;) %&gt;% 
   select(c( &quot;district&quot;, &quot;mean.x&quot;, &quot;mean.y&quot;)) %&gt;% 
-  rename(&quot;a.did&quot;= &quot;mean.x&quot;, &quot;b.did&quot;= &quot;mean.y&quot;)
+  rename(&quot;a.did&quot;= &quot;mean.x&quot;, &quot;b.did&quot;= &quot;mean.y&quot;) %&gt;% 
+  mutate(intercept= a.did + m1.1.i$summary.fixed[[1]][[1]], 
+         slope= b.did + m1.1.i$summary.fixed[[1]][[2]])
 
 
 
 m1.1.i.mean.plot &lt;-  ggplot()+
-  geom_point(data= m1.1.i.mean, aes(x=a.did, y= b.did))+
-   geom_hline(yintercept=0, linetype=&#39;longdash&#39;) +
+  geom_point(data= m1.1.i.mean, aes(x=intercept, y= slope))+
+  geom_hline(yintercept=0, linetype=&#39;longdash&#39;) +
   geom_vline(xintercept = 0)+
   labs(x= &quot;a (intercept)&quot;, y = &quot;b (urban slope)&quot;)+
   theme_bw()
@@ -577,8 +589,10 @@ m1.1.i.mean.plot</code></pre>
 
 
 m1.1.i.outcome &lt;- m1.1.i.mean %&gt;% 
-  mutate(u0.i = inverse_logit(a.did), 
-         u1.i= inverse_logit(a.did + b.did))
+  mutate(u0.i = inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]]), 
+         u1.i= inverse_logit(a.did + m1.1.i$summary.fixed[[1]][[1]] + 
+                               b.did + m1.1.i$summary.fixed[[1]][[2]])
+         )
 
 
 m1.1.i.outcome.plot &lt;-  ggplot()+
@@ -592,6 +606,13 @@ m1.1.i.outcome.plot &lt;-  ggplot()+
 
 m1.1.i.outcome.plot</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.1.1%20outcome%20plot%20inla-1.png" width="672" /></p>
+</div>
+<div id="difference-between-the-rethinking-and-inla-model-parametrization" class="section level3">
+<h3><strong>Difference between the rethinking and INLA model parametrization</strong></h3>
+<p>The rethinking random effects are parameterized like N[ (a, b); Sigma ], while the INLA random effects are parameterized like (a, b) + N[ (0, 0); Sigma ]. From INLA’s perspective, (a, b) are fixed effects that define the center of the random effect. The INLA plot is centered at (0,0), while in this case, the rethinking plot is centered at (-0.68, 0.65). That’s why, when we want to replicate the rethinking model in INLA, we have to add the the fixed effects, which are the center of the distribution, to the random effects, which are deviations from that center.</p>
+<p>Example:</p>
+<p>m1.1.i$summary.fixed[[1]][[1]] is the fixed effect of the intercept a.did is the deviation from the intercept by district</p>
+<p>a.did + m1.1.i$summary.fixed[[1]][[1]] in INLA is the equivalent of a in the rethinking model.</p>
 </div>
 </div>
 <div id="model-urban-index-intercepts." class="section level2">
@@ -648,12 +669,14 @@ m1.2.i &lt;- inla(C ~ 0 + urban + f(did, model=&quot;iid2d&quot;, n= 2*n.distric
 summary(m1.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, &quot; n.district), family = \&quot;binomial\&quot;, data 
-##    = d1.2.i, Ntrials = 1, &quot;, &quot; control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; control.predictor = 
-##    list(link = 1, compute = T), control.family = list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    c(&quot;inla(formula = C ~ 0 + urban + f(did, model = \&quot;iid2d\&quot;, n = 2 * &quot;, 
+##    &quot; n.district), family = \&quot;binomial\&quot;, data = d1.2.i, Ntrials = 1, &quot;, &quot; 
+##    control.compute = list(config = T, dic = TRUE, waic = TRUE), &quot;, &quot; 
+##    control.predictor = list(link = 1, compute = T), control.family = 
+##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
 ##    list(mean = 0, prec = 1))&quot;) 
 ## Time used:
-##     Pre = 1.46, Running = 3.02, Post = 0.344, Total = 4.82 
+##     Pre = 1.5, Running = 2.9, Post = 0.384, Total = 4.78 
 ## Fixed effects:
 ##          mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## urban0 -0.698 0.087     -0.871   -0.697     -0.529 -0.696   0
@@ -664,10 +687,14 @@ summary(m1.2.i)</code></pre>
 ##     did IID2D model
 ## 
 ## Model hyperparameters:
-##                                   mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for did (component 1)  5.113 1.602      2.684    4.876      8.910  4.436
-## Precision for did (component 2)  3.910 2.753      0.669    3.265     10.923  1.880
-## Rho1:2 for did                  -0.006 0.318     -0.606   -0.007      0.598 -0.009
+##                                   mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for did (component 1)  5.113 1.602      2.684    4.876      8.910
+## Precision for did (component 2)  3.910 2.753      0.669    3.265     10.923
+## Rho1:2 for did                  -0.006 0.318     -0.606   -0.007      0.598
+##                                   mode
+## Precision for did (component 1)  4.436
+## Precision for did (component 2)  1.880
+## Rho1:2 for did                  -0.009
 ## 
 ## Expected number of effective parameters(stdev): 33.89(3.74)
 ## Number of equivalent replicates : 57.06 
@@ -683,13 +710,16 @@ summary(m1.2.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m1.2.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025         q0.5   q0.975         mode
-## SD for did (component 1)  0.457905716 0.06978712  0.3356060  0.452735735 0.609076  0.443241189
-## SD for did (component 2)  0.607659726 0.23711773  0.3031733  0.552883810 1.215125  0.462597098
-## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026 0.592858 -0.009533963</code></pre>
+<pre><code>##                                  mean         sd     q0.025         q0.5
+## SD for did (component 1)  0.457905716 0.06978712  0.3356060  0.452735735
+## SD for did (component 2)  0.607659726 0.23711773  0.3031733  0.552883810
+## Rho1:2 for did           -0.006416599 0.31759125 -0.6030245 -0.007601026
+##                            q0.975         mode
+## SD for did (component 1) 0.609076  0.443241189
+## SD for did (component 2) 1.215125  0.462597098
+## Rho1:2 for did           0.592858 -0.009533963</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m1.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2%20inla%20mean-1.png" width="672" /></p>
-<p>** i think it’s not totally correct, the sigmas ar off (they’re not=1)**</p>
 </div>
 </div>
 </div>
@@ -729,18 +759,18 @@ Sigma ~ exponential(1)
 ## Running the chains for more iterations may help. See
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.1)</code></pre>
-<pre><code>##             mean         sd        5.5%      94.5%    n_eff     Rhat4
-## abar -0.68576920 0.09875436 -0.84490536 -0.5268890 1474.633 0.9996129
-## bA    0.08179146 0.04660512  0.00700422  0.1553170 3426.373 0.9983257
-## bbar  0.64162601 0.15676258  0.39575912  0.8896354 1340.254 0.9994605</code></pre>
+<pre><code>##             mean         sd         5.5%      94.5%    n_eff     Rhat4
+## abar -0.69027935 0.09839765 -0.849204797 -0.5307997 1527.989 1.0000145
+## bA    0.08575952 0.04863796  0.006913121  0.1645410 3479.560 0.9992465
+## bbar  0.64396667 0.15978274  0.382250689  0.9000550 1186.593 0.9992846</code></pre>
 <pre class="r"><code>precis( m2.1 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6526711 1.749518e-01 -0.8660731 -0.3408475  364.6056 1.006441
-## Rho[2,1] -0.6526711 1.749518e-01 -0.8660731 -0.3408475  364.6056 1.006441
-## Rho[2,2]  1.0000000 5.881462e-17  1.0000000  1.0000000 1714.2664 0.997998
-## Sigma[1]  0.5745653 9.688525e-02  0.4295537  0.7382072  537.6061 1.008345
-## Sigma[2]  0.7699467 2.042112e-01  0.4471645  1.1078577  262.1892 1.024505</code></pre>
+## Rho[1,2] -0.6628487 1.623307e-01 -0.8727841 -0.3596225  422.4545 1.003141
+## Rho[2,1] -0.6628487 1.623307e-01 -0.8727841 -0.3596225  422.4545 1.003141
+## Rho[2,2]  1.0000000 5.678775e-17  1.0000000  1.0000000 1800.2697 0.997998
+## Sigma[1]  0.5850329 1.000878e-01  0.4320000  0.7481646  546.6285 1.007837
+## Sigma[2]  0.7978350 2.034641e-01  0.4883978  1.1375241  246.7951 1.024439</code></pre>
 <p>In this model, the total causal effect of age is positive and very small. Older individuals use slightly more contraception.</p>
 </div>
 <div id="inla-2" class="section level3">
@@ -780,13 +810,15 @@ m2.1.i &lt;- inla(C ~ 1+ urban + age + f(a.did, model=&quot;iid2d&quot;, n= 2*n.
 summary(m2.1.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, 
-##    copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, &quot;, &quot; 
-##    dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link 
-##    = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
-##    prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + age + f(a.did, model = \&quot;iid2d\&quot;, &quot;, 
+##    &quot; n = 2 * n.district) + f(b.did, urban, copy = \&quot;a.did\&quot;), family = 
+##    \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = 
+##    list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = 
+##    list(link = 1, &quot;, &quot; compute = T), control.family = list(control.link = 
+##    list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 
+##    1/(0.5^2), mean.intercept = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.79, Running = 3.59, Post = 0.342, Total = 5.72 
+##     Pre = 1.86, Running = 3.62, Post = 0.376, Total = 5.85 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.689 0.100     -0.887   -0.689     -0.495 -0.688   0
@@ -799,10 +831,14 @@ summary(m2.1.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for a.did (component 1)  3.088 1.017      1.570    2.930      5.516  2.640
-## Precision for a.did (component 2)  1.904 0.925      0.703    1.709      4.234  1.384
-## Rho1:2 for a.did                  -0.662 0.146     -0.873   -0.687     -0.309 -0.739
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  3.088 1.017      1.570    2.930      5.516
+## Precision for a.did (component 2)  1.904 0.925      0.703    1.709      4.234
+## Rho1:2 for a.did                  -0.662 0.146     -0.873   -0.687     -0.309
+##                                     mode
+## Precision for a.did (component 1)  2.640
+## Precision for a.did (component 2)  1.384
+## Rho1:2 for a.did                  -0.739
 ## 
 ## Expected number of effective parameters(stdev): 52.75(5.30)
 ## Number of equivalent replicates : 36.66 
@@ -818,10 +854,14 @@ summary(m2.1.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.1.i)</code></pre>
-<pre><code>##                                  mean         sd     q0.025       q0.5     q0.975       mode
-## SD for a.did (component 1)  0.5912211 0.09440575  0.4264479  0.5840307  0.7963088  0.5707599
-## SD for a.did (component 2)  0.7838379 0.17978820  0.4868598  0.7646316  1.1895932  0.7281630
-## Rho1:2 for a.did           -0.6619113 0.14617008 -0.8730792 -0.6878622 -0.3103507 -0.7391103</code></pre>
+<pre><code>##                                  mean         sd     q0.025       q0.5
+## SD for a.did (component 1)  0.5912211 0.09440575  0.4264479  0.5840307
+## SD for a.did (component 2)  0.7838379 0.17978820  0.4868598  0.7646316
+## Rho1:2 for a.did           -0.6619113 0.14617008 -0.8730792 -0.6878622
+##                                q0.975       mode
+## SD for a.did (component 1)  0.7963088  0.5707599
+## SD for a.did (component 2)  1.1895932  0.7281630
+## Rho1:2 for a.did           -0.3103507 -0.7391103</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m2.1.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2.1%20inla-1.png" width="672" /></p>
 <p>the intercept is abar</p>
@@ -849,18 +889,18 @@ Sigma ~ exponential(1)
 ## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>precis(m2.2)</code></pre>
 <pre><code>##            mean         sd       5.5%      94.5%    n_eff     Rhat4
-## abar -0.7187628 0.10173897 -0.8830979 -0.5599270 1583.119 1.0033712
-## bA   -0.2643556 0.07098747 -0.3812679 -0.1533103 1945.980 0.9992275
-## bK    0.5119763 0.07252481  0.3921425  0.6247661 1507.116 1.0005053
-## bbar  0.6842043 0.16095893  0.4269610  0.9394445 1049.025 1.0014846</code></pre>
+## abar -0.7144545 0.10234481 -0.8818230 -0.5521382 1687.773 0.9995983
+## bA   -0.2612862 0.07138079 -0.3749902 -0.1504531 1743.880 0.9985095
+## bK    0.5115326 0.07209485  0.3967871  0.6266893 1737.818 1.0001393
+## bbar  0.6888011 0.15762259  0.4408375  0.9414319 1142.356 0.9990996</code></pre>
 <pre class="r"><code>precis( m2.2 , depth=3 , pars=c(&quot;Rho&quot;,&quot;Sigma&quot;) )</code></pre>
 <pre><code>##                mean           sd       5.5%      94.5%     n_eff    Rhat4
 ## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN      NaN
-## Rho[1,2] -0.6019807 1.839418e-01 -0.8397488 -0.2668630  395.4271 1.012317
-## Rho[2,1] -0.6019807 1.839418e-01 -0.8397488 -0.2668630  395.4271 1.012317
-## Rho[2,2]  1.0000000 6.560418e-17  1.0000000  1.0000000 1595.9135 0.997998
-## Sigma[1]  0.6056725 9.924445e-02  0.4592953  0.7712107  508.5028 1.011315
-## Sigma[2]  0.7474246 2.131369e-01  0.4043804  1.0998097  180.6403 1.019900</code></pre>
+## Rho[1,2] -0.6376823 1.708759e-01 -0.8538454 -0.3368814  370.5424 1.002529
+## Rho[2,1] -0.6376823 1.708759e-01 -0.8538454 -0.3368814  370.5424 1.002529
+## Rho[2,2]  1.0000000 6.153016e-17  1.0000000  1.0000000 1944.3327 0.997998
+## Sigma[1]  0.6063893 9.665623e-02  0.4611645  0.7679767  544.1599 1.001116
+## Sigma[2]  0.7538359 1.974397e-01  0.4344186  1.0786125  226.6856 1.021838</code></pre>
 <p>In this model, the direct effect of age is negative, and much farther from zero than before. The effect of number of children is strong and positive. These results are consistent with the DAG, because they imply that the reason the total effect of age, from m2.1, is positive is that older individuals also have more kids. Having more kids increases contraception. Being older, controlling for kids, actually makes con- traception less likely.</p>
 </div>
 <div id="inla-3" class="section level3">
@@ -883,13 +923,16 @@ m2.2.i &lt;- inla(C ~ 1+ urban + age + children + f(a.did, model=&quot;iid2d&quo
 summary(m2.2.i)</code></pre>
 <pre><code>## 
 ## Call:
-##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, 
-##    urban, copy = \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, control.compute = list(config = T, 
-##    &quot;, &quot; dic = TRUE, waic = TRUE), control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
-##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = list(mean = 0, prec = 1/(0.5^2), mean.intercept 
-##    = 0, &quot;, &quot; prec.intercept = 1))&quot;) 
+##    c(&quot;inla(formula = C ~ 1 + urban + age + children + f(a.did, model = 
+##    \&quot;iid2d\&quot;, &quot;, &quot; n = 2 * n.district) + f(b.did, urban, copy = 
+##    \&quot;a.did\&quot;), family = \&quot;binomial\&quot;, &quot;, &quot; data = d2.i, Ntrials = 1, 
+##    control.compute = list(config = T, &quot;, &quot; dic = TRUE, waic = TRUE), 
+##    control.predictor = list(link = 1, &quot;, &quot; compute = T), control.family = 
+##    list(control.link = list(model = \&quot;logit\&quot;)), &quot;, &quot; control.fixed = 
+##    list(mean = 0, prec = 1/(0.5^2), mean.intercept = 0, &quot;, &quot; 
+##    prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.89, Running = 3.09, Post = 0.372, Total = 5.35 
+##     Pre = 1.99, Running = 3.13, Post = 0.4, Total = 5.52 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## (Intercept) -0.718 0.103     -0.922   -0.717     -0.516 -0.716   0
@@ -903,10 +946,14 @@ summary(m2.2.i)</code></pre>
 ##    b.did Copy
 ## 
 ## Model hyperparameters:
-##                                     mean    sd 0.025quant 0.5quant 0.975quant   mode
-## Precision for a.did (component 1)  2.832 0.926      1.449    2.688      5.040  2.424
-## Precision for a.did (component 2)  1.958 0.968      0.713    1.751      4.401  1.409
-## Rho1:2 for a.did                  -0.657 0.148     -0.871   -0.682     -0.299 -0.734
+##                                     mean    sd 0.025quant 0.5quant 0.975quant
+## Precision for a.did (component 1)  2.832 0.926      1.449    2.688      5.040
+## Precision for a.did (component 2)  1.958 0.968      0.713    1.751      4.401
+## Rho1:2 for a.did                  -0.657 0.148     -0.871   -0.682     -0.299
+##                                     mode
+## Precision for a.did (component 1)  2.424
+## Precision for a.did (component 2)  1.409
+## Rho1:2 for a.did                  -0.734
 ## 
 ## Expected number of effective parameters(stdev): 54.03(5.28)
 ## Number of equivalent replicates : 35.79 
@@ -922,10 +969,14 @@ summary(m2.2.i)</code></pre>
 ## Posterior marginals for the linear predictor and
 ##  the fitted values are computed</code></pre>
 <pre class="r"><code>bri.hyperpar.summary(m2.2.i)</code></pre>
-<pre><code>##                                  mean        sd     q0.025       q0.5     q0.975       mode
-## SD for a.did (component 1)  0.6170742 0.0977858  0.4460300  0.6097704  0.8291373  0.5965057
-## SD for a.did (component 2)  0.7746153 0.1801363  0.4774009  0.7553064  1.1813881  0.7186946
-## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040 -0.3010549 -0.7346392</code></pre>
+<pre><code>##                                  mean        sd     q0.025       q0.5
+## SD for a.did (component 1)  0.6170742 0.0977858  0.4460300  0.6097704
+## SD for a.did (component 2)  0.7746153 0.1801363  0.4774009  0.7553064
+## Rho1:2 for a.did           -0.6566265 0.1479663 -0.8707183 -0.6828040
+##                                q0.975       mode
+## SD for a.did (component 1)  0.8291373  0.5965057
+## SD for a.did (component 2)  1.1813881  0.7186946
+## Rho1:2 for a.did           -0.3010549 -0.7346392</code></pre>
 <pre class="r"><code>bri.hyperpar.plot(m2.2.i)</code></pre>
 <p><img src="rethinkingINLA_HW9_files/figure-html/9.2.2%20inla-1.png" width="672" /></p>
 </div>
