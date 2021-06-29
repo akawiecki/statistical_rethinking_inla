@@ -169,14 +169,14 @@ d3 <- d2 %>%
   mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
          i_married= na_if(married, 0)) 
 
-m6.9.inla.prior <- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
+m6.9.i <- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
                         control.fixed = list(
         mean= 0, 
         prec= list(i_notmarried=2, i_married= 1, A=2)),
         control.compute = list(dic=TRUE, waic= TRUE)
 )
 
-summary(m6.9.inla.prior )
+summary(m6.9.i )
 
 ```
 
@@ -204,7 +204,7 @@ precis(m6.10)
 ```{r hw4.2.2 m6.10 INLA}
 
 
-m6.10.inla.prior <- inla(happiness~ A , data= d3, 
+m6.10.i <- inla(happiness~ A , data= d3, 
                         control.fixed = list(
         mean= 0, 
         prec= 1/(2^2),
@@ -213,7 +213,7 @@ m6.10.inla.prior <- inla(happiness~ A , data= d3,
         control.compute = list(dic=TRUE, waic= TRUE)
 )
 
-summary(m6.10.inla.prior )
+summary(m6.10.i )
 ```
 
 ### To compare these models using WAIC:
@@ -226,11 +226,49 @@ summary(m6.10.inla.prior )
  compare( m6.9 , m6.10 )
 ```
 
+Now to judge whether two models are easy to distinguish, we don’t use their standard errors but rather the standard error of their difference. What does that mean? Just like each WAIC value, each difference in WAIC values also has a standard error. To compute the standard error of the difference between models m6.7 and m6.8, we just need the pointwise breakdown of the WAIC values:
+
+To compute the standard error of the difference between models m6.7 and m6.8, we just need the pointwise breakdown of the WAIC values:
+```{r rethinking st. dev}
+
+m6.9.waic.r <- WAIC( m6.9 , pointwise=TRUE )$WAIC
+m6.10.waic.r <- WAIC( m6.10 , pointwise=TRUE )$WAIC
+n <- length(m6.9.waic.r)
+diff_m6.9_m6.10 <- m6.9.waic.r - m6.10.waic.r
+
+sqrt( n*var( diff_m6.9_m6.10 ) )
+
+```
+
+This is the value in the second row of the compare table. It’s slightly different, only because of simulation variance. The difference between the models is 387.9 and the standard error about 35.5. If we imagine the 99% (corresponding to a z-score of about 2.6) interval of the difference, it’ll be about:
+
+```{r rethinking 99 CI}
+ 387.9 + c(-1,1)*35.5*2.6
+```
+
+
 ### compare INLA 
 ```{r compare inla}
-m6.9.inla.prior$waic$waic
-m6.10.inla.prior$waic$waic
+m6.9.i$waic$waic
+m6.10.i$waic$waic
 ```
+
+```{r INLA st. dev}
+m6.9.waic.i <- m6.9.i$waic$local.waic
+m6.10.waic.i <- m6.10.i$waic$local.waic
+n <- length(m6.9.waic.i)
+diff_m6.9_m6.10.i <- m6.9.waic.i - m6.10.waic.i
+
+st.dev.i <- sqrt( n*var( diff_m6.9_m6.10 ) )
+
+d.waic.mean.i <- m6.10.i$waic$waic - m6.9.i$waic$waic
+
+ci.i <- d.waic.mean.i + c(-1,1)*st.dev.i*2.6
+
+387.9 + c(-1,1)*35.5*2.6
+
+```
+
 
 The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.
 
@@ -324,6 +362,13 @@ m5 <- quap(
 
 ```
 
+Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of food, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths.
+What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:
+
+```{r coeftab}
+coeftab(m4,m5)
+```
+
 
 ## 3. INLA
 
@@ -382,9 +427,94 @@ m5.i$waic$waic
 ```
 
 
-Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of good, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths.
-What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:
+```{r f. st dev inla }
+m.list <- list(m1.i, m2.i,m3.i, m4.i, m5.i)
 
-```{r coeftab}
-coeftab(m4,m5)
+f.waic.compare <- function(m){
+  
+f.waic.min <- function(m){
+  
+  #find the smallest waic value among the models 
+  min.waic <- min(unlist(lapply(m, function (x){
+x[["waic"]][["waic"]]
+} )))
+  
+  # condition: is the model waic == the lowest waic?
+  min.waic.T <- sapply(m, function(x) x[["waic"]][["waic"]] == min.waic )
+
+  # select the model where the waic == the lowest waic is TRUE
+  m.min.waic <- m[min.waic.T==TRUE]
+}
+  
+  m.min.waic <- f.waic.min(m.list)
+
+  
+  n <- length(m[["waic"]][["local.waic"]])
+  
+  
+  waic.compare <- list( waic= m[["waic"]][["waic"]],
+       s.e = as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) ),
+       d.mean.waic= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] , 
+       d.s.e= as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) ), 
+       p.waic= sum(m[["waic"]][["local.p.eff"]])
+ )
+  
+}
+
+test <- lapply(m.list,f.waic.compare) %>%  bind_rows()
+
+
 ```
+
+```{r st dev inla }
+m.list <- list(m1.i, m2.i,m3.i, m4.i, m5.i)
+
+min.waic <- min(unlist(lapply(m.list, function (x){
+x[["waic"]][["waic"]]
+} )))
+
+f.waic <- function (x){
+list(waic= c(x[["waic"]][["waic"]]),
+     fixed= c(paste(x$names.fixed[2:length(x$names.fixed)], collapse= "+")),
+     loc.waic= x[["waic"]][["local.waic"]]
+     )
+}
+
+m.waic.i <-lapply(m.list, f.waic ) #%>% bind_rows()
+
+min.waic.T <- sapply(m.waic.i,function(x) x[["waic"]] == min.waic )
+
+min.waic.list <- m.waic.i[min.waic.T==TRUE ]
+
+d.waic <- lapply(m.waic.i, function (x){x[["waic"]] - min.waic } )
+
+
+f.waic.diff <- function(x){
+
+ list( d.mean.waic= x[["waic"]]-min.waic.list[[1]][["waic"]] , 
+       s.e= as.numeric(sqrt( length(x[["loc.waic"]])*var( x[["loc.waic"]]-min.waic.list[[1]][["loc.waic"]] ) ) ),
+      
+       #d.loc.waic= x[["loc.waic"]]-min.waic.list[[1]][["loc.waic"]], 
+       n= length(x[["loc.waic"]])
+ )
+  
+  
+  
+}
+
+
+waic.diff <- lapply(m.waic.i, f.waic.diff) %>% bind_rows()
+
+
+```
+
+```{r}
+ compare( m1 , m2 , m3 , m4 , m5 )
+```
+
+
+list.condition <- sapply(input.list, function(x) class(x)=="desired.class")
+output.list  <- input.list[list.condition]
+
+
+
