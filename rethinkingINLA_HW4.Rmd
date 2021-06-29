@@ -432,11 +432,12 @@ m5.i$waic$waic
 m.list <- list(m1.i, m2.i,m3.i, m4.i, m5.i)
 
 #names of models
-m.name <- c("m1.i"," m2.i","m3.i", "m4.i", "m5.i")
+m.name <- c("m1.i","m2.i","m3.i", "m4.i", "m5.i")
 
 # f.waic.compare: function that 
 f.waic.compare <- function(m){
   
+  #f.waic.min finds the model in the list with the lowest waic
 f.waic.min <- function(m){
   
   #find the smallest waic value among the models 
@@ -450,23 +451,31 @@ x[["waic"]][["waic"]]
   # select the model where the waic == the lowest waic is TRUE
   m.min.waic <- m[min.waic.T==TRUE]
 }
-  
+  #apply f.waic.min to the model list 
   m.min.waic <- f.waic.min(m.list)
 
-  
+  #number of observations
   n <- length(m[["waic"]][["local.waic"]])
   
   
-  waic.compare <- list( waic= m[["waic"]][["waic"]],
+  waic.compare <- list( 
+    #extract waic 
+    waic= m[["waic"]][["waic"]],
+    # st. error of the pointwise waic
        s.e = as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) ),
-       
+    # lower ci of the pointwise waic
        ci.l= m[["waic"]][["waic"]] - as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) )*2.6, 
+    # upper ci of the pointwise waic
        ci.u= m[["waic"]][["waic"]] + as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) )*2.6, 
+    #difference between a model's waic and the lowest waic
        d.mean.waic= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] , 
+    #st. error of the difference between a model's waic and the lowest waic
        d.s.e= as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) ), 
+    #lower ci of the difference between a model's waic and the lowest waic
        ci.d.l= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] - as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) )*2.6, 
-       
+    #upper ci of the difference between a model's waic and the lowest waic
        ci.d.u= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] + as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) )*2.6, 
+    # prediction penalty
        p.waic= sum(m[["waic"]][["local.p.eff"]])
  )
   
@@ -482,7 +491,6 @@ waic.compare.i
 
 ```{r inla waic diff plot}
 
-waic.compare.i.plot
 
 plot.v.waic <- ggplot() +
     geom_point( data= waic.compare.i , aes(y= m, x=waic), size=2, shape= 16,  position=position_dodge(width=0.5)) +

@@ -26,6 +26,15 @@
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
   pre:not([class]) {
@@ -70,6 +79,7 @@ h6 {
   text-align: left;
 }
 </style>
+
 
 
 
@@ -532,14 +542,14 @@ precis(m6.9,depth=2)</code></pre>
   mutate(i_notmarried= na_if(if_else(married==0, 1, 0), 0), 
          i_married= na_if(married, 0)) 
 
-m6.9.inla.prior &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
+m6.9.i &lt;- inla(happiness~ -1 +i_notmarried+i_married + A , data= d3, 
                         control.fixed = list(
         mean= 0, 
         prec= list(i_notmarried=2, i_married= 1, A=2)),
         control.compute = list(dic=TRUE, waic= TRUE)
 )
 
-summary(m6.9.inla.prior )</code></pre>
+summary(m6.9.i )</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = happiness ~ -1 + i_notmarried + i_married + A, &quot;, &quot; 
@@ -547,7 +557,7 @@ summary(m6.9.inla.prior )</code></pre>
 ##    control.fixed = list(mean = 0, prec = list(i_notmarried = 2, &quot;, &quot; 
 ##    i_married = 1, A = 2)))&quot;) 
 ## Time used:
-##     Pre = 1.24, Running = 0.454, Post = 0.222, Total = 1.91 
+##     Pre = 2.33, Running = 0.512, Post = 0.32, Total = 3.17 
 ## Fixed effects:
 ##                mean    sd 0.025quant 0.5quant 0.975quant   mode kld
 ## i_notmarried -0.240 0.063     -0.364   -0.240     -0.116 -0.240   0
@@ -595,7 +605,7 @@ precis(m6.10)</code></pre>
 </div>
 <div id="inla-1" class="section level3">
 <h3>2.2 INLA</h3>
-<pre class="r"><code>m6.10.inla.prior &lt;- inla(happiness~ A , data= d3, 
+<pre class="r"><code>m6.10.i &lt;- inla(happiness~ A , data= d3, 
                         control.fixed = list(
         mean= 0, 
         prec= 1/(2^2),
@@ -604,14 +614,14 @@ precis(m6.10)</code></pre>
         control.compute = list(dic=TRUE, waic= TRUE)
 )
 
-summary(m6.10.inla.prior )</code></pre>
+summary(m6.10.i )</code></pre>
 <pre><code>## 
 ## Call:
 ##    c(&quot;inla(formula = happiness ~ A, data = d3, control.compute = list(dic 
 ##    = TRUE, &quot;, &quot; waic = TRUE), control.fixed = list(mean = 0, prec = 
 ##    1/(2^2), &quot;, &quot; mean.intercept = 0, prec.intercept = 1))&quot;) 
 ## Time used:
-##     Pre = 1.18, Running = 0.466, Post = 0.205, Total = 1.85 
+##     Pre = 2.11, Running = 0.56, Post = 0.324, Total = 2.99 
 ## Fixed effects:
 ##             mean    sd 0.025quant 0.5quant 0.975quant mode kld
 ## (Intercept)    0 0.077     -0.151        0      0.151    0   0
@@ -647,13 +657,38 @@ summary(m6.10.inla.prior )</code></pre>
 <pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
 ## m6.9  2713.964 37.55324   0.0000       NA 3.732484 1.000000e+00
 ## m6.10 3101.906 27.74820 387.9425 35.41158 2.337316 5.745894e-85</code></pre>
+<p>Now to judge whether two models are easy to distinguish, we don’t use their standard errors but rather the standard error of their difference. What does that mean? Just like each WAIC value, each difference in WAIC values also has a standard error. To compute the standard error of the difference between models m6.7 and m6.8, we just need the pointwise breakdown of the WAIC values:</p>
+<p>To compute the standard error of the difference between models m6.7 and m6.8, we just need the pointwise breakdown of the WAIC values:</p>
+<pre class="r"><code>m6.9.waic.r &lt;- WAIC( m6.9 , pointwise=TRUE )$WAIC
+m6.10.waic.r &lt;- WAIC( m6.10 , pointwise=TRUE )$WAIC
+n &lt;- length(m6.9.waic.r)
+diff_m6.9_m6.10 &lt;- m6.9.waic.r - m6.10.waic.r
+
+sqrt( n*var( diff_m6.9_m6.10 ) )</code></pre>
+<pre><code>## [1] 35.33786</code></pre>
+<p>This is the value in the second row of the compare table. It’s slightly different, only because of simulation variance. The difference between the models is 387.9 and the standard error about 35.5. If we imagine the 99% (corresponding to a z-score of about 2.6) interval of the difference, it’ll be about:</p>
+<pre class="r"><code> 387.9 + c(-1,1)*35.5*2.6</code></pre>
+<pre><code>## [1] 295.6 480.2</code></pre>
 </div>
 <div id="compare-inla" class="section level3">
 <h3>compare INLA</h3>
-<pre class="r"><code>m6.9.inla.prior$waic$waic</code></pre>
+<pre class="r"><code>m6.9.i$waic$waic</code></pre>
 <pre><code>## [1] 2713.829</code></pre>
-<pre class="r"><code>m6.10.inla.prior$waic$waic</code></pre>
+<pre class="r"><code>m6.10.i$waic$waic</code></pre>
 <pre><code>## [1] 3102.055</code></pre>
+<pre class="r"><code>m6.9.waic.i &lt;- m6.9.i$waic$local.waic
+m6.10.waic.i &lt;- m6.10.i$waic$local.waic
+n &lt;- length(m6.9.waic.i)
+diff_m6.9_m6.10.i &lt;- m6.9.waic.i - m6.10.waic.i
+
+st.dev.i &lt;- sqrt( n*var( diff_m6.9_m6.10 ) )
+
+d.waic.mean.i &lt;- m6.10.i$waic$waic - m6.9.i$waic$waic
+
+ci.i &lt;- d.waic.mean.i + c(-1,1)*st.dev.i*2.6
+
+387.9 + c(-1,1)*35.5*2.6</code></pre>
+<pre><code>## [1] 295.6 480.2</code></pre>
 <p>The model that produces the invalid inference, m6.9, is expected to predict much better. And it would. This is because the collider path does convey actual association. We simply end up mistaken about the causal inference. We should not use WAIC (or LOO) to choose among models, unless we have some clear sense of the causal model. These criteria will happily favor confounded models.</p>
 </div>
 </div>
@@ -716,12 +751,20 @@ m5 &lt;- quap(
 
 
  compare( m1 , m2 , m3 , m4 , m5 )</code></pre>
-<pre><code>##        WAIC       SE     dWAIC      dSE    pWAIC      weight
-## m1 322.8570 16.27702  0.000000       NA 4.643026 0.464863619
-## m3 323.8852 15.67222  1.028262 2.911577 3.711944 0.277997758
-## m2 324.0754 16.12771  1.218433 3.584892 3.818873 0.252782029
-## m4 333.4369 13.78791 10.579891 7.194478 2.423844 0.002343859
-## m5 333.7415 13.79359 10.884499 7.243278 2.659040 0.002012735</code></pre>
+<pre><code>##        WAIC       SE      dWAIC      dSE    pWAIC      weight
+## m1 323.5170 16.42107  0.0000000       NA 4.981215 0.353237245
+## m2 323.6882 16.09250  0.1711984 3.402548 3.647110 0.324258394
+## m3 323.7266 15.75646  0.2096031 3.131420 3.632684 0.318091271
+## m4 333.4783 13.84020  9.9612889 7.291470 2.434303 0.002426611
+## m5 333.8786 13.89132 10.3615522 7.362743 2.699905 0.001986479</code></pre>
+<p>Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of food, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths. What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:</p>
+<pre class="r"><code>coeftab(m4,m5)</code></pre>
+<pre><code>##       m4      m5     
+## a           0       0
+## bF      -0.02      NA
+## sigma    0.99    0.99
+## bA         NA    0.02
+## nobs      116     116</code></pre>
 </div>
 <div id="inla-2" class="section level2">
 <h2>3. INLA</h2>
@@ -780,14 +823,79 @@ m1.i$waic$waic</code></pre>
 <pre><code>## [1] 333.412</code></pre>
 <pre class="r"><code>m5.i$waic$waic</code></pre>
 <pre><code>## [1] 333.6651</code></pre>
-<p>Notice that the top three models are m1, m3, and m2. They have very similar WAIC values. The differences are small and smaller in all cases than the standard error of the difference. WAIC sees these models are tied. This makes sense, given the DAG, because as long as a model has groupsize in it, we can include either avgfood or area or both and get the same inferences. Another way to think of this is that the influence of good, adjusting for group size, is (according to the DAG) the same as the influence of area, adjusting for group size, because the influence of area is routed entirely through food and group size. There are no backdoor paths. What about the other two models, m4 and m5? These models are tied with one another, and both omit group size. Again, the influence of area passes entirely through food. So including only food or only area should produce the same inference—the total causal influence of area (or food) is just about zero. That’s indeed what the posterior distributions suggest:</p>
-<pre class="r"><code>coeftab(m4,m5)</code></pre>
-<pre><code>##       m4      m5     
-## a           0       0
-## bF      -0.02      NA
-## sigma    0.99    0.99
-## bA         NA    0.02
-## nobs      116     116</code></pre>
+<pre class="r"><code>#list of models
+m.list &lt;- list(m1.i, m2.i,m3.i, m4.i, m5.i)
+
+#names of models
+m.name &lt;- c(&quot;m1.i&quot;,&quot; m2.i&quot;,&quot;m3.i&quot;, &quot;m4.i&quot;, &quot;m5.i&quot;)
+
+# f.waic.compare: function that 
+f.waic.compare &lt;- function(m){
+  
+f.waic.min &lt;- function(m){
+  
+  #find the smallest waic value among the models 
+  min.waic &lt;- min(unlist(lapply(m, function (x){
+x[[&quot;waic&quot;]][[&quot;waic&quot;]]
+} )))
+  
+  # condition: is the model waic == the lowest waic?
+  min.waic.T &lt;- sapply(m, function(x) x[[&quot;waic&quot;]][[&quot;waic&quot;]] == min.waic )
+
+  # select the model where the waic == the lowest waic is TRUE
+  m.min.waic &lt;- m[min.waic.T==TRUE]
+}
+  
+  m.min.waic &lt;- f.waic.min(m.list)
+
+  
+  n &lt;- length(m[[&quot;waic&quot;]][[&quot;local.waic&quot;]])
+  
+  
+  waic.compare &lt;- list( waic= m[[&quot;waic&quot;]][[&quot;waic&quot;]],
+       s.e = as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) ),
+       
+       ci.l= m[[&quot;waic&quot;]][[&quot;waic&quot;]] - as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) )*2.6, 
+       ci.u= m[[&quot;waic&quot;]][[&quot;waic&quot;]] + as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) )*2.6, 
+       d.mean.waic= m[[&quot;waic&quot;]][[&quot;waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;waic&quot;]] , 
+       d.s.e= as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) ), 
+       ci.d.l= m[[&quot;waic&quot;]][[&quot;waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;waic&quot;]] - as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) )*2.6, 
+       
+       ci.d.u= m[[&quot;waic&quot;]][[&quot;waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;waic&quot;]] + as.numeric(sqrt( n*var( m[[&quot;waic&quot;]][[&quot;local.waic&quot;]]-m.min.waic[[1]][[&quot;waic&quot;]][[&quot;local.waic&quot;]] ) ) )*2.6, 
+       p.waic= sum(m[[&quot;waic&quot;]][[&quot;local.p.eff&quot;]])
+ )
+  
+}
+
+
+waic.compare.i &lt;- lapply(m.list,f.waic.compare) %&gt;%  bind_rows() %&gt;% mutate(m= m.name)
+
+waic.compare.i</code></pre>
+<pre><code>## # A tibble: 5 x 10
+##    waic   s.e  ci.l  ci.u d.mean.waic d.s.e ci.d.l ci.d.u p.waic m      
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  
+## 1  323.  15.8  282.  364.       0      0      0      0      4.58 &quot;m1.i&quot; 
+## 2  324.  15.7  283.  364.       0.756  3.44  -8.19   9.70   3.57 &quot; m2.i&quot;
+## 3  324.  15.4  284.  364.       0.838  2.81  -6.46   8.14   3.61 &quot;m3.i&quot; 
+## 4  333.  13.6  298.  369.      10.5    6.89  -7.44  28.4    2.37 &quot;m4.i&quot; 
+## 5  334.  13.6  298.  369.      10.7    6.95  -7.34  28.8    2.58 &quot;m5.i&quot;</code></pre>
+<pre class="r"><code>plot.v.waic &lt;- ggplot() +
+    geom_point( data= waic.compare.i , aes(y= m, x=waic), size=2, shape= 16,  position=position_dodge(width=0.5)) +
+    geom_errorbarh(data= waic.compare.i , aes(y= m, x=waic, xmin=ci.l, xmax=ci.u), height=.3, position=position_dodge(width=0.5)) +
+    geom_point( data= waic.compare.i , aes(y= m, x=d.mean.waic), size=2, shape= 2,  position=position_dodge(width=0.5), alpha= 0.8) +
+  
+  
+    geom_errorbarh(data= waic.compare.i , aes(y= m, x=d.mean.waic, xmin=ci.d.l, xmax=ci.d.u), height=.3, position=position_dodge(width=0.5), alpha= 0.5) +
+    #labs(x= &quot;rate ratio difference&quot;)+
+    theme_bw()</code></pre>
+<pre><code>## Warning: Ignoring unknown aesthetics: x
+
+## Warning: Ignoring unknown aesthetics: x</code></pre>
+<pre class="r"><code>  #xlim(0,3.5)+
+  #ggtitle(&#39;compare spray effect models that include the lowest waic values&#39;)
+
+plot.v.waic</code></pre>
+<p><img src="rethinkingINLA_HW4_files/figure-html/inla%20waic%20diff%20plot-1.png" width="672" /></p>
 </div>
 </div>
 
@@ -802,7 +910,7 @@ m1.i$waic$waic</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
