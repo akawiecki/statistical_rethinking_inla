@@ -428,8 +428,13 @@ m5.i$waic$waic
 
 
 ```{r f. st dev inla }
+#list of models
 m.list <- list(m1.i, m2.i,m3.i, m4.i, m5.i)
 
+#names of models
+m.name <- c("m1.i"," m2.i","m3.i", "m4.i", "m5.i")
+
+# f.waic.compare: function that 
 f.waic.compare <- function(m){
   
 f.waic.min <- function(m){
@@ -454,67 +459,49 @@ x[["waic"]][["waic"]]
   
   waic.compare <- list( waic= m[["waic"]][["waic"]],
        s.e = as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) ),
+       
+       ci.l= m[["waic"]][["waic"]] - as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) )*2.6, 
+       ci.u= m[["waic"]][["waic"]] + as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]] ) ) )*2.6, 
        d.mean.waic= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] , 
        d.s.e= as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) ), 
+       ci.d.l= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] - as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) )*2.6, 
+       
+       ci.d.u= m[["waic"]][["waic"]]-m.min.waic[[1]][["waic"]][["waic"]] + as.numeric(sqrt( n*var( m[["waic"]][["local.waic"]]-m.min.waic[[1]][["waic"]][["local.waic"]] ) ) )*2.6, 
        p.waic= sum(m[["waic"]][["local.p.eff"]])
  )
   
 }
 
-test <- lapply(m.list,f.waic.compare) %>%  bind_rows()
+
+waic.compare.i <- lapply(m.list,f.waic.compare) %>%  bind_rows() %>% mutate(m= m.name)
+
+waic.compare.i
+
+```
+
+
+```{r inla waic diff plot}
+
+waic.compare.i.plot
+
+plot.v.waic <- ggplot() +
+    geom_point( data= waic.compare.i , aes(y= m, x=waic), size=2, shape= 16,  position=position_dodge(width=0.5)) +
+    geom_errorbarh(data= waic.compare.i , aes(y= m, x=waic, xmin=ci.l, xmax=ci.u), height=.3, position=position_dodge(width=0.5)) +
+    geom_point( data= waic.compare.i , aes(y= m, x=d.mean.waic), size=2, shape= 2,  position=position_dodge(width=0.5), alpha= 0.8) +
+  
+  
+    geom_errorbarh(data= waic.compare.i , aes(y= m, x=d.mean.waic, xmin=ci.d.l, xmax=ci.d.u), height=.3, position=position_dodge(width=0.5), alpha= 0.5) +
+    #labs(x= "rate ratio difference")+
+    theme_bw()
+  #xlim(0,3.5)+
+  #ggtitle('compare spray effect models that include the lowest waic values')
+
+plot.v.waic
 
 
 ```
 
-```{r st dev inla }
-m.list <- list(m1.i, m2.i,m3.i, m4.i, m5.i)
 
-min.waic <- min(unlist(lapply(m.list, function (x){
-x[["waic"]][["waic"]]
-} )))
-
-f.waic <- function (x){
-list(waic= c(x[["waic"]][["waic"]]),
-     fixed= c(paste(x$names.fixed[2:length(x$names.fixed)], collapse= "+")),
-     loc.waic= x[["waic"]][["local.waic"]]
-     )
-}
-
-m.waic.i <-lapply(m.list, f.waic ) #%>% bind_rows()
-
-min.waic.T <- sapply(m.waic.i,function(x) x[["waic"]] == min.waic )
-
-min.waic.list <- m.waic.i[min.waic.T==TRUE ]
-
-d.waic <- lapply(m.waic.i, function (x){x[["waic"]] - min.waic } )
-
-
-f.waic.diff <- function(x){
-
- list( d.mean.waic= x[["waic"]]-min.waic.list[[1]][["waic"]] , 
-       s.e= as.numeric(sqrt( length(x[["loc.waic"]])*var( x[["loc.waic"]]-min.waic.list[[1]][["loc.waic"]] ) ) ),
-      
-       #d.loc.waic= x[["loc.waic"]]-min.waic.list[[1]][["loc.waic"]], 
-       n= length(x[["loc.waic"]])
- )
-  
-  
-  
-}
-
-
-waic.diff <- lapply(m.waic.i, f.waic.diff) %>% bind_rows()
-
-
-```
-
-```{r}
- compare( m1 , m2 , m3 , m4 , m5 )
-```
-
-
-list.condition <- sapply(input.list, function(x) class(x)=="desired.class")
-output.list  <- input.list[list.condition]
 
 
 
